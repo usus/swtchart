@@ -6,6 +6,5 @@ Bundle-Version: 0.1.0
 Require-Bundle: org.eclipse.swt,
  org.eclipse.ui,
  org.eclipse.core.runtime
-Export-Package: org.swtchart,
- org.swtchart
+Export-Package: org.swtchart
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
