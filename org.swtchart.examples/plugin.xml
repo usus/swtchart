@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Examples"
+            id="org.swtchart.examples">
+      </category>
+      <view
+            name="SWT Chart View"
+            icon="icons/swtchart.gif"
+            class="org.swtchart.examples.ext.InteractiveChartExample"
+            id="org.swtchart.ChartExample">
+      </view>
+   </extension>
+</plugin>
