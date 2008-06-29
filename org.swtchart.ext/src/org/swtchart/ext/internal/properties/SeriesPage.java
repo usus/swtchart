@@ -1,0 +1,491 @@
+package org.swtchart.ext.internal.properties;
+
+import org.eclipse.jface.preference.ColorSelector;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
+import org.swtchart.Chart;
+import org.swtchart.Constants;
+import org.swtchart.IBarSeries;
+import org.swtchart.ILineSeries;
+import org.swtchart.ISeries;
+import org.swtchart.LineStyle;
+import org.swtchart.ILineSeries.PlotSymbolType;
+
+/**
+ * The series page on properties dialog.
+ */
+public class SeriesPage extends AbstractSelectorPage {
+
+	private Button visibleButton;
+
+	private Button stackedButton;
+
+	private Combo xAxisIdCombo;
+
+	private Combo yAxisIdCombo;
+
+	private ColorSelector lineColorButton;
+
+	private Combo lineStyleCombo;
+
+	private ColorSelector symbolColorButton;
+
+	private Combo symbolTypeCombo;
+
+	private Text symbolSizeText;
+
+	private ColorSelector barColorButton;
+
+	private Text paddingText;
+
+	private ISeries[] series;
+
+	private int[] xAxisIdItems;
+
+	private int[] yAxisIdItems;
+
+	private boolean[] visibleStates;
+
+	private boolean[] stackedStates;
+
+	private int[] xAxisIds;
+
+	private int[] yAxisIds;
+
+	private Color[] lineColors;
+
+	private LineStyle[] lineStyles;
+
+	private Color[] symbolColors;
+
+	private PlotSymbolType[] symbolTypes;
+
+	private int[] symbolSizes;
+
+	private Color[] barColors;
+
+	private int[] paddings;
+
+	private Composite stackPanel;
+
+	private StackLayout stackLayout;
+
+	private Composite lineSeriesGroup;
+
+	private Composite barSeriesGroup;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param chart
+	 *            the chart
+	 * @param axes
+	 *            the axes
+	 * @param title
+	 *            the title
+	 */
+	public SeriesPage(Chart chart, String title) {
+		super(chart, title, "Series:");
+
+		series = chart.getSeriesSet().getSeries();
+		xAxisIdItems = chart.getAxisSet().getXAxisIds();
+		yAxisIdItems = chart.getAxisSet().getYAxisIds();
+
+		visibleStates = new boolean[series.length];
+		stackedStates = new boolean[series.length];
+		xAxisIds = new int[series.length];
+		yAxisIds = new int[series.length];
+		lineColors = new Color[series.length];
+		lineStyles = new LineStyle[series.length];
+		symbolColors = new Color[series.length];
+		symbolTypes = new PlotSymbolType[series.length];
+		symbolSizes = new int[series.length];
+		barColors = new Color[series.length];
+		paddings = new int[series.length];
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.swtchart.ext.internal.properties.AbstractSelectorPage#getListItems()
+	 */
+	@Override
+	protected String[] getListItems() {
+		String[] items = new String[series.length];
+		for (int i = 0; i < items.length; i++) {
+			items[i] = String.valueOf(series[i].getId());
+		}
+		return items;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.swtchart.ext.internal.properties.AbstractSelectorPage#selectInitialValues
+	 * ()
+	 */
+	@Override
+	protected void selectInitialValues() {
+		for (int i = 0; i < series.length; i++) {
+			visibleStates[i] = series[i].isVisible();
+			stackedStates[i] = series[i].isStackEnabled();
+			if (series[i] instanceof ILineSeries) {
+				lineColors[i] = ((ILineSeries) series[i]).getLineColor();
+				lineStyles[i] = ((ILineSeries) series[i]).getLineStyle();
+				symbolColors[i] = ((ILineSeries) series[i]).getSymbolColor();
+				symbolTypes[i] = ((ILineSeries) series[i]).getSymbolType();
+				symbolSizes[i] = ((ILineSeries) series[i]).getSymbolSize();
+			} else if (series[i] instanceof IBarSeries) {
+				barColors[i] = ((IBarSeries) series[i]).getBarColor();
+				paddings[i] = ((IBarSeries) series[i]).getBarPadding();
+			}
+			xAxisIds[i] = series[i].getXAxisId();
+			yAxisIds[i] = series[i].getYAxisId();
+		}
+
+		updateStackPanel();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.swtchart.ext.internal.properties.AbstractSelectorPage#
+	 * updateControlSelections()
+	 */
+	@Override
+	protected void updateControlSelections() {
+		visibleButton.setSelection(visibleStates[selectedIndex]);
+		stackedButton.setSelection(stackedStates[selectedIndex]);
+		if (xAxisIdCombo != null) {
+			xAxisIdCombo.setText("" + xAxisIds[selectedIndex]);
+		}
+		if (yAxisIdCombo != null) {
+			yAxisIdCombo.setText("" + yAxisIds[selectedIndex]);
+		}
+		if (series[selectedIndex] instanceof ILineSeries) {
+			lineStyleCombo.setText(lineStyles[selectedIndex].label);
+			lineStyleCombo.setEnabled(true);
+			lineColorButton.setColorValue(lineColors[selectedIndex].getRGB());
+			symbolColorButton.setColorValue(symbolColors[selectedIndex]
+					.getRGB());
+			symbolTypeCombo.setText(symbolTypes[selectedIndex].label);
+			symbolSizeText.setText(String.valueOf(symbolSizes[selectedIndex]));
+		} else if (series[selectedIndex] instanceof IBarSeries) {
+			barColorButton.setColorValue(barColors[selectedIndex].getRGB());
+			paddingText.setText(String.valueOf(paddings[selectedIndex]));
+		}
+
+		setControlsEnable(series[selectedIndex].isVisible());
+		updateStackPanel();
+	}
+
+	/**
+	 * Updates the stack panel.
+	 */
+	private void updateStackPanel() {
+		if (series[selectedIndex] instanceof ILineSeries) {
+			stackLayout.topControl = lineSeriesGroup;
+		} else if (series[selectedIndex] instanceof IBarSeries) {
+			stackLayout.topControl = barSeriesGroup;
+		}
+		stackPanel.layout();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.swtchart.ext.internal.properties.AbstractSelectorPage#
+	 * addRightPanelContents(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	protected void addRightPanelContents(Composite parent) {
+		addSeriesGroup(parent);
+
+		stackPanel = new Composite(parent, SWT.NONE);
+		stackLayout = new StackLayout();
+		stackPanel.setLayout(stackLayout);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 1;
+		stackPanel.setLayoutData(gridData);
+
+		addLineSeriesGroup(stackPanel);
+		addBarSeriesGroup(stackPanel);
+	}
+
+	/**
+	 * Adds the series panel.
+	 * 
+	 * @param parent
+	 *            the parent to add the series panel
+	 */
+	private void addSeriesGroup(Composite parent) {
+		Composite group = new Composite(parent, SWT.NONE);
+		group.setLayout(new GridLayout(2, true));
+
+		visibleButton = createCheckBoxControl(group, "Show plot");
+		visibleButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				boolean visible = visibleButton.getSelection();
+				visibleStates[selectedIndex] = visible;
+				setControlsEnable(visible);
+			}
+		});
+
+		stackedButton = createCheckBoxControl(group, "Stacked series:");
+		stackedButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				stackedStates[selectedIndex] = stackedButton.getSelection();
+			}
+		});
+
+		if (xAxisIdItems.length > 1) {
+			createLabelControl(group, "X Axis:");
+			String[] items = new String[xAxisIdItems.length];
+			for (int i = 0; i < items.length; i++) {
+				items[i] = "" + xAxisIdItems[i];
+			}
+			xAxisIdCombo = createComboControl(group, items);
+			xAxisIdCombo.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					xAxisIds[selectedIndex] = Integer.parseInt(xAxisIdCombo
+							.getText());
+				}
+			});
+		}
+
+		if (yAxisIdItems.length > 1) {
+			createLabelControl(group, "Y Axis:");
+			String[] items = new String[yAxisIdItems.length];
+			for (int i = 0; i < items.length; i++) {
+				items[i] = "" + yAxisIdItems[i];
+			}
+			yAxisIdCombo = createComboControl(group, items);
+			yAxisIdCombo.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					yAxisIds[selectedIndex] = Integer.parseInt(yAxisIdCombo
+							.getText());
+				}
+			});
+		}
+	}
+
+	/**
+	 * Adds the line series group.
+	 * 
+	 * @param parent
+	 *            the parent to add the line series group
+	 */
+	private void addLineSeriesGroup(Composite parent) {
+		lineSeriesGroup = createGroupControl(parent, "Line series:", true);
+		stackLayout.topControl = lineSeriesGroup;
+
+		createLabelControl(lineSeriesGroup, "Line color:");
+		lineColorButton = createColorButtonControl(lineSeriesGroup);
+		lineColorButton.addListener(new IPropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				lineColors[selectedIndex] = new Color(Display.getDefault(),
+						lineColorButton.getColorValue());
+			}
+		});
+
+		createLabelControl(lineSeriesGroup, "Line style:");
+		LineStyle[] styles = LineStyle.values();
+		String[] labels = new String[styles.length];
+		for (int i = 0; i < styles.length; i++) {
+			labels[i] = styles[i].label;
+		}
+		lineStyleCombo = createComboControl(lineSeriesGroup, labels);
+		lineStyleCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String value = lineStyleCombo.getText();
+				LineStyle selectedStyle = LineStyle.NONE;
+				for (LineStyle style : LineStyle.values()) {
+					if (style.label.equals(value)) {
+						selectedStyle = style;
+					}
+				}
+				lineStyles[selectedIndex] = selectedStyle;
+			}
+		});
+
+		createLabelControl(lineSeriesGroup, "Symbol color:");
+		symbolColorButton = createColorButtonControl(lineSeriesGroup);
+		symbolColorButton.addListener(new IPropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				symbolColors[selectedIndex] = new Color(Display.getDefault(),
+						symbolColorButton.getColorValue());
+			}
+		});
+
+		createLabelControl(lineSeriesGroup, "Symbol type:");
+		PlotSymbolType[] types = PlotSymbolType.values();
+		labels = new String[types.length];
+		for (int i = 0; i < types.length; i++) {
+			labels[i] = types[i].label;
+		}
+		symbolTypeCombo = createComboControl(lineSeriesGroup, labels);
+		symbolTypeCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String value = symbolTypeCombo.getText();
+				PlotSymbolType selectedType = PlotSymbolType.CIRCLE;
+				for (PlotSymbolType type : PlotSymbolType.values()) {
+					if (type.label.equals(value)) {
+						selectedType = type;
+					}
+				}
+				symbolTypes[selectedIndex] = selectedType;
+			}
+		});
+
+		createLabelControl(lineSeriesGroup, "Size:");
+		symbolSizeText = createTextControl(lineSeriesGroup);
+		symbolSizeText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				symbolSizes[selectedIndex] = Integer.parseInt(symbolSizeText
+						.getText());
+			}
+		});
+	}
+
+	/**
+	 * Adds the bar series group.
+	 * 
+	 * @param parent
+	 *            the parent to add the bar series group
+	 */
+	private void addBarSeriesGroup(Composite parent) {
+		barSeriesGroup = new Composite(parent, SWT.NONE);
+		new Text(parent, SWT.NONE);
+		barSeriesGroup.setLayout(new GridLayout(1, true));
+		barSeriesGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		Group group = createGroupControl(barSeriesGroup, "Bar series:", true);
+
+		createLabelControl(group, "Color:");
+		barColorButton = createColorButtonControl(group);
+		barColorButton.addListener(new IPropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				barColors[selectedIndex] = new Color(Display.getDefault(),
+						barColorButton.getColorValue());
+			}
+		});
+
+		createLabelControl(group, "Size:");
+		paddingText = createTextControl(group);
+		paddingText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				paddings[selectedIndex] = Integer.parseInt(paddingText
+						.getText());
+			}
+		});
+	}
+
+	/**
+	 * Sets the enable state of controls.
+	 * 
+	 * @param enabled
+	 *            true if controls are enabled
+	 */
+	private void setControlsEnable(boolean enabled) {
+		lineColorButton.setEnabled(enabled);
+		lineStyleCombo.setEnabled(enabled);
+		stackedButton.setEnabled(enabled);
+		if (xAxisIdCombo != null) {
+			xAxisIdCombo.setEnabled(enabled);
+		}
+		if (yAxisIdCombo != null) {
+			yAxisIdCombo.setEnabled(enabled);
+		}
+		barColorButton.setEnabled(enabled);
+		paddingText.setEnabled(enabled);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.swtchart.ext.internal.preference.AbstractPreferencePage#apply()
+	 */
+	@Override
+	public void apply() {
+		for (int i = 0; i < series.length; i++) {
+			series[i].setVisible(visibleStates[i]);
+			if (series[i] instanceof ILineSeries) {
+				((ILineSeries) series[i]).setLineColor(lineColors[i]);
+				((ILineSeries) series[i]).setLineStyle(lineStyles[i]);
+				((ILineSeries) series[i]).setSymbolColor(symbolColors[i]);
+				((ILineSeries) series[i]).setSymbolType(symbolTypes[i]);
+				((ILineSeries) series[i]).setSymbolSize(symbolSizes[i]);
+			} else if (series[i] instanceof IBarSeries) {
+				((IBarSeries) series[i]).setBarColor(barColors[i]);
+				((IBarSeries) series[i]).setBarPadding(paddings[i]);
+			}
+			try {
+				series[i].enableStack(stackedStates[i]);
+			} catch (IllegalArgumentException e) {
+				stackedStates[i] = false;
+				stackedButton.setSelection(false);
+			}
+			series[i].setXAxisId(xAxisIds[i]);
+			series[i].setYAxisId(yAxisIds[i]);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+	 */
+	@Override
+	protected void performDefaults() {
+		visibleStates[selectedIndex] = true;
+		stackedStates[selectedIndex] = false;
+		if (xAxisIdCombo != null) {
+			xAxisIds[selectedIndex] = 0;
+		}
+		if (yAxisIdCombo != null) {
+			yAxisIds[selectedIndex] = 0;
+		}
+		if (series[selectedIndex] instanceof ILineSeries) {
+			lineStyles[selectedIndex] = LineStyle.SOLID;
+			lineColors[selectedIndex] = Constants.BLUE;
+			symbolColors[selectedIndex] = Constants.BLUE;
+			symbolTypes[selectedIndex] = PlotSymbolType.CIRCLE;
+			symbolSizes[selectedIndex] = 4;
+		} else if (series[selectedIndex] instanceof IBarSeries) {
+			barColors[selectedIndex] = Constants.BLUE;
+			paddings[selectedIndex] = 80;
+		}
+
+		updateControlSelections();
+
+		super.performDefaults();
+	}
+}
