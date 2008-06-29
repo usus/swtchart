@@ -37,10 +37,10 @@ public class LineSeries extends Series implements ILineSeries {
 	private static final LineStyle DEFAULT_LINE_STYLE = LineStyle.SOLID;
 
 	/** the default line color */
-	private static final Color DEFAULT_LINE_COLOR = Constants.GRAY;
+	private static final Color DEFAULT_LINE_COLOR = Constants.BLUE;
 
 	/** the default symbol color */
-	private static final Color DEFAULT_COLOR = Constants.BLUE;
+	private static final Color DEFAULT_COLOR = Constants.DARK_GRAY;
 
 	/** the default symbol size */
 	private static final int DEFAULT_SIZE = 4;

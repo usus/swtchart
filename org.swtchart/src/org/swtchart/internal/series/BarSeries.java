@@ -38,7 +38,7 @@ public class BarSeries extends Series implements IBarSeries {
 	private static final int MARGIN_AT_MIN_MAX_PLOT = 6;
 
 	/** the default bar color */
-	private static final Color DEFAULT_BAR_COLOR = Constants.BLUE;
+	private static final Color DEFAULT_BAR_COLOR = Constants.LIGHT_BLUE;
 
 	/**
 	 * Constructor.
