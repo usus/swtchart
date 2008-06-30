@@ -98,7 +98,6 @@ public class AxisTickMarks extends Canvas implements PaintListener {
 	 * org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events
 	 * .PaintEvent)
 	 */
-	@Override
 	public void paintControl(PaintEvent e) {
 		ArrayList<Integer> tickLabelPositions = axis.getTick()
 				.getAxisTickLabels().getTickLabelPositions();

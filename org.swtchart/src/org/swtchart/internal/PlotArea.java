@@ -91,7 +91,6 @@ public class PlotArea extends Canvas implements PaintListener {
 	 * 
 	 * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
 	 */
-	@Override
 	public void paintControl(PaintEvent e) {
 		Point p = getSize();
 		Image bufferedImage = new Image(Display.getCurrent(), p.x, p.y);

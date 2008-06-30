@@ -211,7 +211,6 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 	 * org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events
 	 * .PaintEvent)
 	 */
-	@Override
 	public void paintControl(PaintEvent e) {
 
 		if (!visible) {

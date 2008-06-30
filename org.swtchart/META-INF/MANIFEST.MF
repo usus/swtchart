@@ -3,8 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SWTChart Plug-in
 Bundle-SymbolicName: org.swtchart;singleton:=true
 Bundle-Version: 0.1.0
-Require-Bundle: org.eclipse.swt,
- org.eclipse.ui,
- org.eclipse.core.runtime
+Require-Bundle: org.eclipse.swt
 Export-Package: org.swtchart
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -384,7 +384,6 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 	 * org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events
 	 * .PaintEvent)
 	 */
-	@Override
 	public void paintControl(PaintEvent e) {
 		if (axis.isHorizontalAxis()) {
 			drawXTick(e.gc);

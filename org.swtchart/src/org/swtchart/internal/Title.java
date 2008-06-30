@@ -184,7 +184,6 @@ public class Title extends Canvas implements ITitle, PaintListener {
 	 * org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events
 	 * .PaintEvent)
 	 */
-	@Override
 	public void paintControl(PaintEvent e) {
 
 		if (text == null || text.equals("") || !isVisible) {
