@@ -50,18 +50,18 @@ public class InteractiveChartExample extends ViewPart {
 		
 		// create line series 2
 		ILineSeries lineSeries2 = (ILineSeries) chart.getSeriesSet().createSeries(
-				SeriesType.LINE, "line series2");
+				SeriesType.LINE, "line series 2");
 		lineSeries2.setYSeries(yLineSeries2);
 		lineSeries2.setLineColor(Constants.RED);
 
 		// create bar series 1
 		IBarSeries barSeries1 = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR,
-				"bar series1");
+				"bar series 1");
 		barSeries1.setYSeries(yBarSeries1);
 		
 		// create bar series 2
 		IBarSeries barSeries2 = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR,
-				"bar series2");
+				"bar series 2");
 		barSeries2.setYSeries(yBarSeries2);
 		barSeries2.setBarColor(Constants.LIGHT_GREEN);
 		
