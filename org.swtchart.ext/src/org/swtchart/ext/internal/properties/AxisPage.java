@@ -146,7 +146,7 @@ public class AxisPage extends AbstractSelectorPage {
 			maxRanges[i] = axes[i].getRange().upper;
 			positions[i] = axes[i].getPosition();
 			if (direction == Direction.X) {
-				categoryStates[i] = axes[i].isLogScaleEnabled();
+				categoryStates[i] = axes[i].isCategoryEnabled();
 			}
 			logScaleStates[i] = axes[i].isLogScaleEnabled();
 		}
