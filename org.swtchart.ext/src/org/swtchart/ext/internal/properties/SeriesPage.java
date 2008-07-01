@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
@@ -47,11 +48,11 @@ public class SeriesPage extends AbstractSelectorPage {
 
 	private Combo symbolTypeCombo;
 
-	private Text symbolSizeText;
+	private Spinner symbolSizeSpinner;
 
 	private ColorSelector barColorButton;
 
-	private Text paddingText;
+	private Spinner paddingSizeSpinner;
 
 	private ISeries[] series;
 
@@ -186,10 +187,10 @@ public class SeriesPage extends AbstractSelectorPage {
 			symbolColorButton.setColorValue(symbolColors[selectedIndex]
 					.getRGB());
 			symbolTypeCombo.setText(symbolTypes[selectedIndex].label);
-			symbolSizeText.setText(String.valueOf(symbolSizes[selectedIndex]));
+			symbolSizeSpinner.setSelection(symbolSizes[selectedIndex]);
 		} else if (series[selectedIndex] instanceof IBarSeries) {
 			barColorButton.setColorValue(barColors[selectedIndex].getRGB());
-			paddingText.setText(String.valueOf(paddings[selectedIndex]));
+			paddingSizeSpinner.setSelection(paddings[selectedIndex]);
 		}
 
 		setControlsEnable(series[selectedIndex].isVisible());
@@ -362,13 +363,12 @@ public class SeriesPage extends AbstractSelectorPage {
 			}
 		});
 
-		createLabelControl(lineSeriesGroup, "Size:");
-		symbolSizeText = createTextControl(lineSeriesGroup);
-		symbolSizeText.addModifyListener(new ModifyListener() {
+		createLabelControl(lineSeriesGroup, "Symbol size:");
+		symbolSizeSpinner = createSpinnerControl(lineSeriesGroup, 1, 10);
+		symbolSizeSpinner.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				symbolSizes[selectedIndex] = Integer.parseInt(symbolSizeText
-						.getText());
+				symbolSizes[selectedIndex] = symbolSizeSpinner.getSelection();
 			}
 		});
 	}
@@ -397,13 +397,12 @@ public class SeriesPage extends AbstractSelectorPage {
 			}
 		});
 
-		createLabelControl(group, "Size:");
-		paddingText = createTextControl(group);
-		paddingText.addModifyListener(new ModifyListener() {
+		createLabelControl(group, "Padding size:");
+		paddingSizeSpinner = createSpinnerControl(group, 0, 100);
+		paddingSizeSpinner.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				paddings[selectedIndex] = Integer.parseInt(paddingText
-						.getText());
+				paddings[selectedIndex] = paddingSizeSpinner.getSelection();
 			}
 		});
 	}
@@ -425,7 +424,7 @@ public class SeriesPage extends AbstractSelectorPage {
 			yAxisIdCombo.setEnabled(enabled);
 		}
 		barColorButton.setEnabled(enabled);
-		paddingText.setEnabled(enabled);
+		paddingSizeSpinner.setEnabled(enabled);
 	}
 
 	/*
@@ -481,7 +480,7 @@ public class SeriesPage extends AbstractSelectorPage {
 			symbolSizes[selectedIndex] = 4;
 		} else if (series[selectedIndex] instanceof IBarSeries) {
 			barColors[selectedIndex] = Constants.BLUE;
-			paddings[selectedIndex] = 80;
+			paddings[selectedIndex] = 20;
 		}
 
 		updateControlSelections();
