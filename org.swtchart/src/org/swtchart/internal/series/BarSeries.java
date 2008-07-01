@@ -299,8 +299,7 @@ public class BarSeries extends Series implements IBarSeries {
 			} else {
 				y = (int) ((series[i] - yRange.lower)
 						/ (yRange.upper - yRange.lower) * yWidth);
-				riserHeight = y + yRange.lower / (yRange.upper - yRange.lower)
-						* yWidth;// getRiserHeight(i, yRange, yWidth, false);
+				riserHeight = getRiserHeight(i, yRange, yWidth, false);
 			}
 			if (y > yWidth) {
 				riserHeight -= y - yWidth;
@@ -403,7 +402,8 @@ public class BarSeries extends Series implements IBarSeries {
 				x = (int) ((xCompressedSeries[i] - xRange.lower)
 						/ (xRange.upper - xRange.lower) * xWidth);
 			}
-			riserwidth = getRaiserWidth(xCompressedSeries, i, xRange, xWidth, false);
+			riserwidth = getRaiserWidth(xCompressedSeries, i, xRange, xWidth,
+					false);
 
 			int y;
 			double riserHeight;
@@ -434,10 +434,12 @@ public class BarSeries extends Series implements IBarSeries {
 
 			if (isHorizontal) {
 				drawRiser(gc, x, height - y, riserwidth, riserHeight);
-				((SeriesLabel) seriesLabel).draw(gc, x, height - y, yCompressedSeries[i]);
+				((SeriesLabel) seriesLabel).draw(gc, x, height - y,
+						yCompressedSeries[i]);
 			} else {
 				drawRiser(gc, y, height - x, riserwidth, riserHeight);
-				((SeriesLabel) seriesLabel).draw(gc, y, height - x, yCompressedSeries[i]);
+				((SeriesLabel) seriesLabel).draw(gc, y, height - x,
+						yCompressedSeries[i]);
 			}
 		}
 	}
@@ -468,8 +470,8 @@ public class BarSeries extends Series implements IBarSeries {
 						/ (Math.log10(xRange.upper) - Math.log10(xRange.lower))
 						* xAxisWidth;
 			} else {
-				width = (series[1] - series[0])
-						/ (xRange.upper - xRange.lower) * xAxisWidth;
+				width = (series[1] - series[0]) / (xRange.upper - xRange.lower)
+						* xAxisWidth;
 			}
 		} else if (index == series.length - 1) {
 			if (isLogScale) {
@@ -484,8 +486,7 @@ public class BarSeries extends Series implements IBarSeries {
 		} else {
 			if (isLogScale) {
 				double plotStep = Math.min(Math.log10(series[index + 1])
-						- Math.log10(series[index]), Math
-						.log10(series[index])
+						- Math.log10(series[index]), Math.log10(series[index])
 						- Math.log10(series[index - 1]));
 				width = plotStep
 						/ (Math.log10(xRange.upper) - Math.log10(xRange.lower))

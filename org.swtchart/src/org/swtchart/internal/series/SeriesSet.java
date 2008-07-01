@@ -49,9 +49,9 @@ public class SeriesSet implements ISeriesSet {
 		if (id == null) {
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		}
-		
+
 		id = id.trim();
-		
+
 		if ("".equals(id)) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
@@ -231,14 +231,6 @@ public class SeriesSet implements ISeriesSet {
 	 */
 	public void updateStackAndRiserData() {
 		for (IAxis xAxis : chart.getAxisSet().getXAxes()) {
-
-			if (!((Axis) xAxis).isValidCategoryAxis()) {
-				for (ISeries series : getSeries()) {
-					if (series.isStackEnabled()) {
-						series.enableStack(false);
-					}
-				}
-			}
 			for (IAxis yAxis : chart.getAxisSet().getYAxes()) {
 				updateStackAndRiserData(xAxis, yAxis);
 			}
@@ -258,6 +250,9 @@ public class SeriesSet implements ISeriesSet {
 		int riserCnt = 0;
 		int stackRiserPosition = -1;
 
+		double[] stackBarSeries = new double[xAxis.getCategorySeries().length];
+		double[] stackLineSeries = new double[xAxis.getCategorySeries().length];
+
 		for (ISeries series : getSeries()) {
 			if (series.getXAxisId() != xAxis.getId()
 					|| series.getYAxisId() != yAxis.getId()
@@ -265,9 +260,7 @@ public class SeriesSet implements ISeriesSet {
 				continue;
 			}
 
-			if (series.isStackEnabled()) {
-				double[] stackLineSeries = new double[xAxis.getCategorySeries().length];
-				double[] stackBarSeries = new double[xAxis.getCategorySeries().length];
+			if (series.isStackEnabled() && ((Axis) xAxis).isValidCategoryAxis()) {
 				if (series.getType() == SeriesType.BAR) {
 					if (stackRiserPosition == -1) {
 						stackRiserPosition = riserCnt;
@@ -302,8 +295,10 @@ public class SeriesSet implements ISeriesSet {
 			if (i > ySeries.length) {
 				break;
 			}
-			stackSeries[i] = new BigDecimal(stackSeries[i] + "").add(
-					new BigDecimal(ySeries[i] + "")).doubleValue();
+			stackSeries[i] = new BigDecimal(new Double(stackSeries[i])
+					.toString()).add(
+					new BigDecimal(new Double(ySeries[i]).toString()))
+					.doubleValue();
 		}
 		double[] copiedStackSeries = new double[stackSeries.length];
 		System.arraycopy(stackSeries, 0, copiedStackSeries, 0,
