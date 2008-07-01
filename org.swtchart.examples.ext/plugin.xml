@@ -8,10 +8,11 @@
             id="org.swtchart.examples">
       </category>
       <view
-            name="SWT Chart Example View"
+            name="SWT Chart Sample View"
             icon="icons/swtchart.gif"
+            category="org.swtchart.examples"
             class="org.swtchart.examples.ext.InteractiveChartExample"
-            id="org.swtchart.ChartExample">
+            id="org.swtchart.examples.ext.InteractiveChartExample">
       </view>
    </extension>
 </plugin>
