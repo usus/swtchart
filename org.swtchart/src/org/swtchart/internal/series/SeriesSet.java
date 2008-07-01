@@ -249,9 +249,13 @@ public class SeriesSet implements ISeriesSet {
 
 		int riserCnt = 0;
 		int stackRiserPosition = -1;
+		double[] stackBarSeries = null;
+		double[] stackLineSeries = null;
 
-		double[] stackBarSeries = new double[xAxis.getCategorySeries().length];
-		double[] stackLineSeries = new double[xAxis.getCategorySeries().length];
+		if (((Axis) xAxis).isValidCategoryAxis()) {
+			stackBarSeries = new double[xAxis.getCategorySeries().length];
+			stackLineSeries = new double[xAxis.getCategorySeries().length];
+		}
 
 		for (ISeries series : getSeries()) {
 			if (series.getXAxisId() != xAxis.getId()
