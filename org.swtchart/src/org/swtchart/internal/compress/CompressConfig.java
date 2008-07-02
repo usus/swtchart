@@ -65,7 +65,7 @@ public class CompressConfig {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {
+		if (obj == null || !(obj instanceof CompressConfig)) {
 			return false;
 		}
 
@@ -109,6 +109,17 @@ public class CompressConfig {
 		}
 
 		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		assert false;
+		return 0;
 	}
 
 	/**

@@ -40,8 +40,12 @@ public abstract class Compress implements ICompress {
 	 * @see org.swtchart.internal.compress.ICompress#setXSeries(double[])
 	 */
 	public void setXSeries(double[] xSeries) {
-		this.xSeries = xSeries;
-		compressedXSeries = xSeries;
+		double[] copiedSeries = new double[xSeries.length];
+		System.arraycopy(xSeries, 0, copiedSeries, 0, xSeries.length);
+
+		this.xSeries = copiedSeries;
+		compressedXSeries = copiedSeries;
+
 		compressed = false;
 	}
 
@@ -51,8 +55,12 @@ public abstract class Compress implements ICompress {
 	 * @see org.swtchart.internal.compress.ICompress#setYSeries(double[])
 	 */
 	public void setYSeries(double[] ySeries) {
-		this.ySeries = ySeries;
-		compressedYSeries = ySeries;
+		double[] copiedSeries = new double[ySeries.length];
+		System.arraycopy(ySeries, 0, copiedSeries, 0, ySeries.length);
+
+		this.ySeries = copiedSeries;
+		compressedYSeries = copiedSeries;
+
 		compressed = false;
 	}
 
@@ -62,7 +70,11 @@ public abstract class Compress implements ICompress {
 	 * @see org.swtchart.internal.compress.ICompress#getCompressedXSeries()
 	 */
 	public double[] getCompressedXSeries() {
-		return compressedXSeries;
+		double[] copiedSeries = new double[compressedXSeries.length];
+		System.arraycopy(compressedXSeries, 0, copiedSeries, 0,
+				compressedXSeries.length);
+
+		return copiedSeries;
 	}
 
 	/*
@@ -71,7 +83,11 @@ public abstract class Compress implements ICompress {
 	 * @see org.swtchart.internal.compress.ICompress#getCompressedYSeries()
 	 */
 	public double[] getCompressedYSeries() {
-		return compressedYSeries;
+		double[] copiedSeries = new double[compressedYSeries.length];
+		System.arraycopy(compressedYSeries, 0, copiedSeries, 0,
+				compressedYSeries.length);
+
+		return copiedSeries;
 	}
 
 	/*
@@ -83,8 +99,8 @@ public abstract class Compress implements ICompress {
 	 */
 	final public boolean compress(CompressConfig compressConfig) {
 
-		if ((compressConfig.equals(prevConfig) && compressed) || xSeries == null
-				|| ySeries == null) {
+		if ((compressConfig.equals(prevConfig) && compressed)
+				|| xSeries == null || ySeries == null) {
 			return false;
 		}
 

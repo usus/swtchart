@@ -534,7 +534,9 @@ public class Axis implements IAxis {
 			throw new IllegalStateException("Y axis cannot be category axis.");
 		}
 
-		categorySeries = series;
+		String[] copiedSeries = new String[series.length];
+		System.arraycopy(series, 0, copiedSeries, 0, series.length);
+		categorySeries = copiedSeries;
 
 		if (isValidCategoryAxis()) {
 			min = (min < 0) ? 0 : (int) min;
@@ -553,7 +555,16 @@ public class Axis implements IAxis {
 	 * @see org.swtchart.IAxis#getCategorySeries()
 	 */
 	public String[] getCategorySeries() {
-		return categorySeries;
+
+		String[] copiedCategorySeries = null;
+
+		if (categorySeries != null) {
+			copiedCategorySeries = new String[categorySeries.length];
+			System.arraycopy(categorySeries, 0, copiedCategorySeries, 0,
+					categorySeries.length);
+		}
+
+		return copiedCategorySeries;
 	}
 
 	/**

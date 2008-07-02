@@ -8,7 +8,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.IBarSeries;
@@ -51,14 +50,14 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 	/**
 	 * Constructor.
 	 * 
-	 * @param parent
-	 *            the parent composite
+	 * @param chart
+	 *            the chart
 	 * @param style
 	 *            the style
 	 */
-	public Legend(Composite parent, int style) {
-		super(parent, style);
-		this.chart = (Chart) parent;
+	public Legend(Chart chart, int style) {
+		super(chart, style);
+		this.chart = chart;
 
 		visible = true;
 		setFont(DEFAULT_FONT);

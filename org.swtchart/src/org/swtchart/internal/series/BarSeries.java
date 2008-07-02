@@ -122,9 +122,6 @@ public class BarSeries extends Series implements IBarSeries {
 		} else {
 			compressor = new CompressScatterSeries();
 		}
-
-		compressor.setXSeries(xSeries);
-		compressor.setYSeries(ySeries);
 	}
 
 	/*
@@ -279,14 +276,14 @@ public class BarSeries extends Series implements IBarSeries {
 			series = getYSeries();
 		}
 
-		for (int i = (int) xRange.lower; i < (int) xRange.upper + 1; i++) {
+		for (int i = (int) xRange.lower; i < xRange.upper + 1; i++) {
 			if (i >= series.length) {
 				break;
 			}
 			double x = (i - xRange.lower + 0.5)
-					/ ((int) xRange.upper - (int) xRange.lower + 1) * xWidth;
+					/ (xRange.upper - xRange.lower + 1) * xWidth;
 			double riserwidth = xWidth
-					/ ((int) xRange.upper - (int) xRange.lower + 1);
+					/ (xRange.upper - xRange.lower + 1);
 
 			double riserHeight;
 			int y;

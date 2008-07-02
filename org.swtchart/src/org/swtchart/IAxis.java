@@ -142,8 +142,8 @@ public interface IAxis {
 	void scrollDown();
 
 	/**
-	 * Enables category. Category is applicable only for X axis. If
-	 * category series are not yet set, category won't be enabled.
+	 * Enables category. Category is applicable only for X axis. If category
+	 * series are not yet set, category won't be enabled.
 	 * 
 	 * @param enabled
 	 *            true if enabling category
@@ -167,7 +167,8 @@ public interface IAxis {
 	void setCategorySeries(String[] series);
 
 	/**
-	 * Gets the category series.
+	 * Gets the category series. If the category series haven't been set yet,
+	 * <tt>null</tt> will be returned.
 	 * 
 	 * @return the category series
 	 */

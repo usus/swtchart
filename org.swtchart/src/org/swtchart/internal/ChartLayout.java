@@ -69,7 +69,7 @@ public class ChartLayout extends Layout {
 	/**
 	 * Axis layout data.
 	 */
-	private class AxisLayoutData {
+	private static class AxisLayoutData {
 
 		/** the axis tick marks */
 		public AxisTickMarks axisTickMarks;

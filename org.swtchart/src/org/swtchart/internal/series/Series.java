@@ -184,7 +184,6 @@ abstract public class Series implements ISeries {
 			setCompressor();
 
 			compressor.setXSeries(xSeries);
-			compressor.setYSeries(ySeries);
 
 			if (minX <= 0) {
 				IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
@@ -201,7 +200,10 @@ abstract public class Series implements ISeries {
 	 * @see org.swtchart.ISeries#getXSeries()
 	 */
 	public double[] getXSeries() {
-		return xSeries;
+		double[] copiedSeries = new double[xSeries.length];
+		System.arraycopy(xSeries, 0, copiedSeries, 0, xSeries.length);
+
+		return copiedSeries;
 	}
 
 	/*
@@ -243,6 +245,9 @@ abstract public class Series implements ISeries {
 
 		setCompressor();
 
+		compressor.setXSeries(xSeries);
+		compressor.setYSeries(ySeries);
+		
 		if (minX <= 0) {
 			IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
 			if (axis != null) {
@@ -263,7 +268,10 @@ abstract public class Series implements ISeries {
 	 * @see org.swtchart.ISeries#getYSeries()
 	 */
 	public double[] getYSeries() {
-		return ySeries;
+		double[] copiedSeries = new double[ySeries.length];
+		System.arraycopy(ySeries, 0, copiedSeries, 0, ySeries.length);
+
+		return copiedSeries;
 	}
 
 	/**

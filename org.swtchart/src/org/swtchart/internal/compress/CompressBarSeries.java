@@ -28,7 +28,7 @@ public class CompressBarSeries extends Compress {
 						maxY = ySeries[i];
 					}
 				} else {
-					if (maxY != Double.MIN_VALUE) {
+					if (maxY > Double.MIN_VALUE) {
 						addToList(xList, yList, prevX, maxY);
 					}
 					prevX = xSeries[i];

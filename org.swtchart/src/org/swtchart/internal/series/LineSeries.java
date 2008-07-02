@@ -205,9 +205,6 @@ public class LineSeries extends Series implements ILineSeries {
 			((CompressScatterSeries) compressor)
 					.setLineVisible(getLineStyle() != LineStyle.NONE);
 		}
-
-		compressor.setXSeries(xSeries);
-		compressor.setYSeries(ySeries);
 	}
 
 	/*

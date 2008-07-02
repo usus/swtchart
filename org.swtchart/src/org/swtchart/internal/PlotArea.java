@@ -8,7 +8,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
@@ -37,15 +36,15 @@ public class PlotArea extends Canvas implements PaintListener {
 	/**
 	 * Constructor.
 	 * 
-	 * @param parent
-	 *            the parent composite
+	 * @param chart
+	 *            the chart
 	 * @param style
 	 *            the style
 	 */
-	public PlotArea(Composite parent, int style) {
-		super(parent, style | SWT.NO_BACKGROUND);
+	public PlotArea(Chart chart, int style) {
+		super(chart, style | SWT.NO_BACKGROUND);
 
-		this.chart = (Chart) parent;
+		this.chart = chart;
 
 		seriesSet = new SeriesSet(chart);
 
