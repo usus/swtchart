@@ -3,6 +3,8 @@ package org.swtchart.internal.series;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.IBarSeries;
@@ -38,7 +40,7 @@ public class BarSeries extends Series implements IBarSeries {
 	private static final int MARGIN_AT_MIN_MAX_PLOT = 6;
 
 	/** the default bar color */
-	private static final Color DEFAULT_BAR_COLOR = Constants.LIGHT_BLUE;
+	private static final RGB DEFAULT_BAR_COLOR = Constants.LIGHT_BLUE;
 
 	/**
 	 * Constructor.
@@ -46,7 +48,7 @@ public class BarSeries extends Series implements IBarSeries {
 	protected BarSeries(Chart chart, String id) {
 		super(chart, id);
 
-		barColor = DEFAULT_BAR_COLOR;
+		barColor = new Color(Display.getDefault(), DEFAULT_BAR_COLOR);
 		padding = INITIAL_PADDING;
 		type = SeriesType.BAR;
 
@@ -94,7 +96,7 @@ public class BarSeries extends Series implements IBarSeries {
 		}
 
 		if (color == null) {
-			this.barColor = DEFAULT_BAR_COLOR;
+			this.barColor = new Color(Display.getDefault(), DEFAULT_BAR_COLOR);
 		} else {
 			this.barColor = color;
 		}
@@ -282,8 +284,7 @@ public class BarSeries extends Series implements IBarSeries {
 			}
 			double x = (i - xRange.lower + 0.5)
 					/ (xRange.upper - xRange.lower + 1) * xWidth;
-			double riserwidth = xWidth
-					/ (xRange.upper - xRange.lower + 1);
+			double riserwidth = xWidth / (xRange.upper - xRange.lower + 1);
 
 			double riserHeight;
 			int y;

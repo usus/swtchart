@@ -1,5 +1,8 @@
 package org.swtchart.internal.axis;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.IAxis.Direction;
@@ -38,7 +41,8 @@ public class AxisTitle extends Title {
 		super(chart, style);
 		this.axis = axis;
 		this.direction = direction;
-		setFont(Constants.MEDIUM_FONT);
+		setFont(new Font(Display.getDefault(), "Tahoma",
+				Constants.MEDIUM_FONT_SIZE, SWT.BOLD));
 	}
 
 	/*

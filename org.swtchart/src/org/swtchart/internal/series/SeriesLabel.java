@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Constants;
 import org.swtchart.ISeriesLabel;
@@ -28,17 +29,21 @@ public class SeriesLabel implements ISeriesLabel {
 	private String format;
 
 	/** the default label color */
-	private static final Color DEFAULT_COLOR = Constants.BLACK;
+	private static final RGB DEFAULT_COLOR = Constants.BLACK;
 
 	/** the default label format */
 	private static final String DEFAULT_FORMAT = "############.###########";
+
+	/** the default font */
+	private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
 
 	/**
 	 * Constructor.
 	 */
 	public SeriesLabel() {
-		font = Constants.TINY_FONT;
-		color = DEFAULT_COLOR;
+		font = new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
+				SWT.NORMAL);
+		color = new Color(Display.getDefault(), DEFAULT_COLOR);
 		isVisible = false;
 		format = DEFAULT_FORMAT;
 	}
@@ -86,7 +91,7 @@ public class SeriesLabel implements ISeriesLabel {
 		}
 
 		if (color == null) {
-			color = DEFAULT_COLOR;
+			color = new Color(Display.getDefault(), DEFAULT_COLOR);
 		}
 
 		this.color = color;

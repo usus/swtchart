@@ -6,8 +6,10 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.IBarSeries;
@@ -39,13 +41,13 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 	private static final int LINE_WIDTH = 2;
 
 	/** the default foreground */
-	private static final Color DEFAULT_FOREGROUND = Constants.BLACK;
+	private static final RGB DEFAULT_FOREGROUND = Constants.BLACK;
 
 	/** the default background */
-	private static final Color DEFAULT_BACKGROUND = Constants.WHITE;
+	private static final RGB DEFAULT_BACKGROUND = Constants.WHITE;
 
 	/** the default font */
-	private static final Font DEFAULT_FONT = Constants.TINY_FONT;
+	private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
 
 	/**
 	 * Constructor.
@@ -60,9 +62,10 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 		this.chart = chart;
 
 		visible = true;
-		setFont(DEFAULT_FONT);
-		setForeground(DEFAULT_FOREGROUND);
-		setBackground(DEFAULT_BACKGROUND);
+		setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
+				SWT.NORMAL));
+		setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
+		setBackground(new Color(Display.getDefault(), DEFAULT_BACKGROUND));
 		addPaintListener(this);
 	}
 
@@ -101,7 +104,8 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 	@Override
 	public void setFont(Font font) {
 		if (font == null) {
-			font = DEFAULT_FONT;
+			font = new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
+					SWT.NORMAL);
 		}
 		super.setFont(font);
 		chart.updateLayout();
@@ -117,7 +121,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 	@Override
 	public void setForeground(Color color) {
 		if (color == null) {
-			color = DEFAULT_FOREGROUND;
+			color = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
 		}
 		super.setForeground(color);
 	}
@@ -132,7 +136,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 	@Override
 	public void setBackground(Color color) {
 		if (color == null) {
-			color = DEFAULT_BACKGROUND;
+			color = new Color(Display.getDefault(), DEFAULT_BACKGROUND);
 		}
 		super.setBackground(color);
 	}
@@ -177,7 +181,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 		if (!visible) {
 			return;
 		}
-		
+
 		if (series instanceof ILineSeries) {
 			// draw plot line
 			gc.setForeground(((ILineSeries) series).getLineColor());
@@ -192,7 +196,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 			}
 
 			// draw series symbol
-			((LineSeries) series).drawSeriesSymbol(gc, x + SYMBOL_WIDTH/2, y);
+			((LineSeries) series).drawSeriesSymbol(gc, x + SYMBOL_WIDTH / 2, y);
 		} else if (series instanceof IBarSeries) {
 			// draw riser
 			gc.setBackground(((IBarSeries) series).getBarColor());
@@ -229,7 +233,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 		// draw frame
 		gc.setLineStyle(SWT.LINE_SOLID);
 		gc.setLineWidth(1);
-		gc.setForeground(Constants.GRAY);
+		gc.setForeground(new Color(Display.getDefault(), Constants.GRAY));
 		gc.drawRectangle(0, 0, width - 1, height - 1);
 
 		// draw content

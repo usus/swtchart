@@ -1,5 +1,6 @@
 package org.swtchart.internal;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -8,6 +9,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
@@ -29,10 +31,10 @@ public class Title extends Canvas implements ITitle, PaintListener {
 	protected boolean isVisible;
 
 	/** the default font */
-	private static final Font DEFAULT_FONT = Constants.LARGE_FONT;
+	private static final int DEFAULT_FONT_SIZE = Constants.LARGE_FONT_SIZE;
 
 	/** the default color */
-	private static final Color DEFAULT_FOREGROUND = Constants.BLUE;
+	private static final RGB DEFAULT_FOREGROUND = Constants.BLUE;
 
 	/** the default text */
 	private static final String DEFAULT_TEXT = "";
@@ -54,8 +56,9 @@ public class Title extends Canvas implements ITitle, PaintListener {
 		text = getDefaultText();
 		isVisible = true;
 
-		setFont(DEFAULT_FONT);
-		setForeground(DEFAULT_FOREGROUND);
+		setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
+				SWT.BOLD));
+		setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
 
 		addPaintListener(this);
 	}
@@ -101,7 +104,8 @@ public class Title extends Canvas implements ITitle, PaintListener {
 	@Override
 	public void setFont(Font font) {
 		if (font == null) {
-			font = DEFAULT_FONT;
+			font = new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
+					SWT.BOLD);
 		}
 		super.setFont(font);
 		chart.updateLayout();
@@ -117,7 +121,7 @@ public class Title extends Canvas implements ITitle, PaintListener {
 	@Override
 	public void setForeground(Color color) {
 		if (color == null) {
-			color = DEFAULT_FOREGROUND;
+			color = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
 		}
 		super.setForeground(color);
 	}

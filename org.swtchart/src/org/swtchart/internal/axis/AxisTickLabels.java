@@ -8,9 +8,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.internal.ChartLayoutData;
@@ -37,7 +40,10 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 	private int tickLabelMaxLength;
 
 	/** the default foreground */
-	private static final Color DEFAULT_FOREGROUND = Constants.BLUE;
+	private static final RGB DEFAULT_FOREGROUND = Constants.BLUE;
+
+	/** the default font */
+	private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
 
 	/**
 	 * Constructor.
@@ -57,8 +63,9 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 		tickLabelPositions = new ArrayList<Integer>();
 		tickVisibilities = new ArrayList<Boolean>();
 
-		setFont(Constants.TINY_FONT);
-		setForeground(DEFAULT_FOREGROUND);
+		setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
+				SWT.NORMAL));
+		setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
 		addPaintListener(this);
 	}
 
@@ -72,7 +79,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 	@Override
 	public void setForeground(Color color) {
 		if (color == null) {
-			color = DEFAULT_FOREGROUND;
+			color = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
 		}
 		super.setForeground(color);
 	}

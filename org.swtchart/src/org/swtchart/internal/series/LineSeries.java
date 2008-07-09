@@ -3,6 +3,8 @@ package org.swtchart.internal.series;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.ILineSeries;
@@ -37,10 +39,10 @@ public class LineSeries extends Series implements ILineSeries {
 	private static final LineStyle DEFAULT_LINE_STYLE = LineStyle.SOLID;
 
 	/** the default line color */
-	private static final Color DEFAULT_LINE_COLOR = Constants.BLUE;
+	private static final RGB DEFAULT_LINE_COLOR = Constants.BLUE;
 
 	/** the default symbol color */
-	private static final Color DEFAULT_COLOR = Constants.DARK_GRAY;
+	private static final RGB DEFAULT_COLOR = Constants.DARK_GRAY;
 
 	/** the default symbol size */
 	private static final int DEFAULT_SIZE = 4;
@@ -58,11 +60,11 @@ public class LineSeries extends Series implements ILineSeries {
 		super(chart, id);
 
 		symbolSize = 4;
-		symbolColor = DEFAULT_COLOR;
+		symbolColor = new Color(Display.getDefault(), DEFAULT_COLOR);
 		symbolType = DEFAULT_SYMBOL_TYPE;
 
 		lineStyle = DEFAULT_LINE_STYLE;
-		lineColor = DEFAULT_LINE_COLOR;
+		lineColor = new Color(Display.getDefault(), DEFAULT_LINE_COLOR);
 
 		compressor = new CompressLineSeries();
 	}
@@ -114,7 +116,7 @@ public class LineSeries extends Series implements ILineSeries {
 		}
 
 		if (color == null) {
-			this.lineColor = DEFAULT_LINE_COLOR;
+			this.lineColor = new Color(Display.getDefault(), DEFAULT_LINE_COLOR);
 		} else {
 			this.lineColor = color;
 		}
@@ -185,7 +187,7 @@ public class LineSeries extends Series implements ILineSeries {
 		}
 
 		if (color == null) {
-			this.symbolColor = DEFAULT_COLOR;
+			this.symbolColor = new Color(Display.getDefault(), DEFAULT_COLOR);
 		} else {
 			this.symbolColor = color;
 		}
