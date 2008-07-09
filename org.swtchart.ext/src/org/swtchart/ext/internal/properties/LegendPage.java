@@ -157,10 +157,9 @@ public class LegendPage extends AbstractPage {
 		showLegendButton.setSelection(true);
 		setControlsEnable(true);
 		
-		backgroundButton.setColorValue(Constants.WHITE.getRGB());
-		foregroundButton.setColorValue(Constants.BLACK.getRGB());
-		fontSizeSpinner.setSelection(Constants.TINY_FONT.getFontData()[0]
-				.getHeight());
+		backgroundButton.setColorValue(Constants.WHITE);
+		foregroundButton.setColorValue(Constants.BLACK);
+		fontSizeSpinner.setSelection(Constants.SMALL_FONT_SIZE);
 		
 		super.performDefaults();
 	}

@@ -192,9 +192,8 @@ public class SeriesLabelPage extends AbstractSelectorPage {
 	@Override
 	protected void performDefaults() {
 		visibleStates[selectedIndex] = false;
-		colors[selectedIndex] = Constants.BLACK;
-		fontSizes[selectedIndex] = Constants.TINY_FONT.getFontData()[0]
-		                                             				.getHeight();
+		colors[selectedIndex] = new Color(Display.getDefault(), Constants.BLACK);
+		fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
 
 		updateControlSelections();
 		

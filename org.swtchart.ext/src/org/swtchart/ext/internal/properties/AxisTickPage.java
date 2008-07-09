@@ -206,9 +206,9 @@ public class AxisTickPage extends AbstractSelectorPage {
 	@Override
 	protected void performDefaults() {
 		visibilityStates[selectedIndex] = true;
-		fontSizes[selectedIndex] = Constants.TINY_FONT.getFontData()[0]
-				.getHeight();
-		foregroundColors[selectedIndex] = Constants.BLUE;
+		fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
+		foregroundColors[selectedIndex] = new Color(Display.getDefault(),
+				Constants.BLUE);
 
 		updateControlSelections();
 

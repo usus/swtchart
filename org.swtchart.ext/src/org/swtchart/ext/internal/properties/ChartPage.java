@@ -60,7 +60,9 @@ public class ChartPage extends AbstractPage {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+	 * @see
+	 * org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse
+	 * .swt.widgets.Composite)
 	 */
 	@Override
 	protected Control createContents(Composite parent) {
@@ -189,7 +191,7 @@ public class ChartPage extends AbstractPage {
 	 */
 	@Override
 	protected void performDefaults() {
-		backgroundInPlotAreaButton.setColorValue(Constants.WHITE.getRGB());
+		backgroundInPlotAreaButton.setColorValue(Constants.WHITE);
 		backgroundButton.setColorValue(Display.getDefault().getSystemColor(
 				SWT.COLOR_WIDGET_BACKGROUND).getRGB());
 		orientationButton.setSelection(false);
@@ -197,9 +199,8 @@ public class ChartPage extends AbstractPage {
 		showTitleButton.setSelection(true);
 		setTitleControlsEnable(true);
 		titleText.setText("Chart Title");
-		fontSizeSpinner.setSelection(Constants.LARGE_FONT.getFontData()[0]
-				.getHeight());
-		titleColorButton.setColorValue(Constants.BLUE.getRGB());
+		fontSizeSpinner.setSelection(Constants.LARGE_FONT_SIZE);
+		titleColorButton.setColorValue(Constants.BLUE);
 
 		super.performDefaults();
 	}

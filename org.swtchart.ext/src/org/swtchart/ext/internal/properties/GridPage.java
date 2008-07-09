@@ -1,6 +1,8 @@
 package org.swtchart.ext.internal.properties;
 
 import org.eclipse.jface.preference.ColorSelector;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -9,6 +11,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.IAxis;
@@ -54,7 +57,8 @@ public class GridPage extends AbstractSelectorPage {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.swtchart.ext.internal.properties.AbstractSelectorPage#getListItems()
+	 * @see
+	 * org.swtchart.ext.internal.properties.AbstractSelectorPage#getListItems()
 	 */
 	@Override
 	protected String[] getListItems() {
@@ -64,11 +68,13 @@ public class GridPage extends AbstractSelectorPage {
 		}
 		return items;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.swtchart.ext.internal.properties.AbstractSelectorPage#selectInitialValues()
+	 * @see
+	 * org.swtchart.ext.internal.properties.AbstractSelectorPage#selectInitialValues
+	 * ()
 	 */
 	@Override
 	protected void selectInitialValues() {
@@ -80,17 +86,22 @@ public class GridPage extends AbstractSelectorPage {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.swtchart.ext.internal.properties.AbstractSelectorPage#updateControlSelections()
+	 * 
+	 * @seeorg.swtchart.ext.internal.properties.AbstractSelectorPage#
+	 * updateControlSelections()
 	 */
 	@Override
 	protected void updateControlSelections() {
 		styleCombo.setText(String.valueOf(styles[selectedIndex]));
-		foregroundButton.setColorValue(foregroundColors[selectedIndex].getRGB());
+		foregroundButton
+				.setColorValue(foregroundColors[selectedIndex].getRGB());
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.swtchart.ext.internal.properties.AbstractSelectorPage#addRightPanelContents(org.eclipse.swt.widgets.Composite)
+	 * 
+	 * @seeorg.swtchart.ext.internal.properties.AbstractSelectorPage#
+	 * addRightPanelContents(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	protected void addRightPanelContents(Composite parent) {
@@ -133,6 +144,13 @@ public class GridPage extends AbstractSelectorPage {
 
 		createLabelControl(group, "Color:");
 		foregroundButton = createColorButtonControl(group);
+		foregroundButton.addListener(new IPropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				foregroundColors[selectedIndex] = new Color(Display
+						.getDefault(), foregroundButton.getColorValue());
+			}
+		});
 	}
 
 	/*
@@ -156,10 +174,11 @@ public class GridPage extends AbstractSelectorPage {
 	@Override
 	protected void performDefaults() {
 		styles[selectedIndex] = LineStyle.DOT;
-		foregroundColors[selectedIndex] = Constants.GRAY;
+		foregroundColors[selectedIndex] = new Color(Display.getDefault(),
+				Constants.GRAY);
 
 		updateControlSelections();
-		
+
 		super.performDefaults();
 	}
 }

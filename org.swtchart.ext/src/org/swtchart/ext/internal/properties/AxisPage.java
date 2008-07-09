@@ -368,15 +368,15 @@ public class AxisPage extends AbstractSelectorPage {
 			titleTexts[selectedIndex] = "Y Axis";
 		}
 		positions[selectedIndex] = Position.Primary;
-		titleFontSizes[selectedIndex] = Constants.MEDIUM_FONT.getFontData()[0]
-				.getHeight();
-		titleColors[selectedIndex] = Constants.BLUE;
+		titleFontSizes[selectedIndex] = Constants.MEDIUM_FONT_SIZE;
+		titleColors[selectedIndex] = new Color(Display.getDefault(),
+				Constants.BLUE);
 		minRanges[selectedIndex] = 0.0;
 		maxRanges[selectedIndex] = 1.0;
 		logScaleStates[selectedIndex] = false;
 
 		updateControlSelections();
-		
+
 		super.performDefaults();
 	}
 }

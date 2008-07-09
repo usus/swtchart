@@ -474,12 +474,15 @@ public class SeriesPage extends AbstractSelectorPage {
 		}
 		if (series[selectedIndex] instanceof ILineSeries) {
 			lineStyles[selectedIndex] = LineStyle.SOLID;
-			lineColors[selectedIndex] = Constants.BLUE;
-			symbolColors[selectedIndex] = Constants.BLUE;
+			lineColors[selectedIndex] = new Color(Display.getDefault(),
+					Constants.BLUE);
+			symbolColors[selectedIndex] = new Color(Display.getDefault(),
+					Constants.DARK_GRAY);
 			symbolTypes[selectedIndex] = PlotSymbolType.CIRCLE;
 			symbolSizes[selectedIndex] = 4;
 		} else if (series[selectedIndex] instanceof IBarSeries) {
-			barColors[selectedIndex] = Constants.BLUE;
+			barColors[selectedIndex] = new Color(Display.getDefault(),
+					Constants.BLUE);
 			paddings[selectedIndex] = 20;
 		}
 
