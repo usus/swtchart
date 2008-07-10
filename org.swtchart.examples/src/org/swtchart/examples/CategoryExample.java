@@ -1,11 +1,12 @@
 package org.swtchart.examples;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.IBarSeries;
 import org.swtchart.ISeries.SeriesType;
 
@@ -32,12 +33,12 @@ public class CategoryExample {
 
 		// create a chart
 		Chart chart = new Chart(shell, SWT.NONE);
-		
+
 		// set titles
 		chart.getTitle().setText("Category Axis Example");
 		chart.getAxisSet().getXAxis(0).getTitle().setText("Month");
 		chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
-		
+
 		// set category
 		chart.getAxisSet().getXAxis(0).enableCategory(true);
 		chart.getAxisSet().getXAxis(0).setCategorySeries(
@@ -47,7 +48,8 @@ public class CategoryExample {
 		IBarSeries barSeries1 = (IBarSeries) chart.getSeriesSet().createSeries(
 				SeriesType.BAR, "bar series 1");
 		barSeries1.setYSeries(ySeries1);
-		barSeries1.setBarColor(Constants.LIGHT_GREEN);
+		barSeries1.setBarColor(new Color(Display.getDefault(), new RGB(80, 240,
+				180)));
 
 		IBarSeries barSeries2 = (IBarSeries) chart.getSeriesSet().createSeries(
 				SeriesType.BAR, "bar series 2");
