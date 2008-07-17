@@ -334,7 +334,9 @@ public class Axis implements IAxis {
 			double minimum = Double.MAX_VALUE;
 			double maximum = Double.MIN_VALUE;
 			for (ISeries series : chart.getSeriesSet().getSeries()) {
-				if (!series.isVisible()) {
+				int axisId = direction == Direction.X ? series.getXAxisId()
+						: series.getYAxisId();
+				if (!series.isVisible() || getId() != axisId) {
 					continue;
 				}
 
