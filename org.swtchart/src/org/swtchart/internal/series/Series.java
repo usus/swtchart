@@ -280,7 +280,13 @@ abstract public class Series implements ISeries {
 	 * @return the X range of series
 	 */
 	public Range getXRange() {
-		return new Range(minX, maxX);
+		double min = minX;
+		double max = maxX;
+		if (min == max) {
+			min = min - 0.5;
+			max = max + 0.5;
+		}
+		return new Range(min, max);
 	}
 
 	/**
@@ -312,6 +318,10 @@ abstract public class Series implements ISeries {
 		}
 		if (type == SeriesType.BAR && min > 0 && !yAxis.isLogScaleEnabled()) {
 			min = 0;
+		}
+		if (min == max) {
+			min = min - 0.5;
+			max = max + 0.5;
 		}
 		return new Range(min, max);
 	}
