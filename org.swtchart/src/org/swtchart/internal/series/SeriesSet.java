@@ -77,6 +77,9 @@ public class SeriesSet implements ISeriesSet {
 			updateStackAndRiserData();
 		}
 
+		// legend will be shown if there is previously no series.
+		chart.updateLayout();
+		
 		return series;
 	}
 
@@ -124,6 +127,9 @@ public class SeriesSet implements ISeriesSet {
 		seriesMap.remove(id);
 
 		updateStackAndRiserData();
+		
+		// legend will be hidden if this is the last series
+		chart.updateLayout();
 	}
 
 	/**
