@@ -229,7 +229,7 @@ public class AxisPage extends AbstractSelectorPage {
 
 		createLabelControl(group, "Position:");
 		String[] items = new String[] { Position.Primary.name(),
-				Position.Seconday.name() };
+				Position.Secondary.name() };
 
 		positionCombo = createComboControl(group, items);
 		positionCombo.addSelectionListener(new SelectionAdapter() {
