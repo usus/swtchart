@@ -67,8 +67,8 @@ public class InteractiveChartExample extends ViewPart {
 		barSeries2.setYSeries(yBarSeries2);
 		barSeries2.setBarColor(new Color(Display.getDefault(), 80, 240, 180));
 
-		// fit the axis scale
-		chart.getAxisSet().autoScale();
+		// adjust the axis range
+		chart.getAxisSet().adjustRange();
 	}
 
 	/*
