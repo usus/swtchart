@@ -55,8 +55,8 @@ public class CategoryExample {
 				SeriesType.BAR, "bar series 2");
 		barSeries2.setYSeries(ySeries2);
 
-		// fit the axis scale
-		chart.getAxisSet().autoScale();
+		// adjust the axis range
+		chart.getAxisSet().adjustRange();
 
 		shell.open();
 		while (!shell.isDisposed()) {

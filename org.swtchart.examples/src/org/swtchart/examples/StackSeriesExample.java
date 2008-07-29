@@ -59,8 +59,8 @@ public class StackSeriesExample {
 		barSeries1.enableStack(true);
 		barSeries2.enableStack(true);
 		
-		// fit the axis scale
-		chart.getAxisSet().autoScale();
+		// adjust the axis range
+		chart.getAxisSet().adjustRange();
 
 		shell.open();
 		while (!shell.isDisposed()) {

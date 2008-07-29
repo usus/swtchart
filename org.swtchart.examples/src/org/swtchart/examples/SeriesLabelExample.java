@@ -45,8 +45,8 @@ public class SeriesLabelExample {
 		// set label visible
 		lineSeries.getLabel().setVisible(true);
 
-		// fit the axis scale
-		chart.getAxisSet().autoScale();
+		// adjust the axis range
+		chart.getAxisSet().adjustRange();
 
 		shell.open();
 		while (!shell.isDisposed()) {

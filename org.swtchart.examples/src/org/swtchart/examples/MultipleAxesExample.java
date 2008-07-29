@@ -68,8 +68,8 @@ public class MultipleAxesExample {
 		// assign series to second Y axis
 		lineSeries2.setYAxisId(axisId);
 
-		// fit the axis scale
-		chart.getAxisSet().autoScale();
+		// adjust the axis range
+		chart.getAxisSet().adjustRange();
 
 		shell.open();
 		while (!shell.isDisposed()) {

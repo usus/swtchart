@@ -45,8 +45,8 @@ public class LogScaleExample {
 		// set log scale
 		chart.getAxisSet().getYAxis(0).enableLogScale(true);
 
-		// fit the axis scale
-		chart.getAxisSet().autoScale();
+		// adjust the axis range
+		chart.getAxisSet().adjustRange();
 
 		shell.open();
 		while (!shell.isDisposed()) {

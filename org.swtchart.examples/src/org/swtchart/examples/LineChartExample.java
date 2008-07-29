@@ -42,8 +42,8 @@ public class LineChartExample {
 				.createSeries(SeriesType.LINE, "line series");
 		lineSeries.setYSeries(ySeries);
 
-		// fit the axis scale
-		chart.getAxisSet().autoScale();
+		// adjust the axis range
+		chart.getAxisSet().adjustRange();
 
 		shell.open();
 		while (!shell.isDisposed()) {
