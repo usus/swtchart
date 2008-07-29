@@ -273,11 +273,11 @@ public class AxisSet implements IAxisSet {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.swtchart.IAxisSet#autoScale()
+	 * @see org.swtchart.IAxisSet#adjustRange()
 	 */
-	public void autoScale() {
+	public void adjustRange() {
 		for (IAxis axis : getAxes()) {
-			axis.autoScale();
+			axis.adjustRange();
 		}
 	}
 

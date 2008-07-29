@@ -21,7 +21,7 @@ public interface IAxis {
 		/** bottom or left side of chart */
 		Primary,
 
-		/** top or right side chart */
+		/** top or right side of chart */
 		Secondary
 	}
 
@@ -116,10 +116,10 @@ public interface IAxis {
 	IGrid getGrid();
 
 	/**
-	 * Auto-scales the axes. The axis range will be adjusted to the existing
-	 * series on chart, so that all series are completely shown.
+	 * Adjusts the axis range to the series belonging to the axis, so that all
+	 * series are completely shown.
 	 */
-	void autoScale();
+	void adjustRange();
 
 	/**
 	 * Zooms in the axis.

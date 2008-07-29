@@ -262,7 +262,7 @@ public class Axis implements IAxis {
 							"Series contain negative value.");
 				}
 
-				// auto-scale range in order not to have negative value
+				// adjust the range in order not to have negative value
 				if (min <= 0) {
 					min = minSeriesValue;
 				}
@@ -325,9 +325,9 @@ public class Axis implements IAxis {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.swtchart.IAxis#autoScale()
+	 * @see org.swtchart.IAxis#adjustRange()
 	 */
-	public void autoScale() {
+	public void adjustRange() {
 		if (isValidCategoryAxis()) {
 			setRange(new Range(0, categorySeries.length - 1));
 		} else {

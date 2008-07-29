@@ -99,9 +99,9 @@ public interface IAxisSet {
 	void deleteYAxis(int id);
 
 	/**
-	 * Auto-scales all axes.
+	 * Adjusts the axis range of all axes.
 	 */
-	void autoScale();
+	void adjustRange();
 
 	/**
 	 * Zooms in all axes.
