@@ -28,7 +28,7 @@ import org.swtchart.ext.internal.properties.SeriesPage;
  * <ul>
  * <li>scroll with arrow keys</li>
  * <li>zoom in and out with ctrl + arrow up/down keys</li>
- * <li>context menus for auto-scaling and zooming in/out.</li>
+ * <li>context menus for adjusting axis range and zooming in/out.</li>
  * <li>properties dialog to configure the chart settings</li>
  * </ul>
  */
@@ -79,25 +79,25 @@ public class InteractiveChart extends Chart implements PaintListener {
 		Menu menu = new Menu(getPlotArea());
 		getPlotArea().setMenu(menu);
 
-		// autoscale menu group
+		// adjust axis range menu group
 		MenuItem menuItem = new MenuItem(menu, SWT.CASCADE);
-		menuItem.setText(Messages.AUTOSCALE_GROUP);
-		Menu autoScaleMenu = new Menu(menuItem);
-		menuItem.setMenu(autoScaleMenu);
+		menuItem.setText(Messages.ADJUST_AXIS_RANGE_GROUP);
+		Menu adjustAxisRangeMenu = new Menu(menuItem);
+		menuItem.setMenu(adjustAxisRangeMenu);
 
-		// autoscale both axes
-		menuItem = new MenuItem(autoScaleMenu, SWT.PUSH);
-		menuItem.setText(Messages.AUTOSCALE);
+		// adjust axis range
+		menuItem = new MenuItem(adjustAxisRangeMenu, SWT.PUSH);
+		menuItem.setText(Messages.ADJUST_AXIS_RANGE);
 		menuItem.addListener(SWT.Selection, this);
 
-		// autoscale X axis
-		menuItem = new MenuItem(autoScaleMenu, SWT.PUSH);
-		menuItem.setText(Messages.AUTOSCALE_X);
+		// adjust X axis range
+		menuItem = new MenuItem(adjustAxisRangeMenu, SWT.PUSH);
+		menuItem.setText(Messages.ADJUST_X_AXIS_RANGE);
 		menuItem.addListener(SWT.Selection, this);
 
-		// autoscale Y axis
-		menuItem = new MenuItem(autoScaleMenu, SWT.PUSH);
-		menuItem.setText(Messages.AUTOSCALE_Y);
+		// adjust Y axis range
+		menuItem = new MenuItem(adjustAxisRangeMenu, SWT.PUSH);
+		menuItem.setText(Messages.ADJUST_Y_AXIS_RANGE);
 		menuItem.addListener(SWT.Selection, this);
 
 		menuItem = new MenuItem(menu, SWT.SEPARATOR);
@@ -316,15 +316,15 @@ public class InteractiveChart extends Chart implements PaintListener {
 		}
 		MenuItem menuItem = (MenuItem) event.widget;
 
-		if (menuItem.getText().equals(Messages.AUTOSCALE)) {
-			getAxisSet().autoScale();
-		} else if (menuItem.getText().equals(Messages.AUTOSCALE_X)) {
+		if (menuItem.getText().equals(Messages.ADJUST_AXIS_RANGE)) {
+			getAxisSet().adjustRange();
+		} else if (menuItem.getText().equals(Messages.ADJUST_X_AXIS_RANGE)) {
 			for (IAxis axis : getAxisSet().getXAxes()) {
-				axis.autoScale();
+				axis.adjustRange();
 			}
-		} else if (menuItem.getText().equals(Messages.AUTOSCALE_Y)) {
+		} else if (menuItem.getText().equals(Messages.ADJUST_Y_AXIS_RANGE)) {
 			for (IAxis axis : getAxisSet().getYAxes()) {
-				axis.autoScale();
+				axis.adjustRange();
 			}
 		} else if (menuItem.getText().equals(Messages.ZOOMIN)) {
 			getAxisSet().zoomIn();

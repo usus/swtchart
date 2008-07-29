@@ -5,17 +5,17 @@ package org.swtchart.ext;
  */
 public class Messages {
 
-	/** the menu group for autoscale menus */
-	public static final String AUTOSCALE_GROUP = "&Autoscale";
+	/** the menu group for adjust axis range menus */
+	public static final String ADJUST_AXIS_RANGE_GROUP = "&Adjust Axis Range";
 
-	/** the menu for autoscale */
-	public static final String AUTOSCALE = "&Autoscale";
+	/** the menu for adjust axis range */
+	public static final String ADJUST_AXIS_RANGE = "&Adjust Axis Range";
 
-	/** the menu for autoscale only X axis */
-	public static final String AUTOSCALE_X = "Autoscale &X Axis";
+	/** the menu for adjust X axis range */
+	public static final String ADJUST_X_AXIS_RANGE = "Adjust &X Axis Range";
 
-	/** the menu for autoscale only Y axis */
-	public static final String AUTOSCALE_Y = "Autoscale &Y Axis";
+	/** the menu for adjust Y axis range */
+	public static final String ADJUST_Y_AXIS_RANGE = "Adjust &Y Axis Range";
 
 	/** the menu group for zoom in menus */
 	public static final String ZOOMIN_GROUP = "Zoom &In";
