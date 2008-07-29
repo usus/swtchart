@@ -50,7 +50,7 @@ public class MultipleAxesExample {
 
 		// set the properties of second Y axis
 		IAxis yAxis2 = chart.getAxisSet().getYAxis(axisId);
-		yAxis2.setPosition(Position.Seconday);
+		yAxis2.setPosition(Position.Secondary);
 		final Color RED = new Color(Display.getDefault(), new RGB(255, 0, 0));
 		yAxis2.getTick().setForeground(RED);
 		yAxis2.getTitle().setForeground(RED);
