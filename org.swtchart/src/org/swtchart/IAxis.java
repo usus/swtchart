@@ -22,7 +22,7 @@ public interface IAxis {
 		Primary,
 
 		/** top or right side chart */
-		Seconday
+		Secondary
 	}
 
 	/**

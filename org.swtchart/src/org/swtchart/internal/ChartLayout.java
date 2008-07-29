@@ -217,7 +217,7 @@ public class ChartLayout extends Layout {
 				bottomAxisHeight += layoutData.titleLayoutdata.heightHint
 						+ layoutData.tickLabelsLayoutdata.heightHint
 						+ layoutData.tickMarksLayoutdata.heightHint;
-			} else if (position == Position.Seconday && axis.isHorizontalAxis()) {
+			} else if (position == Position.Secondary && axis.isHorizontalAxis()) {
 				topAxisHeight += layoutData.titleLayoutdata.heightHint
 						+ layoutData.tickLabelsLayoutdata.heightHint
 						+ layoutData.tickMarksLayoutdata.heightHint;
@@ -225,7 +225,7 @@ public class ChartLayout extends Layout {
 				leftAxisWidth += layoutData.titleLayoutdata.widthHint
 						+ layoutData.tickLabelsLayoutdata.widthHint
 						+ layoutData.tickMarksLayoutdata.widthHint;
-			} else if (position == Position.Seconday
+			} else if (position == Position.Secondary
 					&& !axis.isHorizontalAxis()) {
 				rightAxisWidth += layoutData.titleLayoutdata.widthHint
 						+ layoutData.tickLabelsLayoutdata.widthHint
@@ -309,11 +309,11 @@ public class ChartLayout extends Layout {
 			Position position = axis.getPosition();
 			if (position == Position.Primary && axis.isHorizontalAxis()) {
 				layoutBottomAxis(r, layoutData);
-			} else if (position == Position.Seconday && axis.isHorizontalAxis()) {
+			} else if (position == Position.Secondary && axis.isHorizontalAxis()) {
 				layoutTopAxis(r, layoutData);
 			} else if (position == Position.Primary && !axis.isHorizontalAxis()) {
 				layoutLeftAxis(r, layoutData);
-			} else if (position == Position.Seconday
+			} else if (position == Position.Secondary
 					&& !axis.isHorizontalAxis()) {
 				layoutRightAxis(r, layoutData);
 			}

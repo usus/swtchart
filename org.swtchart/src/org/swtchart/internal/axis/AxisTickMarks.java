@@ -143,7 +143,7 @@ public class AxisTickMarks extends Canvas implements PaintListener {
 				for (int i = 0; i < tickLabelPositions.size() + 1; i++) {
 					x += step;
 					int y = 0;
-					if (position == Position.Seconday) {
+					if (position == Position.Secondary) {
 						y = height - 1 - LINE_WIDTH - TICK_LENGTH;
 					}
 					gc.drawLine(x, y, x, y + TICK_LENGTH);
@@ -153,7 +153,7 @@ public class AxisTickMarks extends Canvas implements PaintListener {
 			for (int i = 0; i < tickLabelPositions.size(); i++) {
 				int x = tickLabelPositions.get(i);
 				int y = 0;
-				if (position == Position.Seconday) {
+				if (position == Position.Secondary) {
 					y = height - 1 - LINE_WIDTH - TICK_LENGTH;
 				}
 				gc.drawLine(x, y, x, y + TICK_LENGTH);
