@@ -45,6 +45,9 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 	/** the default font */
 	private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
 
+	/** the line width of axis */
+	private static final int LINE_WIDTH = 1;
+
 	/**
 	 * Constructor.
 	 * 
@@ -94,45 +97,66 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 	}
 
 	/**
-	 * Updates the tick labels
+	 * Updates the tick labels.
+	 * 
+	 * @param length
+	 *            the axis length
 	 */
 	protected void update(int length) {
+		tickLabels.clear();
+		tickLabelPositions.clear();
+
+		/*
+		 * add LINE_WIDTH x 2 to axis length, since the min/max of axis tick can
+		 * overlap with axis line.
+		 */
 		if (axis.isValidCategoryAxis()) {
-			updateTickLabelForCategoryAxis();
+			updateTickLabelForCategoryAxis(length + LINE_WIDTH * 2);
 		} else if (axis.isLogScaleEnabled()) {
-			updateTickLabelForLogScale();
+			updateTickLabelForLogScale(length + LINE_WIDTH * 2);
 		} else {
-			updateTickLabelForLinearScale(length);
+			updateTickLabelForLinearScale(length + LINE_WIDTH * 2);
 		}
 
-		updateTickLabelPosition(length + 2);
 		updateTickVisibility();
 		updateTickLabelMaxLength();
 	}
 
 	/**
 	 * Updates tick label for category axis.
+	 * 
+	 * @param length
+	 *            the length of axis
 	 */
-	private void updateTickLabelForCategoryAxis() {
-		tickLabels.clear();
+	private void updateTickLabelForCategoryAxis(int length) {
+		String[] series = axis.getCategorySeries();
+		if (series == null) {
+			return;
+		}
 
 		double min = axis.getRange().lower;
 		double max = axis.getRange().upper;
 
-		String[] series = axis.getCategorySeries();
-		for (int i = (int) min; i <= max; i++) {
-			if (series != null && series.length > i && i >= 0) {
-				tickLabels.add(series[i]);
-			}
+		int sizeOfTickLabels = (series.length < (int) max - (int) min + 1) ? series.length
+				: (int) max - (int) min + 1;
+		int initialIndex = (min < 0) ? 0 : (int) min;
+
+		for (int i = 0; i < sizeOfTickLabels; i++) {
+			tickLabels.add(series[i + initialIndex]);
+
+			int tickLabelPosition = (int) (length * (i + 0.5) / sizeOfTickLabels)
+					- LINE_WIDTH;
+			tickLabelPositions.add(tickLabelPosition);
 		}
 	}
 
 	/**
 	 * Updates tick label for log scale.
+	 * 
+	 * @param length
+	 *            the length of axis
 	 */
-	private void updateTickLabelForLogScale() {
-		tickLabels.clear();
-
+	private void updateTickLabelForLogScale(int length) {
 		double min = axis.getRange().lower;
 		double max = axis.getRange().upper;
 
@@ -158,32 +182,16 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 				String label = new DecimalFormat("############.###########")
 						.format(j.doubleValue());
 				tickLabels.add(label);
+
+				int tickLabelPosition = (int) ((Math.log10(j.doubleValue()) - Math
+						.log10(min))
+						/ (Math.log10(max) - Math.log10(min)) * length)
+						- LINE_WIDTH;
+				tickLabelPositions.add(tickLabelPosition);
 			}
 			tickStep = tickStep.multiply(pow(10, 1));
 			firstPosition = tickStep.add(pow(10, i));
 		}
-
-	}
-
-	/**
-	 * Calculates the value of the first argument raised to the power of the
-	 * second argument.
-	 * 
-	 * @param base
-	 *            the base
-	 * @param expornent
-	 *            the exponent
-	 * @return the value <tt>a<sup>b</sup></tt> in <tt>BigDecimal</tt>
-	 */
-	private BigDecimal pow(double base, int expornent) {
-		BigDecimal value;
-		if (expornent > 0) {
-			value = new BigDecimal(new Double(base).toString()).pow(expornent);
-		} else {
-			value = BigDecimal.ONE.divide(new BigDecimal(new Double(base)
-					.toString()).pow(-expornent));
-		}
-		return value;
 	}
 
 	/**
@@ -193,10 +201,9 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 	 *            axis length (>0)
 	 */
 	private void updateTickLabelForLinearScale(int length) {
-		tickLabels.clear();
-
 		double min = axis.getRange().lower;
 		double max = axis.getRange().upper;
+
 		final BigDecimal MIN = new BigDecimal(new Double(min).toString());
 		final BigDecimal TICKSTEP = getGridStep(length, min, max);
 		BigDecimal firstPosition;
@@ -215,58 +222,11 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 			String label = new DecimalFormat("############.###########")
 					.format(b.doubleValue());
 			tickLabels.add(label);
-		}
-	}
 
-	/**
-	 * Gets max length of tick label.
-	 */
-	private void updateTickLabelMaxLength() {
-		int maxLength = 0;
-		for (int i = 0; i < tickLabels.size(); i++) {
-			if (tickVisibilities.size() > i && tickVisibilities.get(i) == true) {
-				Point p = Util.getExtentInGC(axis.getTick().getFont(),
-						tickLabels.get(i));
-				if (p.x > maxLength) {
-					maxLength = p.x;
-				}
-			}
-		}
-		tickLabelMaxLength = maxLength;
-	}
-
-	/**
-	 * Updates the tick label position.
-	 * 
-	 * @param length
-	 *            axis length (>0)
-	 */
-	private void updateTickLabelPosition(int length) {
-		tickLabelPositions.clear();
-
-		for (int j = 0; j < tickLabels.size(); j++) {
-			double tickLabelPosition = 0;
-			double min = axis.getRange().lower;
-			double max = axis.getRange().upper;
-			if (axis.isLogScaleEnabled()) {
-				if (axis.isValidCategoryAxis()) {
-					tickLabelPosition = length * (j + 0.5) / tickLabels.size();
-				} else {
-					double digitMax = Math.log10(max);
-					double digitMin = Math.log10(min);
-					tickLabelPosition = (Math.log10(Double.valueOf(tickLabels
-							.get(j))) - digitMin)
-							/ (digitMax - digitMin) * length;
-				}
-			} else {
-				if (axis.isValidCategoryAxis()) {
-					tickLabelPosition = length * (j + 0.5) / tickLabels.size();
-				} else {
-					tickLabelPosition = (Double.valueOf(tickLabels.get(j)) - min)
-							/ (max - min) * length;
-				}
-			}
-			tickLabelPositions.add((int) tickLabelPosition - 1);
+			int tickLabelPosition = (int) ((b.doubleValue() - min)
+					/ (max - min) * length)
+					- LINE_WIDTH;
+			tickLabelPositions.add(tickLabelPosition);
 		}
 	}
 
@@ -292,6 +252,44 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 				previousPosition = tickLabelPositions.get(i);
 			}
 		}
+	}
+
+	/**
+	 * Gets max length of tick label.
+	 */
+	private void updateTickLabelMaxLength() {
+		int maxLength = 0;
+		for (int i = 0; i < tickLabels.size(); i++) {
+			if (tickVisibilities.size() > i && tickVisibilities.get(i) == true) {
+				Point p = Util.getExtentInGC(axis.getTick().getFont(),
+						tickLabels.get(i));
+				if (p.x > maxLength) {
+					maxLength = p.x;
+				}
+			}
+		}
+		tickLabelMaxLength = maxLength;
+	}
+
+	/**
+	 * Calculates the value of the first argument raised to the power of the
+	 * second argument.
+	 * 
+	 * @param base
+	 *            the base
+	 * @param expornent
+	 *            the exponent
+	 * @return the value <tt>a<sup>b</sup></tt> in <tt>BigDecimal</tt>
+	 */
+	private BigDecimal pow(double base, int expornent) {
+		BigDecimal value;
+		if (expornent > 0) {
+			value = new BigDecimal(new Double(base).toString()).pow(expornent);
+		} else {
+			value = BigDecimal.ONE.divide(new BigDecimal(new Double(base)
+					.toString()).pow(-expornent));
+		}
+		return value;
 	}
 
 	/**
