@@ -362,12 +362,14 @@ public class LineSeries extends Series implements ILineSeries {
 			gc.fillPolygon(invertedTriangleArray);
 			break;
 		case CROSS:
+			gc.setLineStyle(SWT.LINE_SOLID);
 			gc.drawLine(h - symbolSize, v - symbolSize, h + symbolSize, v
 					+ symbolSize);
 			gc.drawLine(h - symbolSize, v + symbolSize, h + symbolSize, v
 					- symbolSize);
 			break;
 		case PLUS:
+			gc.setLineStyle(SWT.LINE_SOLID);
 			gc.drawLine(h, v - symbolSize, h, v + symbolSize);
 			gc.drawLine(h - symbolSize, v, h + symbolSize, v);
 			break;
