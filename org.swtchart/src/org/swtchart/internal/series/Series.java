@@ -444,9 +444,11 @@ abstract public class Series implements ISeries {
 	 */
 	public void draw(GC gc, int width, int height) {
 
-		if (!visible || width < 0 || height < 0 || ySeries == null) {
-			return;
-		}
+		if (!visible || width < 0 || height < 0 || xSeries == null
+                || xSeries.length == 0 || ySeries == null
+                || ySeries.length == 0) {
+            return;
+        }
 
 		Rectangle oldRect = gc.getClipping();
 
