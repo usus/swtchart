@@ -200,6 +200,10 @@ abstract public class Series implements ISeries {
 	 * @see org.swtchart.ISeries#getXSeries()
 	 */
 	public double[] getXSeries() {
+        if (xSeries == null) {
+            return null;
+        }
+	       
 		double[] copiedSeries = new double[xSeries.length];
 		System.arraycopy(xSeries, 0, copiedSeries, 0, xSeries.length);
 
@@ -268,6 +272,10 @@ abstract public class Series implements ISeries {
 	 * @see org.swtchart.ISeries#getYSeries()
 	 */
 	public double[] getYSeries() {
+	    if (ySeries == null){
+	        return null;
+	    }
+	    
 		double[] copiedSeries = new double[ySeries.length];
 		System.arraycopy(ySeries, 0, copiedSeries, 0, ySeries.length);
 
