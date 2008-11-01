@@ -95,7 +95,8 @@ public interface ISeries {
 	void setYSeries(double[] series);
 
 	/**
-	 * Gets the X series.
+	 * Gets the X series. If the X series haven't been set yet,
+     * <tt>null</tt> will be returned.
 	 * 
 	 * @return the X series
 	 * 
@@ -103,7 +104,8 @@ public interface ISeries {
 	double[] getXSeries();
 
 	/**
-	 * Gets the Y series.
+	 * Gets the Y series. If the Y series haven't been set yet,
+     * <tt>null</tt> will be returned.
 	 * 
 	 * @return the Y series
 	 * 
