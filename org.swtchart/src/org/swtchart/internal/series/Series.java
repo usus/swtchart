@@ -165,6 +165,10 @@ abstract public class Series implements ISeries {
 			xSeries = new double[series.length];
 			System.arraycopy(series, 0, xSeries, 0, series.length);
 
+	        if (xSeries.length == 0) {
+	            return;
+	        }
+	        
 			// find the min and max value of y series
 			minX = xSeries[0];
 			maxX = xSeries[0];
@@ -225,6 +229,10 @@ abstract public class Series implements ISeries {
 		ySeries = new double[series.length];
 		System.arraycopy(series, 0, ySeries, 0, series.length);
 
+		if (ySeries.length == 0) {
+		    return;
+		}
+		
 		// find the min and max value of y series
 		minY = ySeries[0];
 		maxY = ySeries[0];
