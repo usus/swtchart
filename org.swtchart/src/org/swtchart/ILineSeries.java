@@ -74,10 +74,10 @@ public interface ILineSeries extends ISeries {
 	int getSymbolSize();
 
 	/**
-	 * Sets the symbol size in pixels.
+	 * Sets the symbol size in pixels. The default size is 4.
 	 * 
 	 * @param size
-	 *            hte symbol size
+	 *            the symbol size
 	 */
 	void setSymbolSize(int size);
 
