@@ -410,11 +410,11 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
         // initialize the array of tick label visibility state
         tickVisibilities.clear();
-        for (int i = 0; i < tickLabelValues.size(); i++) {
+        for (int i = 0; i < tickLabelPositions.size(); i++) {
             tickVisibilities.add(Boolean.TRUE);
         }
 
-        if (tickLabelPositions.size() == 0 || axis.isValidCategoryAxis()) {
+        if (tickLabelPositions.size() == 0 || !axis.isValidCategoryAxis()) {
             return;
         }
 
@@ -431,8 +431,11 @@ public class AxisTickLabels extends Canvas implements PaintListener {
                     tickLabels.get(i - 1));
             
             // check if the tick label value is major
-            boolean isMajorTick = isMajorTick(tickLabelValues.get(i));
-
+            boolean isMajorTick = true;
+            if (!axis.isValidCategoryAxis()) {
+                isMajorTick = isMajorTick(tickLabelValues.get(i));
+            }
+            
             if (!hasSpaceToDraw || isRepeatSameTick || !isMajorTick) {
                 tickVisibilities.set(i, Boolean.FALSE);
             } else {
