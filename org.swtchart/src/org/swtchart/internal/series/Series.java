@@ -1,5 +1,7 @@
 package org.swtchart.internal.series;
 
+import java.util.Date;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -16,467 +18,495 @@ import org.swtchart.internal.compress.ICompress;
  */
 abstract public class Series implements ISeries {
 
-	protected double[] xSeries = null;
+    /** the x series */
+    protected double[] xSeries;
 
-	protected double[] ySeries = null;
+    /** the y series */
+    protected double[] ySeries;
 
-	protected double minX;
+    /** the minimum value of x series */
+    protected double minX;
 
-	protected double maxX;
+    /** the maximum value of x series */
+    protected double maxX;
 
-	protected double minY;
+    /** the minimum value of y series */
+    protected double minY;
 
-	protected double maxY;
+    /** the maximum value of y series */
+    protected double maxY;
 
-	protected String id;
+    /** the series id */
+    protected String id;
 
-	protected ICompress compressor;
+    /** the compressor */
+    protected ICompress compressor;
 
-	protected int xAxisId;
+    /** the x axis id */
+    protected int xAxisId;
 
-	protected int yAxisId;
+    /** the y axis id */
+    protected int yAxisId;
 
-	protected boolean visible;
+    /** the visibility of series */
+    protected boolean visible;
 
-	/** the state indicating whether x series are monotone increasing */
-	protected boolean isXMonotoneIncreasing;
+    /** the state indicating whether x series are monotone increasing */
+    protected boolean isXMonotoneIncreasing;
 
-	/** the series type */
-	protected SeriesType type;
+    /** the series type */
+    protected SeriesType type;
 
-	/** the series label */
-	protected ISeriesLabel seriesLabel;
+    /** the series label */
+    protected ISeriesLabel seriesLabel;
 
-	/** the chart */
-	protected Chart chart;
+    /** the chart */
+    protected Chart chart;
 
-	/** the state indicating if the series is a stacked type */
-	protected boolean stackEnabled;
+    /** the state indicating if the series is a stacked type */
+    protected boolean stackEnabled;
 
-	/** the stack series */
-	protected double[] stackSeries;
+    /** the stack series */
+    protected double[] stackSeries;
 
-	/** the default series type */
-	protected static final SeriesType DEFAULT_SERIES_TYPE = SeriesType.LINE;
+    /** the state indicating if the type of X series is <tt>Date</tt> */
+    private boolean isDateSeries;
 
-	/**
-	 * Constructor.
-	 */
-	protected Series(Chart chart, String id) {
-		super();
+    /** the default series type */
+    protected static final SeriesType DEFAULT_SERIES_TYPE = SeriesType.LINE;
 
-		this.chart = chart;
-		this.id = id;
-		xAxisId = 0;
-		yAxisId = 0;
-		visible = true;
-		type = DEFAULT_SERIES_TYPE;
-		stackEnabled = false;
-		seriesLabel = new SeriesLabel();
-	}
+    /**
+     * Constructor.
+     */
+    protected Series(Chart chart, String id) {
+        super();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+        this.chart = chart;
+        this.id = id;
+        xAxisId = 0;
+        yAxisId = 0;
+        visible = true;
+        type = DEFAULT_SERIES_TYPE;
+        stackEnabled = false;
+        seriesLabel = new SeriesLabel();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#setVisible(boolean)
-	 */
-	public void setVisible(boolean visible) {
-		if (this.visible == visible) {
-			return;
-		}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#getId()
+     */
+    public String getId() {
+        return id;
+    }
 
-		this.visible = visible;
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#setVisible(boolean)
+     */
+    public void setVisible(boolean visible) {
+        if (this.visible == visible) {
+            return;
+        }
 
-		((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
-	}
+        this.visible = visible;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#isVisible()
-	 */
-	public boolean isVisible() {
-		return visible;
-	}
+        ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#getType()
-	 */
-	public SeriesType getType() {
-		return type;
-	}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#isVisible()
+     */
+    public boolean isVisible() {
+        return visible;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#isStackEnabled()
-	 */
-	public boolean isStackEnabled() {
-		return stackEnabled;
-	}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#getType()
+     */
+    public SeriesType getType() {
+        return type;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#enableStack(boolean)
-	 */
-	public void enableStack(boolean enabled) {
-		if (enabled && minY < 0) {
-			throw new IllegalArgumentException(
-					"Stacked series cannot contain minus values.");
-		}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#isStackEnabled()
+     */
+    public boolean isStackEnabled() {
+        return stackEnabled;
+    }
 
-		if (enabled && chart.getAxisSet().getXAxis(xAxisId).isLogScaleEnabled()) {
-			throw new IllegalArgumentException(
-					"Stacked series cannot be set on log scale axis.");
-		}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#enableStack(boolean)
+     */
+    public void enableStack(boolean enabled) {
+        if (enabled && minY < 0) {
+            throw new IllegalArgumentException(
+                    "Stacked series cannot contain minus values.");
+        }
 
-		if (stackEnabled == enabled) {
-			return;
-		}
+        if (enabled && chart.getAxisSet().getXAxis(xAxisId).isLogScaleEnabled()) {
+            throw new IllegalArgumentException(
+                    "Stacked series cannot be set on log scale axis.");
+        }
 
-		stackEnabled = enabled;
+        if (stackEnabled == enabled) {
+            return;
+        }
 
-		((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
-	}
+        stackEnabled = enabled;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#setXSeries(double[])
-	 */
-	public void setXSeries(double[] series) {
+        ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
+    }
 
-		if (series == null) {
-			SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		} else {
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#setXSeries(double[])
+     */
+    public void setXSeries(double[] series) {
 
-			xSeries = new double[series.length];
-			System.arraycopy(series, 0, xSeries, 0, series.length);
+        if (series == null) {
+            SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        } else {
+            xSeries = new double[series.length];
+            System.arraycopy(series, 0, xSeries, 0, series.length);
+            isDateSeries = false;
 
-	        if (xSeries.length == 0) {
-	            return;
-	        }
-	        
-			// find the min and max value of y series
-			minX = xSeries[0];
-			maxX = xSeries[0];
-			for (int i = 1; i < xSeries.length; i++) {
-				if (minX > xSeries[i]) {
-					minX = xSeries[i];
-				}
-				if (maxX < xSeries[i]) {
-					maxX = xSeries[i];
-				}
+            if (xSeries.length == 0) {
+                return;
+            }
+            
+            // find the min and max value of x series
+            minX = xSeries[0];
+            maxX = xSeries[0];
+            for (int i = 1; i < xSeries.length; i++) {
+                if (minX > xSeries[i]) {
+                    minX = xSeries[i];
+                }
+                if (maxX < xSeries[i]) {
+                    maxX = xSeries[i];
+                }
 
-				if (xSeries[i - 1] > xSeries[i]) {
-					isXMonotoneIncreasing = false;
-				}
-			}
+                if (xSeries[i - 1] > xSeries[i]) {
+                    isXMonotoneIncreasing = false;
+                }
+            }
 
-			setCompressor();
+            setCompressor();
 
-			compressor.setXSeries(xSeries);
+            compressor.setXSeries(xSeries);
+            if (ySeries != null) {
+                compressor.setYSeries(ySeries);
+            }
+            
+            if (minX <= 0) {
+                IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
+                if (axis != null) {
+                    axis.enableLogScale(false);
+                }
+            }
+        }
+    }
 
-			if (minX <= 0) {
-				IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
-				if (axis != null) {
-					axis.enableLogScale(false);
-				}
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#getXSeries()
-	 */
-	public double[] getXSeries() {
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#getXSeries()
+     */
+    public double[] getXSeries() {
         if (xSeries == null) {
             return null;
         }
-	       
-		double[] copiedSeries = new double[xSeries.length];
-		System.arraycopy(xSeries, 0, copiedSeries, 0, xSeries.length);
+           
+        double[] copiedSeries = new double[xSeries.length];
+        System.arraycopy(xSeries, 0, copiedSeries, 0, xSeries.length);
 
-		return copiedSeries;
-	}
+        return copiedSeries;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#setYSeries(double[])
-	 */
-	public void setYSeries(double[] series) {
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#setYSeries(double[])
+     */
+    public void setYSeries(double[] series) {
 
-		if (series == null) {
-			SWT.error(SWT.ERROR_NULL_ARGUMENT);
-			return;// 'return' is not necessary, but just in case.
-		}
+        if (series == null) {
+            SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return;// 'return' is not necessary, but just in case.
+        }
 
-		ySeries = new double[series.length];
-		System.arraycopy(series, 0, ySeries, 0, series.length);
+        ySeries = new double[series.length];
+        System.arraycopy(series, 0, ySeries, 0, series.length);
+        
+        if (ySeries.length == 0) {
+            return;
+        }
+        
+        // find the min and max value of y series
+        minY = ySeries[0];
+        maxY = ySeries[0];
+        for (int i = 1; i < ySeries.length; i++) {
+            if (minY > ySeries[i]) {
+                minY = ySeries[i];
+            }
+            if (maxY < ySeries[i]) {
+                maxY = ySeries[i];
+            }
+        }
 
-		if (ySeries.length == 0) {
-		    return;
-		}
-		
-		// find the min and max value of y series
-		minY = ySeries[0];
-		maxY = ySeries[0];
-		for (int i = 1; i < ySeries.length; i++) {
-			if (minY > ySeries[i]) {
-				minY = ySeries[i];
-			}
-			if (maxY < ySeries[i]) {
-				maxY = ySeries[i];
-			}
-		}
+        if (xSeries == null || xSeries.length != series.length) {
+            xSeries = new double[series.length];
+            for (int i = 0; i < series.length; i++) {
+                xSeries[i] = i;
+            }
+            minX = xSeries[0];
+            maxX = xSeries[xSeries.length - 1];
+            isXMonotoneIncreasing = true;
+        }
 
-		if (xSeries == null || xSeries.length != series.length) {
-			xSeries = new double[series.length];
-			for (int i = 0; i < series.length; i++) {
-				xSeries[i] = i;
-			}
-			minX = xSeries[0];
-			maxX = xSeries[xSeries.length - 1];
-			isXMonotoneIncreasing = true;
-		}
+        setCompressor();
 
-		setCompressor();
+        compressor.setXSeries(xSeries);
+        compressor.setYSeries(ySeries);
+        
+        if (minX <= 0) {
+            IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
+            if (axis != null) {
+                axis.enableLogScale(false);
+            }
+        }
+        if (minY <= 0) {
+            IAxis axis = chart.getAxisSet().getYAxis(yAxisId);
+            if (axis != null) {
+                axis.enableLogScale(false);
+            }
+        }
+    }
 
-		compressor.setXSeries(xSeries);
-		compressor.setYSeries(ySeries);
-		
-		if (minX <= 0) {
-			IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
-			if (axis != null) {
-				axis.enableLogScale(false);
-			}
-		}
-		if (minY <= 0) {
-			IAxis axis = chart.getAxisSet().getYAxis(yAxisId);
-			if (axis != null) {
-				axis.enableLogScale(false);
-			}
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#getYSeries()
+     */
+    public double[] getYSeries() {
+        if (ySeries == null){
+            return null;
+        }
+        
+        double[] copiedSeries = new double[ySeries.length];
+        System.arraycopy(ySeries, 0, copiedSeries, 0, ySeries.length);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#getYSeries()
-	 */
-	public double[] getYSeries() {
-	    if (ySeries == null){
-	        return null;
-	    }
-	    
-		double[] copiedSeries = new double[ySeries.length];
-		System.arraycopy(ySeries, 0, copiedSeries, 0, ySeries.length);
+        return copiedSeries;
+    }
 
-		return copiedSeries;
-	}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#setXDateSeries(java.util.Date[])
+     */
+    public void setXDateSeries(Date[] series) {
+        if (series == null) {
+            SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        } else {
+            double[] xDateSeries = new double[series.length];
+            for (int i = 0; i < series.length; i++) {
+                xDateSeries[i] = series[i].getTime();
+            }
+            setXSeries(xDateSeries);
+            isDateSeries = true;
+        }
+    }
 
-	/**
-	 * Gets the X range of series.
-	 * 
-	 * @return the X range of series
-	 */
-	public Range getXRange() {
-		double min = minX;
-		double max = maxX;
-		if (min == max) {
-			min = min - 0.5;
-			max = max + 0.5;
-		}
-		return new Range(min, max);
-	}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#getXDateSeries()
+     */
+    public Date[] getXDateSeries() {
+        if (!isDateSeries) {
+            return null;
+        }
 
-	/**
-	 * Gets the X range of series to draw. This range includes the size of plot
-	 * like symbol or bar.
-	 * 
-	 * @param isLogScale
-	 *            true if axis is log scale
-	 * @return the X range of series to draw.
-	 */
-	abstract public Range getXRangeToDraw(boolean isLogScale);
+        Date[] series = new Date[xSeries.length];
+        for (int i = 0; i < series.length; i++) {
+            series[i] = new Date((long)xSeries[i]);
+        }
+        return series;
+    }
+    
+    /**
+     * Gets the state indicating if date series is set.
+     * 
+     * @param enabled
+     *            true if date series is set
+     */
+    public boolean isDateSeries() {
+        return isDateSeries;
+    }
 
-	/**
-	 * Gets the Y range of series.
-	 * 
-	 * @return the Y range of series
-	 */
-	public Range getYRange() {
-		double min = minY;
-		double max = maxY;
-		Axis xAxis = (Axis) chart.getAxisSet().getXAxis(xAxisId);
-		Axis yAxis = (Axis) chart.getAxisSet().getYAxis(yAxisId);
-		if (stackEnabled && xAxis.isValidCategoryAxis()) {
-			for (int i = 0; i < stackSeries.length; i++) {
-				if (max < stackSeries[i]) {
-					max = stackSeries[i];
-				}
-			}
-		}
-		if (type == SeriesType.BAR && min > 0 && !yAxis.isLogScaleEnabled()) {
-			min = 0;
-		}
-		if (min == max) {
-			min = min - 0.5;
-			max = max + 0.5;
-		}
-		return new Range(min, max);
-	}
+    /**
+     * Gets the X range of series.
+     * 
+     * @return the X range of series
+     */
+    public Range getXRange() {
+        double min = minX;
+        double max = maxX;
+        if (min == max) {
+            min = min - 0.5;
+            max = max + 0.5;
+        }
+        return new Range(min, max);
+    }
 
-	/**
-	 * Gets the Y range of series to draw. This range includes the size of plot
-	 * like symbol or bar.
-	 * 
-	 * @param isLogScale
-	 *            true if axis is log scale
-	 * @return the Y range of series to draw.
-	 */
-	abstract public Range getYRangeToDraw(boolean isLogScale);
+    /**
+     * Gets the X range of series to draw. This range includes the size of plot
+     * like symbol or bar.
+     * 
+     * @param isLogScale
+     *            true if axis is log scale
+     * @return the X range of series to draw.
+     */
+    abstract public Range getXRangeToDraw(boolean isLogScale);
 
-	/**
-	 * Gets the compressor.
-	 * 
-	 * @return the compressor
-	 */
-	protected ICompress getCompressor() {
-		return compressor;
-	}
+    /**
+     * Gets the Y range of series.
+     * 
+     * @return the Y range of series
+     */
+    public Range getYRange() {
+        double min = minY;
+        double max = maxY;
+        Axis xAxis = (Axis) chart.getAxisSet().getXAxis(xAxisId);
+        Axis yAxis = (Axis) chart.getAxisSet().getYAxis(yAxisId);
+        if (stackEnabled && xAxis.isValidCategoryAxis()) {
+            for (int i = 0; i < stackSeries.length; i++) {
+                if (max < stackSeries[i]) {
+                    max = stackSeries[i];
+                }
+            }
+        }
+        if (type == SeriesType.BAR && min > 0 && !yAxis.isLogScaleEnabled()) {
+            min = 0;
+        }
+        if (min == max) {
+            min = min - 0.5;
+            max = max + 0.5;
+        }
+        return new Range(min, max);
+    }
 
-	/**
-	 * Sets the compressor.
-	 */
-	abstract protected void setCompressor();
+    /**
+     * Gets the Y range of series to draw. This range includes the size of plot
+     * like symbol or bar.
+     * 
+     * @param isLogScale
+     *            true if axis is log scale
+     * @return the Y range of series to draw.
+     */
+    abstract public Range getYRangeToDraw(boolean isLogScale);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#getXAxisId()
-	 */
-	public int getXAxisId() {
-		return xAxisId;
-	}
+    /**
+     * Gets the compressor.
+     * 
+     * @return the compressor
+     */
+    protected ICompress getCompressor() {
+        return compressor;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#setXAxisId(int)
-	 */
-	public void setXAxisId(int id) {
-		if (xAxisId == id) {
-			return;
-		}
+    /**
+     * Sets the compressor.
+     */
+    abstract protected void setCompressor();
 
-		IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#getXAxisId()
+     */
+    public int getXAxisId() {
+        return xAxisId;
+    }
 
-		if (minX <= 0 && axis != null && axis.isLogScaleEnabled()) {
-			chart.getAxisSet().getXAxis(xAxisId).enableLogScale(false);
-		}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#setXAxisId(int)
+     */
+    public void setXAxisId(int id) {
+        if (xAxisId == id) {
+            return;
+        }
 
-		xAxisId = id;
+        IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
 
-		((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
-	}
+        if (minX <= 0 && axis != null && axis.isLogScaleEnabled()) {
+            chart.getAxisSet().getXAxis(xAxisId).enableLogScale(false);
+        }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#getYAxisId()
-	 */
-	public int getYAxisId() {
-		return yAxisId;
-	}
+        xAxisId = id;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#setYAxisId(int)
-	 */
-	public void setYAxisId(int id) {
-		yAxisId = id;
-	}
+        ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ISeries#getLabel()
-	 */
-	public ISeriesLabel getLabel() {
-		return seriesLabel;
-	}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#getYAxisId()
+     */
+    public int getYAxisId() {
+        return yAxisId;
+    }
 
-	/**
-	 * Sets the stack series
-	 * 
-	 * @param stackSeries
-	 */
-	protected void setStackSeries(double[] stackSeries) {
-		this.stackSeries = stackSeries;
-	}
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#setYAxisId(int)
+     */
+    public void setYAxisId(int id) {
+        yAxisId = id;
+    }
 
-	/**
-	 * Draws series.
-	 * 
-	 * @param gc
-	 *            the graphics context
-	 * @param width
-	 *            the width to draw series
-	 * @param height
-	 *            the height to draw series
-	 */
-	public void draw(GC gc, int width, int height) {
+    /* (non-Javadoc)
+     * @see org.swtchart.ISeries#getLabel()
+     */
+    public ISeriesLabel getLabel() {
+        return seriesLabel;
+    }
 
-		if (!visible || width < 0 || height < 0 || xSeries == null
+    /**
+     * Sets the stack series
+     * 
+     * @param stackSeries
+     */
+    protected void setStackSeries(double[] stackSeries) {
+        this.stackSeries = stackSeries;
+    }
+
+    /**
+     * Draws series.
+     * 
+     * @param gc
+     *            the graphics context
+     * @param width
+     *            the width to draw series
+     * @param height
+     *            the height to draw series
+     */
+    public void draw(GC gc, int width, int height) {
+
+        if (!visible || width < 0 || height < 0 || xSeries == null
                 || xSeries.length == 0 || ySeries == null
                 || ySeries.length == 0) {
             return;
         }
 
-		Rectangle oldRect = gc.getClipping();
+        Rectangle oldRect = gc.getClipping();
 
-		Axis xAxis = (Axis) chart.getAxisSet().getXAxis(getXAxisId());
-		Axis yAxis = (Axis) chart.getAxisSet().getYAxis(getYAxisId());
-		if (xAxis == null || yAxis == null) {
-			return;
-		}
+        Axis xAxis = (Axis) chart.getAxisSet().getXAxis(getXAxisId());
+        Axis yAxis = (Axis) chart.getAxisSet().getYAxis(getYAxisId());
+        if (xAxis == null || yAxis == null) {
+            return;
+        }
 
-		draw(gc, width, height, xAxis, yAxis);
+        draw(gc, width, height, xAxis, yAxis);
 
-		gc.setClipping(oldRect);
-	}
+        gc.setClipping(oldRect);
+    }
 
-	/**
-	 * Draws series.
-	 * 
-	 * @param gc
-	 *            the graphics context
-	 * @param width
-	 *            the width to draw series
-	 * @param height
-	 *            the height to draw series
-	 * @param xAxis
-	 *            the x axis
-	 * @param yAxis
-	 *            the y axis
-	 */
-	abstract protected void draw(GC gc, int width, int height, Axis xAxis,
-			Axis yAxis);
+    /**
+     * Draws series.
+     * 
+     * @param gc
+     *            the graphics context
+     * @param width
+     *            the width to draw series
+     * @param height
+     *            the height to draw series
+     * @param xAxis
+     *            the x axis
+     * @param yAxis
+     *            the y axis
+     */
+    abstract protected void draw(GC gc, int width, int height, Axis xAxis,
+            Axis yAxis);
 }

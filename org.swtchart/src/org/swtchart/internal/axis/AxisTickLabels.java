@@ -2,7 +2,13 @@ package org.swtchart.internal.axis;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -24,428 +30,742 @@ import org.swtchart.internal.Util;
  */
 public class AxisTickLabels extends Canvas implements PaintListener {
 
-	/** the axis */
-	private Axis axis;
+    /** the axis */
+    private Axis axis;
+    
+    /** the array of tick label vales */
+    private ArrayList<Double> tickLabelValues;
 
-	/** the array of tick label */
-	private ArrayList<String> tickLabels;
+    /** the array of tick label */
+    private ArrayList<String> tickLabels;
 
-	/** the array of tick label position in pixels */
-	private ArrayList<Integer> tickLabelPositions;
+    /** the array of tick label position in pixels */
+    private ArrayList<Integer> tickLabelPositions;
 
-	/** the array of visibility state of tick label */
-	private ArrayList<Boolean> tickVisibilities;
+    /** the array of visibility state of tick label */
+    private ArrayList<Boolean> tickVisibilities;
 
-	/** the maximum length of tick labels */
-	private int tickLabelMaxLength;
+    /** the maximum length of tick labels */
+    private int tickLabelMaxLength;
 
-	/** the default foreground */
-	private static final RGB DEFAULT_FOREGROUND = Constants.BLUE;
+    /** the format for tick labels */
+    private Format format;
+    
+    /** the default foreground */
+    private static final RGB DEFAULT_FOREGROUND = Constants.BLUE;
 
-	/** the default font */
-	private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
+    /** the default font */
+    private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
 
-	/** the line width of axis */
-	private static final int LINE_WIDTH = 1;
+    /** the default label format */
+    private static final String DEFAULT_DECIMAL_FORMAT = "############.###########";
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param chart
-	 *            the chart
-	 * @param style
-	 *            the style
-	 * @param axis
-	 *            the axis
-	 */
-	protected AxisTickLabels(Chart chart, int style, Axis axis) {
-		super(chart, style);
-		this.axis = axis;
+    /** the line width of axis */
+    private static final int LINE_WIDTH = 1;
 
-		tickLabels = new ArrayList<String>();
-		tickLabelPositions = new ArrayList<Integer>();
-		tickVisibilities = new ArrayList<Boolean>();
+    /** the possible tick steps */
+    private Map<Integer, Integer[]> possibleTickSteps;
+    
+    /** the time unit for tick step */
+    private int timeUnit; 
+    
+    /**
+     * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     * @param style
+     *            the style
+     * @param axis
+     *            the axis
+     */
+    protected AxisTickLabels(Chart chart, int style, Axis axis) {
+        super(chart, style);
+        this.axis = axis;
 
-		setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
-				SWT.NORMAL));
-		setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
-		addPaintListener(this);
-	}
+        tickLabelValues = new ArrayList<Double>();
+        tickLabels = new ArrayList<String>();
+        tickLabelPositions = new ArrayList<Integer>();
+        tickVisibilities = new ArrayList<Boolean>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.swt.widgets.Control#setForeground(org.eclipse.swt.graphics
-	 * .Color)
-	 */
-	@Override
-	public void setForeground(Color color) {
-		if (color == null) {
-			color = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
-		}
-		super.setForeground(color);
-	}
+        initializePossibleTickSteps();
+        
+        setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
+                SWT.NORMAL));
+        setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
+        addPaintListener(this);
+    }
 
-	/**
-	 * Gets the array of tick label.
-	 * 
-	 * @return the array of tick label
-	 */
-	protected ArrayList<String> getTickLabel() {
-		return tickLabels;
-	}
+    /**
+     * Initialized the possible tick steps.
+     */
+    private void initializePossibleTickSteps() {
+        final Integer[] milliseconds = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 999 };
+        final Integer[] seconds = { 1, 2, 5, 10, 15, 20, 30, 59 };
+        final Integer[] minutes = { 1, 2, 3, 5, 10, 15, 20, 30, 59 };
+        final Integer[] hours = { 1, 2, 3, 4, 6, 12, 22 };
+        final Integer[] dates = { 1, 7, 14, 28 };
+        final Integer[] months = { 1, 2, 3, 4, 6, 11 };
+        final Integer[] years = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
 
-	/**
-	 * Updates the tick labels.
-	 * 
-	 * @param length
-	 *            the axis length
-	 */
-	protected void update(int length) {
-		tickLabels.clear();
-		tickLabelPositions.clear();
+        possibleTickSteps = new HashMap<Integer, Integer[]>();
+        possibleTickSteps.put(Calendar.MILLISECOND, milliseconds);
+        possibleTickSteps.put(Calendar.SECOND, seconds);
+        possibleTickSteps.put(Calendar.MINUTE, minutes);
+        possibleTickSteps.put(Calendar.HOUR_OF_DAY, hours);
+        possibleTickSteps.put(Calendar.DATE, dates);
+        possibleTickSteps.put(Calendar.MONTH, months);
+        possibleTickSteps.put(Calendar.YEAR, years);
+    }
 
-		/*
-		 * add LINE_WIDTH x 2 to axis length, since the min/max of axis tick can
-		 * overlap with axis line.
-		 */
-		if (axis.isValidCategoryAxis()) {
-			updateTickLabelForCategoryAxis(length + LINE_WIDTH * 2);
-		} else if (axis.isLogScaleEnabled()) {
-			updateTickLabelForLogScale(length + LINE_WIDTH * 2);
-		} else {
-			updateTickLabelForLinearScale(length + LINE_WIDTH * 2);
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.widgets.Control#setForeground(org.eclipse.swt.graphics.Color)
+     */
+    @Override
+    public void setForeground(Color color) {
+        if (color == null) {
+            color = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
+        }
+        super.setForeground(color);
+    }
 
-		updateTickVisibility();
-		updateTickLabelMaxLength();
-	}
+    /**
+     * Updates the tick labels.
+     * 
+     * @param length
+     *            the axis length
+     */
+    protected void update(int length) {
+        tickLabelValues.clear();
+        tickLabels.clear();
+        tickLabelPositions.clear();
 
-	/**
-	 * Updates tick label for category axis.
-	 * 
-	 * @param length
-	 *            the length of axis
-	 */
-	private void updateTickLabelForCategoryAxis(int length) {
-		String[] series = axis.getCategorySeries();
-		if (series == null) {
-			return;
-		}
+        /*
+         * add LINE_WIDTH x 2 to axis length, since the min/max of axis tick can
+         * overlap with axis line.
+         */
+        if (axis.isValidCategoryAxis()) {
+            updateTickLabelForCategoryAxis(length + LINE_WIDTH * 2);
+        } else if (axis.isLogScaleEnabled()) {
+            updateTickLabelForLogScale(length + LINE_WIDTH * 2);
+        } else if (axis.isDateEnabled()) {
+            updateTickLabelForDateAxis(length + LINE_WIDTH * 2);
+        } else {
+            updateTickLabelForLinearScale(length + LINE_WIDTH * 2);
+        }
 
-		double min = axis.getRange().lower;
-		double max = axis.getRange().upper;
+        updateTickVisibility();
+        updateTickLabelMaxLength();
+    }
 
-		int sizeOfTickLabels = (series.length < (int) max - (int) min + 1) ? series.length
-				: (int) max - (int) min + 1;
-		int initialIndex = (min < 0) ? 0 : (int) min;
+    /**
+     * Updates tick label for date axis.
+     * 
+     * @param length
+     *            the length of axis
+     */
+    private void updateTickLabelForDateAxis(int length) {
+        double min = axis.getRange().lower;
+        double max = axis.getRange().upper;
 
-		for (int i = 0; i < sizeOfTickLabels; i++) {
-			tickLabels.add(series[i + initialIndex]);
+        double gridStepHint = Math.abs(max - min) / length
+                * axis.getTick().getTickMarkStepHint();
 
-			int tickLabelPosition = (int) (length * (i + 0.5) / sizeOfTickLabels)
-					- LINE_WIDTH;
-			tickLabelPositions.add(tickLabelPosition);
-		}
-	}
+        timeUnit = getTimeUnit(gridStepHint);
 
-	/**
-	 * Updates tick label for log scale.
-	 * 
-	 * @param length
-	 *            the length of axis
-	 */
-	private void updateTickLabelForLogScale(int length) {
-		double min = axis.getRange().lower;
-		double max = axis.getRange().upper;
+        if (timeUnit == Calendar.MILLISECOND) {
 
-		int digitMin = (int) Math.ceil(Math.log10(min));
-		int digitMax = (int) Math.ceil(Math.log10(max));
+            updateTickLabelForLinearScale(length);
+        } else if (timeUnit == Calendar.SECOND
+                || timeUnit == Calendar.MINUTE
+                || timeUnit == Calendar.HOUR_OF_DAY
+                || timeUnit == Calendar.DATE) {
 
-		final BigDecimal MIN = new BigDecimal(new Double(min).toString());
-		BigDecimal tickStep = pow(10, digitMin - 1);
-		BigDecimal firstPosition;
+            Integer[] steps = possibleTickSteps.get(timeUnit);
+            for (int i = 0; i < steps.length - 1; i++) {
+                if (gridStepHint < (getPeriodInMillis(timeUnit, steps[i]) + 
+                        getPeriodInMillis(timeUnit, steps[i + 1])) / 2) {
+                    BigDecimal gridStep = new BigDecimal(Long.valueOf(
+                            getPeriodInMillis(timeUnit, steps[i])).toString());
+                    updateTickLabelForLinearScale(length, gridStep);
+                    break;
+                }
+            }
+        } else if (timeUnit == Calendar.MONTH
+                || timeUnit == Calendar.YEAR) {
 
-		if (MIN.remainder(tickStep).doubleValue() <= 0) {
-			firstPosition = MIN.subtract(MIN.remainder(tickStep));
-		} else {
-			firstPosition = MIN.subtract(MIN.remainder(tickStep)).add(tickStep);
-		}
+            updateTickLabelForMonthOrYear(length, gridStepHint, timeUnit);
+        }
+    }
 
-		for (int i = digitMin; i <= digitMax; i++) {
-			for (BigDecimal j = firstPosition; j.doubleValue() <= pow(10, i)
-					.doubleValue(); j = j.add(tickStep)) {
-				if (j.doubleValue() > max) {
-					break;
-				}
-				String label = new DecimalFormat("############.###########")
-						.format(j.doubleValue());
-				tickLabels.add(label);
+    /**
+     * Updates the tick label for month or year. The month and year are handled
+     * differently from other units of time, since 1 month and 1 year can be
+     * different depending on which time to start counting.
+     * 
+     * @param length
+     *            the length of axis
+     * @param gridStepHint
+     *            the grid step hint
+     * @param tickStepUnit
+     *            the tick step unit of time
+     */
+    private void updateTickLabelForMonthOrYear(int length, double gridStepHint,
+            int tickStepUnit) {
+        double min = axis.getRange().lower;
+        double max = axis.getRange().upper;
+        
+        // get initial position
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date((long) min));
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR);
+        if (tickStepUnit == Calendar.MONTH) {
+            if (month == Calendar.DECEMBER) {
+                year++;
+                month = Calendar.JANUARY;
+            } else {
+                month++;
+            }
+        } else if (tickStepUnit == Calendar.YEAR) {
+            month = Calendar.JANUARY;
+            year++;
+        }
 
-				int tickLabelPosition = (int) ((Math.log10(j.doubleValue()) - Math
-						.log10(min))
-						/ (Math.log10(max) - Math.log10(min)) * length)
-						- LINE_WIDTH;
-				tickLabelPositions.add(tickLabelPosition);
-			}
-			tickStep = tickStep.multiply(pow(10, 1));
-			firstPosition = tickStep.add(pow(10, i));
-		}
-	}
+        // get tick step
+        Integer[] steps = possibleTickSteps.get(tickStepUnit);
+        int step = steps[steps.length - 1];
+        for (int i = 0; i < steps.length - 1; i++) {
+            if (gridStepHint < (getPeriodInMillis(tickStepUnit, steps[i]) + 
+                    getPeriodInMillis(tickStepUnit, steps[i + 1])) / 2) {
+                step = steps[i];
+                break;
+            }
+        }
 
-	/**
-	 * Updates tick label for normal scale.
-	 * 
-	 * @param length
-	 *            axis length (>0)
-	 */
-	private void updateTickLabelForLinearScale(int length) {
-		double min = axis.getRange().lower;
-		double max = axis.getRange().upper;
+        // set tick labels
+        cal.clear();
+        cal.set(year, month, 1);
+        while (cal.getTimeInMillis() < max) {
+            tickLabelValues.add(Double.valueOf(cal.getTimeInMillis()));
+            tickLabels.add(format(cal.getTimeInMillis()));
+            int tickLabelPosition = (int) ((cal.getTimeInMillis() - min)
+                    / (max - min) * length) - LINE_WIDTH;
+            tickLabelPositions.add(tickLabelPosition);
+            if (tickStepUnit == Calendar.MONTH) {
+                month += step;
+                if (month + step > Calendar.DECEMBER) {
+                    year++;
+                    month -= Calendar.DECEMBER + 1;
+                }
+            } else if (tickStepUnit == Calendar.YEAR) {
+                year += step;
+            }
+            cal.clear();
+            cal.set(year, month, 1);
+        }
+    }
 
-		final BigDecimal MIN = new BigDecimal(new Double(min).toString());
-		final BigDecimal TICKSTEP = getGridStep(length, min, max);
-		BigDecimal firstPosition;
+    /**
+     * Updates tick label for category axis.
+     * 
+     * @param length
+     *            the length of axis
+     */
+    private void updateTickLabelForCategoryAxis(int length) {
+        String[] series = axis.getCategorySeries();
+        if (series == null) {
+            return;
+        }
 
-		/* if (min % tickStep <= 0) */
-		if (MIN.remainder(TICKSTEP).doubleValue() <= 0) {
-			/* firstPosition = min - min % tickStep */
-			firstPosition = MIN.subtract(MIN.remainder(TICKSTEP));
-		} else {
-			/* firstPosition = min - min % tickStep + tickStep */
-			firstPosition = MIN.subtract(MIN.remainder(TICKSTEP)).add(TICKSTEP);
-		}
+        double min = axis.getRange().lower;
+        double max = axis.getRange().upper;
 
-		for (BigDecimal b = firstPosition; b.doubleValue() <= max; b = b
-				.add(TICKSTEP)) {
-			String label = new DecimalFormat("############.###########")
-					.format(b.doubleValue());
-			tickLabels.add(label);
+        int sizeOfTickLabels = (series.length < (int) max - (int) min + 1) ? series.length
+                : (int) max - (int) min + 1;
+        int initialIndex = (min < 0) ? 0 : (int) min;
 
-			int tickLabelPosition = (int) ((b.doubleValue() - min)
-					/ (max - min) * length)
-					- LINE_WIDTH;
-			tickLabelPositions.add(tickLabelPosition);
-		}
-	}
+        for (int i = 0; i < sizeOfTickLabels; i++) {
+            tickLabels.add(series[i + initialIndex]);
 
-	/**
-	 * Updates visibility of tick labels.
-	 */
-	private void updateTickVisibility() {
-		tickVisibilities.clear();
+            int tickLabelPosition = (int) (length * (i + 0.5) / sizeOfTickLabels)
+                    - LINE_WIDTH;
+            tickLabelPositions.add(tickLabelPosition);
+        }
+    }
 
-		for (int i = 0; i < tickLabels.size(); i++) {
-			tickVisibilities.add(Boolean.TRUE);
-		}
+    /**
+     * Updates tick label for log scale.
+     * 
+     * @param length
+     *            the length of axis
+     */
+    private void updateTickLabelForLogScale(int length) {
+        double min = axis.getRange().lower;
+        double max = axis.getRange().upper;
 
-		int previousPosition = Integer.MAX_VALUE;
-		for (int i = tickLabels.size() - 1; i >= 0; i--) {
-			Point p = Util.getExtentInGC(axis.getTick().getFont(), tickLabels
-					.get(i));
-			int interval = previousPosition - tickLabelPositions.get(i);
-			int textLength = axis.isHorizontalAxis() ? p.x : p.y;
-			if (interval < textLength) {
-				tickVisibilities.set(i, Boolean.FALSE);
-			} else {
-				previousPosition = tickLabelPositions.get(i);
-			}
-		}
-	}
+        int digitMin = (int) Math.ceil(Math.log10(min));
+        int digitMax = (int) Math.ceil(Math.log10(max));
 
-	/**
-	 * Gets max length of tick label.
-	 */
-	private void updateTickLabelMaxLength() {
-		int maxLength = 0;
-		for (int i = 0; i < tickLabels.size(); i++) {
-			if (tickVisibilities.size() > i && tickVisibilities.get(i) == true) {
-				Point p = Util.getExtentInGC(axis.getTick().getFont(),
-						tickLabels.get(i));
-				if (p.x > maxLength) {
-					maxLength = p.x;
-				}
-			}
-		}
-		tickLabelMaxLength = maxLength;
-	}
+        final BigDecimal MIN = new BigDecimal(new Double(min).toString());
+        BigDecimal tickStep = pow(10, digitMin - 1);
+        BigDecimal firstPosition;
 
-	/**
-	 * Calculates the value of the first argument raised to the power of the
-	 * second argument.
-	 * 
-	 * @param base
-	 *            the base
-	 * @param expornent
-	 *            the exponent
-	 * @return the value <tt>a<sup>b</sup></tt> in <tt>BigDecimal</tt>
-	 */
-	private BigDecimal pow(double base, int expornent) {
-		BigDecimal value;
-		if (expornent > 0) {
-			value = new BigDecimal(new Double(base).toString()).pow(expornent);
-		} else {
-			value = BigDecimal.ONE.divide(new BigDecimal(new Double(base)
-					.toString()).pow(-expornent));
-		}
-		return value;
-	}
+        if (MIN.remainder(tickStep).doubleValue() <= 0) {
+            firstPosition = MIN.subtract(MIN.remainder(tickStep));
+        } else {
+            firstPosition = MIN.subtract(MIN.remainder(tickStep)).add(tickStep);
+        }
 
-	/**
-	 * Gets the grid step.
-	 * 
-	 * @param lengthInPixels
-	 *            axis length in pixels
-	 * @param min
-	 *            minimum value
-	 * @param max
-	 *            maximum value
-	 * @return rounded value.
-	 */
-	private BigDecimal getGridStep(int lengthInPixels, double min, double max)
-			throws IllegalArgumentException {
-		if (lengthInPixels <= 0) {
-			throw new IllegalArgumentException(
-					"lengthInPixels must be positive value.");
-		}
-		if (min >= max) {
-			throw new IllegalArgumentException("min must be less than max.");
-		}
-		double length = Math.abs(max - min);
-		double gridStepHint = length / lengthInPixels
-				* axis.getTick().getTickMarkStepHint();
+        for (int i = digitMin; i <= digitMax; i++) {
+            for (BigDecimal j = firstPosition; j.doubleValue() <= pow(10, i)
+                    .doubleValue(); j = j.add(tickStep)) {
+                if (j.doubleValue() > max) {
+                    break;
+                }
 
-		// gridStepHint --> mantissa * 10 ** exponent
-		// e.g. 724.1 --> 7.241 * 10 ** 2
-		double mantissa = gridStepHint;
-		int exponent = 0;
-		if (mantissa < 1) {
-			while (mantissa < 1) {
-				mantissa *= 10.0;
-				exponent--;
-			}
-		} else {
-			while (mantissa >= 10) {
-				mantissa /= 10.0;
-				exponent++;
-			}
-		}
+                if (axis.isDateEnabled()) {
+                    Date date = new Date((long) j.doubleValue());
+                    tickLabels.add(format(date));
+                } else {
+                    tickLabels.add(format(j.doubleValue()));
+                }
+                tickLabelValues.add(j.doubleValue());
 
-		// calculate the grid step with hint.
-		BigDecimal gridStep;
-		if (mantissa > 7.5) {
-			// gridStep = 10.0 * 10**exponent
-			gridStep = BigDecimal.TEN.multiply(pow(10, exponent));
-		} else if (mantissa > 3.5) {
-			// gridStep = 5.0 * 10 ** exponent
-			gridStep = new BigDecimal(new Double(5).toString()).multiply(pow(
-					10, exponent));
-		} else if (mantissa > 1.5) {
-			// gridStep = 2.0 * 10 ** exponent
-			gridStep = new BigDecimal(new Double(2).toString()).multiply(pow(
-					10, exponent));
-		} else {
-			// gridStep = 1.0 * 10 ** exponent
-			gridStep = pow(10, exponent);
-		}
-		return gridStep;
-	}
+                int tickLabelPosition = (int) ((Math.log10(j.doubleValue()) - Math
+                        .log10(min))
+                        / (Math.log10(max) - Math.log10(min)) * length)
+                        - LINE_WIDTH;
+                tickLabelPositions.add(tickLabelPosition);
+            }
+            tickStep = tickStep.multiply(pow(10, 1));
+            firstPosition = tickStep.add(pow(10, i));
+        }
+    }
+    
+    /**
+     * Updates tick label for normal scale.
+     * 
+     * @param length
+     *            axis length (>0)
+     */
+    private void updateTickLabelForLinearScale(int length) {
+        double min = axis.getRange().lower;
+        double max = axis.getRange().upper;
+        updateTickLabelForLinearScale(length, getGridStep(length, min, max));
+    }
+    
+    /**
+     * Updates tick label for normal scale.
+     * 
+     * @param length
+     *            axis length (>0)
+     */
+    private void updateTickLabelForLinearScale(int length, BigDecimal tickStep) {
+        double min = axis.getRange().lower;
+        double max = axis.getRange().upper;
 
-	/**
-	 * Gets the tick label positions.
-	 * 
-	 * @return the tick label positions
-	 */
-	public ArrayList<Integer> getTickLabelPositions() {
-		return tickLabelPositions;
-	}
+        final BigDecimal MIN = new BigDecimal(new Double(min).toString());
+        BigDecimal firstPosition;
 
-	/**
-	 * Updates title layout.
-	 */
-	protected void updateLayoutData() {
-		int width = SWT.DEFAULT;
-		int height = SWT.DEFAULT;
-		if (!axis.getTick().isVisible()) {
-			width = 0;
-			height = 0;
-		} else {
-			if (axis.isHorizontalAxis()) {
-				height = Axis.MARGIN
-						+ Util.getExtentInGC(axis.getTick().getAxisTickLabels()
-								.getFont(), "dummy").y;
-			} else {
-				width = tickLabelMaxLength + Axis.MARGIN;
-			}
-		}
-		setLayoutData(new ChartLayoutData(width, height));
-	}
+        /* if (min % tickStep <= 0) */
+        if (MIN.remainder(tickStep).doubleValue() <= 0) {
+            /* firstPosition = min - min % tickStep */
+            firstPosition = MIN.subtract(MIN.remainder(tickStep));
+        } else {
+            /* firstPosition = min - min % tickStep + tickStep */
+            firstPosition = MIN.subtract(MIN.remainder(tickStep)).add(tickStep);
+        }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events
-	 * .PaintEvent)
-	 */
-	public void paintControl(PaintEvent e) {
-		if (axis.isHorizontalAxis()) {
-			drawXTick(e.gc);
-		} else {
-			drawYTick(e.gc);
-		}
-	}
+        // the unit time starts from 1:00
+        if (axis.isDateEnabled()) {
+            BigDecimal zeroOclock = firstPosition.subtract(new BigDecimal(new Double(
+                    3600000).toString()));
+            if (MIN.compareTo(zeroOclock) == -1) {
+                firstPosition = zeroOclock;
+            }
+        }
 
-	/**
-	 * Draw the X tick.
-	 * 
-	 * @param gc
-	 *            the graphics context
-	 */
-	private void drawXTick(GC gc) {
-		int offset = axis.getTick().getAxisTickMarks().getBounds().x;
+        for (BigDecimal b = firstPosition; b.doubleValue() <= max; b = b
+                .add(tickStep)) {
+            if (axis.isDateEnabled()) {
+                Date date = new Date((long) b.doubleValue());
+                tickLabels.add(format(date));
+            } else {
+                tickLabels.add(format(b.doubleValue()));
+            }
+            tickLabelValues.add(b.doubleValue());
 
-		// draw tick labels
-		gc.setFont(axis.getTick().getFont());
-		for (int i = 0; i < tickLabelPositions.size(); i++) {
-			if (tickVisibilities.get(i) == true) {
-				String text = tickLabels.get(i);
-				int fontWidth = gc.textExtent(text).x;
-				int x = (int) (tickLabelPositions.get(i) - fontWidth / 2.0 + offset);
-				gc.drawText(text, x, 0);
-			}
-		}
-	}
+            int tickLabelPosition = (int) ((b.doubleValue() - min)
+                    / (max - min) * length)
+                    - LINE_WIDTH;
+            tickLabelPositions.add(tickLabelPosition);
+        }
+    }
 
-	/**
-	 * Draw the Y tick.
-	 * 
-	 * @param gc
-	 *            the graphics context
-	 */
-	private void drawYTick(GC gc) {
-		int height = getSize().y;
-		int margin = Axis.MARGIN + AxisTickMarks.TICK_LENGTH;
+    /**
+     * Updates the visibility of tick labels.
+     */
+    private void updateTickVisibility() {
 
-		// draw tick labels
-		gc.setFont(axis.getTick().getFont());
-		int figureHeight = gc.textExtent("dummy").y;
-		for (int i = 0; i < tickLabelPositions.size(); i++) {
-			if (tickVisibilities.size() == 0 || tickLabels.size() == 0) {
-				break;
-			}
+        // initialize the array of tick label visibility state
+        tickVisibilities.clear();
+        for (int i = 0; i < tickLabelValues.size(); i++) {
+            tickVisibilities.add(Boolean.TRUE);
+        }
 
-			if (tickVisibilities.get(i) == true) {
-				String text = tickLabels.get(i);
-				int x = 0;
-				if (tickLabels.get(0).startsWith("-") && !text.startsWith("-")) {
-					x += gc.textExtent("-").x;
-				}
-				int y = (int) (height - 1 - tickLabelPositions.get(i)
-						- figureHeight / 2.0 - margin);
-				gc.drawText(text, x, y);
-			}
-		}
-	}
+        if (tickLabelPositions.size() == 0 || axis.isValidCategoryAxis()) {
+            return;
+        }
+
+        // set the tick label visibility
+        int previousPosition = tickLabelPositions.get(0).intValue();
+        for (int i = 1; i < tickLabelPositions.size(); i++) {
+            
+            // check if there is enough space to draw tick label
+            boolean hasSpaceToDraw = hasSpaceToDraw(previousPosition,
+                    tickLabelPositions.get(i), tickLabels.get(i));
+            
+            // check if the same tick label is repeated
+            boolean isRepeatSameTick = tickLabels.get(i).equals(
+                    tickLabels.get(i - 1));
+            
+            // check if the tick label value is major
+            boolean isMajorTick = isMajorTick(tickLabelValues.get(i));
+
+            if (!hasSpaceToDraw || isRepeatSameTick || !isMajorTick) {
+                tickVisibilities.set(i, Boolean.FALSE);
+            } else {
+                previousPosition = tickLabelPositions.get(i);
+            }
+        }
+    }
+
+    /**
+     * Gets the tick step unit.
+     * 
+     * @param gridStepHint
+     *            the grid step hint
+     * @return the tick step unit.
+     */
+    private int getTimeUnit(double gridStepHint) {
+        final Integer[] units = { Calendar.MILLISECOND, Calendar.SECOND,
+                Calendar.MINUTE, Calendar.HOUR_OF_DAY, Calendar.DATE,
+                Calendar.MONTH, Calendar.YEAR };
+    
+        for (Integer unit : units) {
+            Integer[] steps = possibleTickSteps.get(unit);
+            if (gridStepHint < (getPeriodInMillis(unit, steps[steps.length - 2]) 
+                    + getPeriodInMillis(unit, steps[steps.length - 1])) / 2) {
+                return unit;
+            }
+        }
+        return Calendar.YEAR;
+    }
+
+    /**
+     * Gets the period in milliseconds of given unit of date and amount. The
+     * period is calculated based on UTC of January 1, 1970.
+     * 
+     * @param unit
+     *            the unit of time like <tt>Calendar.YEAR<tt>.
+     * @param amount
+     *            the amount of period.
+     * @return the period in milliseconds
+     */
+    private long getPeriodInMillis(int unit, int amount) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0);
+        cal.roll(unit, amount);
+        return cal.getTimeInMillis();
+    }
+
+    /**
+     * Formats the given object.
+     * 
+     * @param obj
+     *            the object
+     * @return the formatted string
+     */
+    private String format(Object obj) {
+        if (format == null) {
+            if (axis.isDateEnabled()){
+                String dateFormat = "yyyyy.MMMMM.dd";
+                if (timeUnit == Calendar.MILLISECOND ) {
+                    dateFormat = "HH:mm:ss.SSS";
+                } else if (timeUnit == Calendar.SECOND) {
+                    dateFormat = "HH:mm:ss";
+                } else if (timeUnit == Calendar.MINUTE) {
+                    dateFormat = "HH:mm";
+                } else if (timeUnit == Calendar.HOUR_OF_DAY) {
+                    dateFormat = "dd HH:mm";
+                } else if (timeUnit == Calendar.DATE) {
+                    dateFormat = "MMMMM d";
+                } else if (timeUnit == Calendar.MONTH) {
+                    dateFormat = "yyyy MMMMM";
+                } else if (timeUnit == Calendar.YEAR) {
+                    dateFormat = "yyyy";
+                } 
+                return new SimpleDateFormat(dateFormat).format(obj);
+            } else {
+                return new DecimalFormat(DEFAULT_DECIMAL_FORMAT).format(obj);
+            }
+        } else {
+            return format.format(obj);
+        }
+    }
+
+    /**
+     * Checks if the tick label is major (...,0.01,0.1,1,10,100,...).
+     * 
+     * @param tickValue
+     *            the tick label value
+     * @return true if the tick label is major
+     */
+    private boolean isMajorTick(double tickValue) {
+        if (!axis.isLogScaleEnabled()) {
+            return true;
+        }
+
+        if (Math.log(tickValue) % 1 == 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns the state indicating if there is a space to draw tick label.
+     * 
+     * @param previousPosition
+     *            the previously drawn tick label position.
+     * @param tickLabelPosition
+     *            the tick label position.
+     * @param tickLabel
+     *            the tick label text
+     * @return true if there is a space to draw tick label
+     */
+    private boolean hasSpaceToDraw(int previousPosition, int tickLabelPosition,
+            String tickLabel) {
+        Point p = Util.getExtentInGC(axis.getTick().getFont(), tickLabel);
+        int interval = tickLabelPosition - previousPosition;
+        int textLength = axis.isHorizontalAxis() ? p.x : p.y;
+
+        return interval > textLength;
+    }
+
+    /**
+     * Gets max length of tick label.
+     */
+    private void updateTickLabelMaxLength() {
+        int maxLength = 0;
+        for (int i = 0; i < tickLabels.size(); i++) {
+            if (tickVisibilities.size() > i && tickVisibilities.get(i) == true) {
+                Point p = Util.getExtentInGC(axis.getTick().getFont(),
+                        tickLabels.get(i));
+                if (p.x > maxLength) {
+                    maxLength = p.x;
+                }
+            }
+        }
+        tickLabelMaxLength = maxLength;
+    }
+
+    /**
+     * Calculates the value of the first argument raised to the power of the
+     * second argument.
+     * 
+     * @param base
+     *            the base
+     * @param expornent
+     *            the exponent
+     * @return the value <tt>a<sup>b</sup></tt> in <tt>BigDecimal</tt>
+     */
+    private BigDecimal pow(double base, int expornent) {
+        BigDecimal value;
+        if (expornent > 0) {
+            value = new BigDecimal(new Double(base).toString()).pow(expornent);
+        } else {
+            value = BigDecimal.ONE.divide(new BigDecimal(new Double(base)
+                    .toString()).pow(-expornent));
+        }
+        return value;
+    }
+
+    /**
+     * Gets the grid step.
+     * 
+     * @param lengthInPixels
+     *            axis length in pixels
+     * @param min
+     *            minimum value
+     * @param max
+     *            maximum value
+     * @return rounded value.
+     */
+    private BigDecimal getGridStep(int lengthInPixels, double min, double max)
+            throws IllegalArgumentException {
+        if (lengthInPixels <= 0) {
+            throw new IllegalArgumentException(
+                    "lengthInPixels must be positive value.");
+        }
+        if (min >= max) {
+            throw new IllegalArgumentException("min must be less than max.");
+        }
+
+        double length = Math.abs(max - min);
+        double gridStepHint = length / lengthInPixels
+                * axis.getTick().getTickMarkStepHint();
+
+        // gridStepHint --> mantissa * 10 ** exponent
+        // e.g. 724.1 --> 7.241 * 10 ** 2
+        double mantissa = gridStepHint;
+        int exponent = 0;
+        if (mantissa < 1) {
+            while (mantissa < 1) {
+                mantissa *= 10.0;
+                exponent--;
+            }
+        } else {
+            while (mantissa >= 10) {
+                mantissa /= 10.0;
+                exponent++;
+            }
+        }
+
+        // calculate the grid step with hint.
+        BigDecimal gridStep;
+        if (mantissa > 7.5) {
+            // gridStep = 10.0 * 10 ** exponent
+            gridStep = BigDecimal.TEN.multiply(pow(10, exponent));
+        } else if (mantissa > 3.5) {
+            // gridStep = 5.0 * 10 ** exponent
+            gridStep = new BigDecimal(new Double(5).toString()).multiply(pow(
+                    10, exponent));
+        } else if (mantissa > 1.5) {
+            // gridStep = 2.0 * 10 ** exponent
+            gridStep = new BigDecimal(new Double(2).toString()).multiply(pow(
+                    10, exponent));
+        } else {
+            // gridStep = 1.0 * 10 ** exponent
+            gridStep = pow(10, exponent);
+        }
+        return gridStep;
+    }
+
+    /**
+     * Gets the tick label positions.
+     * 
+     * @return the tick label positions
+     */
+    public ArrayList<Integer> getTickLabelPositions() {
+        return tickLabelPositions;
+    }
+
+    /**
+     * Updates title layout.
+     */
+    protected void updateLayoutData() {
+        int width = SWT.DEFAULT;
+        int height = SWT.DEFAULT;
+        if (!axis.getTick().isVisible()) {
+            width = 0;
+            height = 0;
+        } else {
+            if (axis.isHorizontalAxis()) {
+                height = Axis.MARGIN
+                        + Util.getExtentInGC(axis.getTick().getAxisTickLabels()
+                                .getFont(), "dummy").y;
+            } else {
+                width = tickLabelMaxLength + Axis.MARGIN;
+            }
+        }
+        setLayoutData(new ChartLayoutData(width, height));
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
+     */
+    public void paintControl(PaintEvent e) {
+        if (axis.isHorizontalAxis()) {
+            drawXTick(e.gc);
+        } else {
+            drawYTick(e.gc);
+        }
+    }
+
+    /**
+     * Draw the X tick.
+     * 
+     * @param gc
+     *            the graphics context
+     */
+    private void drawXTick(GC gc) {
+        int offset = axis.getTick().getAxisTickMarks().getBounds().x;
+
+        // draw tick labels
+        gc.setFont(axis.getTick().getFont());
+        for (int i = 0; i < tickLabelPositions.size(); i++) {
+            if (axis.isValidCategoryAxis() || tickVisibilities.get(i) == true) {
+                String text = tickLabels.get(i);
+                int fontWidth = gc.textExtent(text).x;
+                int x = (int) (tickLabelPositions.get(i) - fontWidth / 2.0 + offset);
+                gc.drawText(text, x, 0);
+            }
+        }
+    }
+
+    /**
+     * Draw the Y tick.
+     * 
+     * @param gc
+     *            the graphics context
+     */
+    private void drawYTick(GC gc) {
+        int height = getSize().y;
+        int margin = Axis.MARGIN + AxisTickMarks.TICK_LENGTH;
+
+        // draw tick labels
+        gc.setFont(axis.getTick().getFont());
+        int figureHeight = gc.textExtent("dummy").y;
+        for (int i = 0; i < tickLabelPositions.size(); i++) {
+            if (tickVisibilities.size() == 0 || tickLabels.size() == 0) {
+                break;
+            }
+
+            if (tickVisibilities.get(i) == true) {
+                String text = tickLabels.get(i);
+                int x = 0;
+                if (tickLabels.get(0).startsWith("-") && !text.startsWith("-")) {
+                    x += gc.textExtent("-").x;
+                }
+                int y = (int) (height - 1 - tickLabelPositions.get(i)
+                        - figureHeight / 2.0 - margin);
+                gc.drawText(text, x, y);
+            }
+        }
+    }
+
+    /**
+     * Sets the format for axis tick label. <tt>DecimalFormat</tt> and
+     * <tt>DateFormat</tt> should be used for <tt>double[]</tt> series and
+     * <tt>Data[]</tt> series respectively.
+     * <p>
+     * If <tt>null</tt> is set, default format will be used.
+     * 
+     * @param format
+     *            the format
+     */
+    protected void setFormat(Format format) {
+        this.format = format;
+    }
+
+    /**
+     * Gets the format for axis tick label.
+     * 
+     * @return the format
+     */
+    protected Format getFormat() {
+        return format;
+    }
 }

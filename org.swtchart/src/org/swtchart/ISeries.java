@@ -1,5 +1,7 @@
 package org.swtchart;
 
+import java.util.Date;
+
 /**
  * Series.
  */
@@ -94,23 +96,39 @@ public interface ISeries {
 	 */
 	void setYSeries(double[] series);
 
-	/**
-	 * Gets the X series. If the X series haven't been set yet,
-     * <tt>null</tt> will be returned.
-	 * 
-	 * @return the X series
-	 * 
-	 */
+    /**
+     * Gets the X series. If the X series is not set, <tt>null</tt> will be
+     * returned.
+     * 
+     * @return the X series
+     */
 	double[] getXSeries();
-
+    
 	/**
 	 * Gets the Y series. If the Y series haven't been set yet,
      * <tt>null</tt> will be returned.
 	 * 
 	 * @return the Y series
-	 * 
 	 */
 	double[] getYSeries();
+
+    /**
+     * Sets the X date series.
+     * <p>
+     * X series and X date series are exclusive. X date series will be cleared
+     * by setting X series, and vice versa.
+     * 
+     * @param series
+     *            the X date series
+     */
+    void setXDateSeries(Date[] series);
+
+    /**
+     * Gets the X date series.
+     * 
+     * @return the X date series, or <tt>null</tt> if X date series is not set.
+     */
+    Date[] getXDateSeries();
 
 	/**
 	 * Gets the X axis id.

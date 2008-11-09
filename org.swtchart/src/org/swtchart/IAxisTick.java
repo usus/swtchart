@@ -1,5 +1,7 @@
 package org.swtchart;
 
+import java.text.Format;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 
@@ -70,4 +72,21 @@ public interface IAxisTick {
 	 *            the tick mark step hint with pixels (> IAxisTick.MIN_GRID_STEP_HINT)
 	 */
 	void setTickMarkStepHint(int tickMarkStepHint);
+
+    /**
+     * Sets the format for axis tick label. <tt>DecimalFormat</tt> and
+     * <tt>DateFormat</tt> should be used for <tt>double[]</tt> series and
+     * <tt>Date[]</tt> series respectively.
+     * 
+     * @param format
+     *            the format
+     */
+    void setFormat(Format format);
+
+    /**
+     * Gets the format for axis tick label.
+     * 
+     * @return the format
+     */
+    Format getFormat();
 }
