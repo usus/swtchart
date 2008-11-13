@@ -140,18 +140,14 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         tickLabels.clear();
         tickLabelPositions.clear();
 
-        /*
-         * add LINE_WIDTH x 2 to axis length, since the min/max of axis tick can
-         * overlap with axis line.
-         */
         if (axis.isValidCategoryAxis()) {
-            updateTickLabelForCategoryAxis(length + LINE_WIDTH * 2);
+            updateTickLabelForCategoryAxis(length);
         } else if (axis.isLogScaleEnabled()) {
-            updateTickLabelForLogScale(length + LINE_WIDTH * 2);
+            updateTickLabelForLogScale(length);
         } else if (axis.isDateEnabled()) {
-            updateTickLabelForDateAxis(length + LINE_WIDTH * 2);
+            updateTickLabelForDateAxis(length);
         } else {
-            updateTickLabelForLinearScale(length + LINE_WIDTH * 2);
+            updateTickLabelForLinearScale(length);
         }
 
         updateTickVisibility();
