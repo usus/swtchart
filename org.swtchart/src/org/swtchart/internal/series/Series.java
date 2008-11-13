@@ -141,11 +141,6 @@ abstract public class Series implements ISeries {
                     "Stacked series cannot contain minus values.");
         }
 
-        if (enabled && chart.getAxisSet().getXAxis(xAxisId).isLogScaleEnabled()) {
-            throw new IllegalArgumentException(
-                    "Stacked series cannot be set on log scale axis.");
-        }
-
         if (stackEnabled == enabled) {
             return;
         }
@@ -365,7 +360,7 @@ abstract public class Series implements ISeries {
         double max = maxY;
         Axis xAxis = (Axis) chart.getAxisSet().getXAxis(xAxisId);
         Axis yAxis = (Axis) chart.getAxisSet().getYAxis(yAxisId);
-        if (stackEnabled && xAxis.isValidCategoryAxis()) {
+        if (stackEnabled && xAxis.isValidCategoryAxis() && stackSeries != null) {
             for (int i = 0; i < stackSeries.length; i++) {
                 if (max < stackSeries[i]) {
                     max = stackSeries[i];

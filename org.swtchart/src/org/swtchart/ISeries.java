@@ -62,15 +62,13 @@ public interface ISeries {
 	SeriesType getType();
 
 	/**
-	 * Enables the stack series. The associated axis has to be category type. In
-	 * addition, the series has to contain only positive values.
-	 * 
-	 * @param enabled
-	 *            true if enabling stack series
-	 * @throws IllegalArgumentException
-	 *             if the associated axis is not valid category type, or if
-	 *             series contains negative values.
-	 */
+     * Enables the stack series. The series has to contain only positive values.
+     * 
+     * @param enabled
+     *            true if enabling stack series
+     * @throws IllegalArgumentException
+     *             if series contains negative values.
+     */
 	void enableStack(boolean enabled);
 
 	/**

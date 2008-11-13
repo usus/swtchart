@@ -125,4 +125,19 @@ public interface ILineSeries extends ISeries {
 	 *            the line color
 	 */
 	void setLineColor(Color color);
+	
+	/**
+     * Enables the area chart.
+     * 
+     * @param enabled
+     *            true if enabling area chart
+     */
+    void enableArea(boolean enabled);
+
+    /**
+     * Gets the state indicating if area chart is enabled.
+     * 
+     * @return true if area chart is enabled
+     */
+    boolean isAreaEnabled();
 }
