@@ -410,28 +410,29 @@ public class AxisTickLabels extends Canvas implements PaintListener {
             tickVisibilities.add(Boolean.TRUE);
         }
 
-        if (tickLabelPositions.size() == 0 || !axis.isValidCategoryAxis()) {
+        if (tickLabelPositions.size() == 0) {
             return;
         }
 
         // set the tick label visibility
-        int previousPosition = tickLabelPositions.get(0).intValue();
-        for (int i = 1; i < tickLabelPositions.size(); i++) {
-            
+        int previousPosition = 0;
+        String previousLabel = null;
+        for (int i = 0; i < tickLabelPositions.size(); i++) {
+
             // check if there is enough space to draw tick label
             boolean hasSpaceToDraw = hasSpaceToDraw(previousPosition,
                     tickLabelPositions.get(i), tickLabels.get(i));
-            
+
             // check if the same tick label is repeated
             boolean isRepeatSameTick = tickLabels.get(i).equals(
-                    tickLabels.get(i - 1));
-            
+                    previousLabel);
+
             // check if the tick label value is major
             boolean isMajorTick = true;
             if (!axis.isValidCategoryAxis()) {
                 isMajorTick = isMajorTick(tickLabelValues.get(i));
             }
-            
+
             if (!hasSpaceToDraw || isRepeatSameTick || !isMajorTick) {
                 tickVisibilities.set(i, Boolean.FALSE);
             } else {
