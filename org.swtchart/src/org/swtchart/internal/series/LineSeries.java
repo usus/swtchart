@@ -38,6 +38,9 @@ public class LineSeries extends Series implements ILineSeries {
     /** the state indicating if area chart is enabled */
     private boolean areaEnabled;
 
+    /** the state indicating if step chart is enabled */
+    private boolean stepEnabled;
+
     /** the alpha value to draw area */
     private static final int ALPHA = 50;
 
@@ -206,6 +209,20 @@ public class LineSeries extends Series implements ILineSeries {
     }
 
     /* (non-Javadoc)
+     * @see org.swtchart.ILineSeries#enableStep(boolean)
+     */
+    public void enableStep(boolean enabled) {
+        stepEnabled = enabled;
+    }
+
+    /* (non-Javadoc)
+     * @see org.swtchart.ILineSeries#isStepEnabled()
+     */
+    public boolean isStepEnabled() {
+        return stepEnabled;
+    }
+
+    /* (non-Javadoc)
      * @see org.swtchart.internal.series.Series#getXRangeToDraw(boolean)
      */
     public Range getXRangeToDraw(boolean isLogScale) {
@@ -323,11 +340,21 @@ public class LineSeries extends Series implements ILineSeries {
                     height, i);
 
             // draw line
-            gc.drawLine(p.x1, p.y1, p.x2, p.y2);
-
+            if (stepEnabled) {
+                if (isHorizontal) {
+                    gc.drawLine(p.x1, p.y1, p.x2, p.y1);
+                    gc.drawLine(p.x2, p.y1, p.x2, p.y2);
+                } else {
+                    gc.drawLine(p.x1, p.y1, p.x1, p.y2);
+                    gc.drawLine(p.x1, p.y2, p.x2, p.y2);
+                }
+            } else {
+                gc.drawLine(p.x1, p.y1, p.x2, p.y2);
+            }
+            
             // draw area
             if (areaEnabled) {
-                drawArea(gc, p);
+                drawArea(gc, p, isHorizontal);
             }
         }
     }
@@ -464,13 +491,23 @@ public class LineSeries extends Series implements ILineSeries {
 
             LinePoints p = getLinePointsOnCategoryAxis(isLogScale, isHorizontal, xRange,
                     yRange, xWidth, yWidth, i);
-            
+
             // draw line
-            gc.drawLine(p.x1, p.y1, p.x2, p.y2);
-            
+            if (stepEnabled) {
+                if (isHorizontal) {
+                    gc.drawLine(p.x1, p.y1, p.x2, p.y1);
+                    gc.drawLine(p.x2, p.y1, p.x2, p.y2);
+                } else {
+                    gc.drawLine(p.x1, p.y1, p.x1, p.y2);
+                    gc.drawLine(p.x1, p.y2, p.x2, p.y2);
+                }
+            } else {
+                gc.drawLine(p.x1, p.y1, p.x2, p.y2);
+            }
+
             // fill area
             if (areaEnabled) {
-                drawArea(gc, p);
+                drawArea(gc, p, isHorizontal);
             }
         }
     }
@@ -550,12 +587,25 @@ public class LineSeries extends Series implements ILineSeries {
      * @param p
      *            the line points
      */
-    private void drawArea(GC gc, LinePoints p) {
+    private void drawArea(GC gc, LinePoints p, boolean isHorizontal) {
         int alpha = gc.getAlpha();
         gc.setAlpha(ALPHA);
         gc.setBackground(lineColor);
-        int[] pointArray = { p.x1, p.y1, p.x2, p.y2, p.x3, p.y3, p.x4, p.y4,
-                p.x1, p.y1 };
+
+        int[] pointArray;
+        if (stepEnabled) {
+            if (isHorizontal) {
+                pointArray = new int[] { p.x1, p.y1, p.x2, p.y1, p.x3, p.y4,
+                        p.x4, p.y4, p.x1, p.y1 };
+            } else {
+                pointArray = new int[] { p.x1, p.y1, p.x1, p.y2, p.x4, p.y3,
+                        p.x4, p.y4, p.x1, p.y1 };
+            }
+        } else {
+            pointArray = new int[] { p.x1, p.y1, p.x2, p.y2, p.x3, p.y3, p.x4,
+                    p.y4, p.x1, p.y1 };
+        }
+
         gc.fillPolygon(pointArray);
         gc.setAlpha(alpha);
     }
