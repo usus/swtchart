@@ -140,4 +140,19 @@ public interface ILineSeries extends ISeries {
      * @return true if area chart is enabled
      */
     boolean isAreaEnabled();
+    
+    /**
+     * Enables the step chart.
+     * 
+     * @param enabled
+     *            true if enabling step chart
+     */
+    void enableStep(boolean enabled);
+
+    /**
+     * Gets the state indicating if step chart is enabled.
+     * 
+     * @return true if step chart is enabled
+     */
+    boolean isStepEnabled();
 }
