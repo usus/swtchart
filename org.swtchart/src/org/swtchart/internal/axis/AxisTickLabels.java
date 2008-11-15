@@ -169,10 +169,8 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
         timeUnit = getTimeUnit(gridStepHint);
 
-        if (timeUnit == Calendar.MILLISECOND) {
-
-            updateTickLabelForLinearScale(length);
-        } else if (timeUnit == Calendar.SECOND
+        if (timeUnit == Calendar.MILLISECOND 
+                || timeUnit == Calendar.SECOND
                 || timeUnit == Calendar.MINUTE
                 || timeUnit == Calendar.HOUR_OF_DAY
                 || timeUnit == Calendar.DATE) {
