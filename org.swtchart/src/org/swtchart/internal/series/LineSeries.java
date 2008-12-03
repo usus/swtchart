@@ -26,6 +26,9 @@ public class LineSeries extends Series implements ILineSeries {
     /** the symbol color */
     private Color symbolColor;
 
+    /** the symbol colors */
+    private Color[] symbolColors;
+    
     /** the symbol type */
     private PlotSymbolType symbolType;
 
@@ -179,6 +182,39 @@ public class LineSeries extends Series implements ILineSeries {
         } else {
             this.symbolColor = color;
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.swtchart.ILineSeries#getSymbolColors()
+     */
+    public Color[] getSymbolColors() {
+        if (symbolColors == null) {
+            return null;
+        }
+
+        Color[] copiedSymbolColors = new Color[symbolColors.length];
+        System.arraycopy(symbolColors, 0, copiedSymbolColors, 0, symbolColors.length);
+
+        return copiedSymbolColors;
+    }
+
+    /* (non-Javadoc)
+     * @see org.swtchart.ILineSeries#setSymbolColors(org.eclipse.swt.graphics.Color[])
+     */
+    public void setSymbolColors(Color[] colors) {
+        if (colors == null) {
+            symbolColors = null;
+            return;
+        }
+
+        for (Color color : colors) {
+            if (color.isDisposed()) {
+                SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+            }
+        }
+
+        symbolColors = new Color[colors.length];
+        System.arraycopy(colors, 0, symbolColors, 0, colors.length);
     }
 
     /* (non-Javadoc)
@@ -662,7 +698,11 @@ public class LineSeries extends Series implements ILineSeries {
                         / (vRange.upper - vRange.lower) * height);
             }
     
-            drawSeriesSymbol(gc, h, height - v);
+            Color color = symbolColor;
+            if (symbolColors != null && symbolColors.length > i) {
+                color = symbolColors[i];
+            }
+            drawSeriesSymbol(gc, h, height - v, color);
             ((SeriesLabel) seriesLabel).draw(gc, h, height - v, vSeries[i]);
         }
     }
@@ -676,11 +716,13 @@ public class LineSeries extends Series implements ILineSeries {
      *            the horizontal coordinate to draw symbol
      * @param v
      *            the vertical coordinate to draw symbol
+     * @param color
+     *            the symbol color
      */
-    public void drawSeriesSymbol(GC gc, int h, int v) {
+    public void drawSeriesSymbol(GC gc, int h, int v, Color color) {
         gc.setAntialias(SWT.ON);
-        gc.setForeground(symbolColor);
-        gc.setBackground(symbolColor);
+        gc.setForeground(color);
+        gc.setBackground(color);
     
         switch (symbolType) {
         case CIRCLE:
@@ -771,11 +813,16 @@ public class LineSeries extends Series implements ILineSeries {
                         / (yRange.upper - yRange.lower) * yWidth);
             }
 
+            Color color = symbolColor;
+            if (symbolColors != null && symbolColors.length > i) {
+                color = symbolColors[i];
+            }
+
             if (isHorizontal) {
-                drawSeriesSymbol(gc, x, height - y);
+                drawSeriesSymbol(gc, x, height - y, color);
                 ((SeriesLabel) seriesLabel).draw(gc, x, height - y, ySeries[i]);
             } else {
-                drawSeriesSymbol(gc, y, height - x);
+                drawSeriesSymbol(gc, y, height - x, color);
                 ((SeriesLabel) seriesLabel).draw(gc, y, height - x, ySeries[i]);
             }
         }

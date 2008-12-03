@@ -95,7 +95,30 @@ public interface ILineSeries extends ISeries {
 	 *            the symbol color
 	 */
 	void setSymbolColor(Color color);
-	
+
+    /**
+     * Gets the symbol colors.
+     * 
+     * @return the symbol colors, or <tt>null</tt> if no symbol colors are set.
+     */
+    Color[] getSymbolColors();
+
+    /**
+     * Sets the symbol colors. Typically, the number of symbol colors is the
+     * same as the number of plots. If the number of symbol colors is less than
+     * the number of plots, the rest of plots will have the common color which 
+     * is set with <tt>setSymbolColor(Color)</tt>.
+     * 
+     * <p>
+     * By default, <tt>null</tt> is set.
+     * 
+     * @param color
+     *            the symbol colors. If <tt>null</tt> is given, the color which
+     *            is set with <tt>setSymbolColor(Color)</tt> will be commonly used
+     *            for all plots.
+     */
+    void setSymbolColors(Color[] colors);
+    
 	/**
 	 * Gets line style.
 	 * 

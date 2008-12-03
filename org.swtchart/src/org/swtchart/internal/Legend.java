@@ -196,7 +196,12 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 			}
 
 			// draw series symbol
-			((LineSeries) series).drawSeriesSymbol(gc, x + SYMBOL_WIDTH / 2, y);
+			Color color = ((ILineSeries) series).getSymbolColor();
+			Color[] colors = ((ILineSeries) series).getSymbolColors();
+			if (colors != null && colors.length > 0) {
+			    color = colors[0];
+			}
+			((LineSeries) series).drawSeriesSymbol(gc, x + SYMBOL_WIDTH / 2, y, color);
 		} else if (series instanceof IBarSeries) {
 			// draw riser
 			gc.setBackground(((IBarSeries) series).getBarColor());
