@@ -529,7 +529,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
             return true;
         }
 
-        if (Math.log(tickValue) % 1 == 0) {
+        if (Math.log10(tickValue) % 1 == 0) {
             return true;
         }
 
