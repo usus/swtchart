@@ -13,8 +13,8 @@ import org.swtchart.ISeries.SeriesType;
  */
 public class LogScaleExample {
 
-	private static final double[] ySeries = { 0.6, 0.4, 0.7, 0.1, 1.9, 1.7,
-			2.6, 5.4, 9.1, 11.2, 23.4, 10.6, 54.2, 40.6, 68.1, 70.5 };
+	private static final double[] ySeries = { 0.6, 0.4, 0.7, 0.06, 1.9, 1.7,
+			2.6, 5.4, 9.1, 11.2, 23.4, 10.6, 54.2, 40.6, 68.1, 110.5 };
 
 	/**
 	 * The main method.
