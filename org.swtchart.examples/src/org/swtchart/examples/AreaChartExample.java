@@ -42,13 +42,11 @@ public class AreaChartExample {
                 .createSeries(SeriesType.LINE, "line series 1");
         lineSeries1.setYSeries(ySeries1);
         lineSeries1.setLineColor(new Color(Display.getDefault(), 255, 0 ,0));
-        lineSeries1.enableStack(true);
         lineSeries1.enableArea(true);
 
         ILineSeries lineSeries2 = (ILineSeries) chart.getSeriesSet()
                 .createSeries(SeriesType.LINE, "line series 2");
         lineSeries2.setYSeries(ySeries2);
-        lineSeries2.enableStack(true);
         lineSeries2.enableArea(true);
 
         // adjust the axis range
