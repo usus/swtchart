@@ -239,7 +239,7 @@ public class InteractiveChart extends Chart implements PaintListener {
 				}
 				Range range = selection.getRange(direction, getPlotArea()
 						.getClientArea());
-				if (range.lower != range.upper) {
+				if (range != null && range.lower != range.upper) {
 					setRange(range, axis);
 				}
 			}
