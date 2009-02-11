@@ -67,80 +67,80 @@ public class AxisTick implements IAxisTick {
         return axisTickLabels;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#setForeground(org.eclipse.swt.graphics.Color)
+    /*
+     * @see IAxisTick#setForeground(Color)
      */
     public void setForeground(Color color) {
         axisTickMarks.setForeground(color);
         axisTickLabels.setForeground(color);
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#getForeground()
+    /*
+     * @see IAxisTick#getForeground()
      */
     public Color getForeground() {
         return axisTickMarks.getForeground();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#setFont(org.eclipse.swt.graphics.Font)
+    /*
+     * @see IAxisTick#setFont(Font)
      */
     public void setFont(Font font) {
         axisTickLabels.setFont(font);
         chart.updateLayout();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#getFont()
+    /*
+     * @see IAxisTick#getFont()
      */
     public Font getFont() {
         return axisTickLabels.getFont();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#isVisible()
+    /*
+     * @see IAxisTick#isVisible()
      */
     public boolean isVisible() {
         return isVisible;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#setVisible(boolean)
+    /*
+     * @see IAxisTick#setVisible(boolean)
      */
     public void setVisible(boolean isVisible) {
         this.isVisible = isVisible;
         chart.updateLayout();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#getTickMarkStepHint()
+    /*
+     * @see IAxisTick#getTickMarkStepHint()
      */
     public int getTickMarkStepHint() {
         return tickMarkStepHint;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#setTickMarkStepHint(int)
+    /*
+     * @see IAxisTick#setTickMarkStepHint(int)
      */
     public void setTickMarkStepHint(int tickMarkStepHint) {
         if (tickMarkStepHint < MIN_GRID_STEP_HINT) {
-            tickMarkStepHint = DEFAULT_TICK_MARK_STEP_HINT;
+            this.tickMarkStepHint = DEFAULT_TICK_MARK_STEP_HINT;
+        } else {
+            this.tickMarkStepHint = tickMarkStepHint;
         }
-
-        this.tickMarkStepHint = tickMarkStepHint;
         chart.updateLayout();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#setFormat(java.text.Format)
+    /*
+     * @see IAxisTick#setFormat(Format)
      */
     public void setFormat(Format format) {
         axisTickLabels.setFormat(format);
         chart.updateLayout();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxisTick#getFormat()
+    /*
+     * @see IAxisTick#getFormat()
      */
     public Format getFormat() {
         return axisTickLabels.getFormat();
@@ -151,9 +151,10 @@ public class AxisTick implements IAxisTick {
      */
     protected void updateTick(int length) {
         if (length <= 0) {
-            length = 1;
+            axisTickLabels.update(1);
+        } else {
+            axisTickLabels.update(length);
         }
-        axisTickLabels.update(length);
     }
 
     /**
