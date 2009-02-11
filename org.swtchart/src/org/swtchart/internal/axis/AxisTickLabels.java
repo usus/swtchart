@@ -32,7 +32,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
     /** the axis */
     private Axis axis;
-    
+
     /** the array of tick label vales */
     private ArrayList<Double> tickLabelValues;
 
@@ -50,7 +50,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
     /** the format for tick labels */
     private Format format;
-    
+
     /** the default foreground */
     private static final RGB DEFAULT_FOREGROUND = Constants.BLUE;
 
@@ -65,10 +65,10 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
     /** the possible tick steps */
     private Map<Integer, Integer[]> possibleTickSteps;
-    
+
     /** the time unit for tick step */
-    private int timeUnit; 
-    
+    private int timeUnit;
+
     /**
      * Constructor.
      * 
@@ -89,7 +89,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         tickVisibilities = new ArrayList<Boolean>();
 
         initializePossibleTickSteps();
-        
+
         setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
                 SWT.NORMAL));
         setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
@@ -100,7 +100,8 @@ public class AxisTickLabels extends Canvas implements PaintListener {
      * Initialized the possible tick steps.
      */
     private void initializePossibleTickSteps() {
-        final Integer[] milliseconds = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 999 };
+        final Integer[] milliseconds = { 1, 2, 5, 10, 20, 50, 100, 200, 500,
+                999 };
         final Integer[] seconds = { 1, 2, 5, 10, 15, 20, 30, 59 };
         final Integer[] minutes = { 1, 2, 3, 5, 10, 15, 20, 30, 59 };
         final Integer[] hours = { 1, 2, 3, 4, 6, 12, 22 };
@@ -118,15 +119,17 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         possibleTickSteps.put(Calendar.YEAR, years);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.swt.widgets.Control#setForeground(org.eclipse.swt.graphics.Color)
+    /*
+     * @see Control#setForeground(Color)
      */
     @Override
     public void setForeground(Color color) {
         if (color == null) {
-            color = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
+            super.setForeground(new Color(Display.getDefault(),
+                    DEFAULT_FOREGROUND));
+        } else {
+            super.setForeground(color);
         }
-        super.setForeground(color);
     }
 
     /**
@@ -169,24 +172,22 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
         timeUnit = getTimeUnit(gridStepHint);
 
-        if (timeUnit == Calendar.MILLISECOND 
-                || timeUnit == Calendar.SECOND
+        if (timeUnit == Calendar.MILLISECOND || timeUnit == Calendar.SECOND
                 || timeUnit == Calendar.MINUTE
                 || timeUnit == Calendar.HOUR_OF_DAY
                 || timeUnit == Calendar.DATE) {
 
             Integer[] steps = possibleTickSteps.get(timeUnit);
             for (int i = 0; i < steps.length - 1; i++) {
-                if (gridStepHint < (getPeriodInMillis(timeUnit, steps[i]) + 
-                        getPeriodInMillis(timeUnit, steps[i + 1])) / 2) {
+                if (gridStepHint < (getPeriodInMillis(timeUnit, steps[i]) + getPeriodInMillis(
+                        timeUnit, steps[i + 1])) / 2) {
                     BigDecimal gridStep = new BigDecimal(Long.valueOf(
                             getPeriodInMillis(timeUnit, steps[i])).toString());
                     updateTickLabelForLinearScale(length, gridStep);
                     break;
                 }
             }
-        } else if (timeUnit == Calendar.MONTH
-                || timeUnit == Calendar.YEAR) {
+        } else if (timeUnit == Calendar.MONTH || timeUnit == Calendar.YEAR) {
 
             updateTickLabelForMonthOrYear(length, gridStepHint, timeUnit);
         }
@@ -208,7 +209,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
             int tickStepUnit) {
         double min = axis.getRange().lower;
         double max = axis.getRange().upper;
-        
+
         // get initial position
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date((long) min));
@@ -230,8 +231,8 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         Integer[] steps = possibleTickSteps.get(tickStepUnit);
         int step = steps[steps.length - 1];
         for (int i = 0; i < steps.length - 1; i++) {
-            if (gridStepHint < (getPeriodInMillis(tickStepUnit, steps[i]) + 
-                    getPeriodInMillis(tickStepUnit, steps[i + 1])) / 2) {
+            if (gridStepHint < (getPeriodInMillis(tickStepUnit, steps[i]) + getPeriodInMillis(
+                    tickStepUnit, steps[i + 1])) / 2) {
                 step = steps[i];
                 break;
             }
@@ -244,7 +245,8 @@ public class AxisTickLabels extends Canvas implements PaintListener {
             tickLabelValues.add(Double.valueOf(cal.getTimeInMillis()));
             tickLabels.add(format(cal.getTimeInMillis()));
             int tickLabelPosition = (int) ((cal.getTimeInMillis() - min)
-                    / (max - min) * length) - LINE_WIDTH;
+                    / (max - min) * length)
+                    - LINE_WIDTH;
             tickLabelPositions.add(tickLabelPosition);
             if (tickStepUnit == Calendar.MONTH) {
                 month += step;
@@ -336,7 +338,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
             firstPosition = tickStep.add(pow(10, i));
         }
     }
-    
+
     /**
      * Updates tick label for normal scale.
      * 
@@ -348,7 +350,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         double max = axis.getRange().upper;
         updateTickLabelForLinearScale(length, getGridStep(length, min, max));
     }
-    
+
     /**
      * Updates tick label for normal scale.
      * 
@@ -373,8 +375,8 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
         // the unit time starts from 1:00
         if (axis.isDateEnabled()) {
-            BigDecimal zeroOclock = firstPosition.subtract(new BigDecimal(new Double(
-                    3600000).toString()));
+            BigDecimal zeroOclock = firstPosition.subtract(new BigDecimal(
+                    new Double(3600000).toString()));
             if (MIN.compareTo(zeroOclock) == -1) {
                 firstPosition = zeroOclock;
             }
@@ -454,11 +456,11 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         final Integer[] units = { Calendar.MILLISECOND, Calendar.SECOND,
                 Calendar.MINUTE, Calendar.HOUR_OF_DAY, Calendar.DATE,
                 Calendar.MONTH, Calendar.YEAR };
-    
+
         for (Integer unit : units) {
             Integer[] steps = possibleTickSteps.get(unit);
-            if (gridStepHint < (getPeriodInMillis(unit, steps[steps.length - 2]) 
-                    + getPeriodInMillis(unit, steps[steps.length - 1])) / 2) {
+            if (gridStepHint < (getPeriodInMillis(unit, steps[steps.length - 2]) + getPeriodInMillis(
+                    unit, steps[steps.length - 1])) / 2) {
                 return unit;
             }
         }
@@ -491,9 +493,9 @@ public class AxisTickLabels extends Canvas implements PaintListener {
      */
     private String format(Object obj) {
         if (format == null) {
-            if (axis.isDateEnabled()){
+            if (axis.isDateEnabled()) {
                 String dateFormat = "yyyyy.MMMMM.dd";
-                if (timeUnit == Calendar.MILLISECOND ) {
+                if (timeUnit == Calendar.MILLISECOND) {
                     dateFormat = "HH:mm:ss.SSS";
                 } else if (timeUnit == Calendar.SECOND) {
                     dateFormat = "HH:mm:ss";
@@ -507,14 +509,12 @@ public class AxisTickLabels extends Canvas implements PaintListener {
                     dateFormat = "yyyy MMMMM";
                 } else if (timeUnit == Calendar.YEAR) {
                     dateFormat = "yyyy";
-                } 
+                }
                 return new SimpleDateFormat(dateFormat).format(obj);
-            } else {
-                return new DecimalFormat(DEFAULT_DECIMAL_FORMAT).format(obj);
             }
-        } else {
-            return format.format(obj);
+            return new DecimalFormat(DEFAULT_DECIMAL_FORMAT).format(obj);
         }
+        return format.format(obj);
     }
 
     /**
@@ -685,8 +685,8 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         setLayoutData(new ChartLayoutData(width, height));
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
+    /*
+     * @see PaintListener#paintControl(PaintEvent)
      */
     public void paintControl(PaintEvent e) {
         if (axis.isHorizontalAxis()) {
