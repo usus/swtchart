@@ -111,29 +111,29 @@ public class Axis implements IAxis {
         categoryAxisEnabled = false;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#getId()
+    /*
+     * @see IAxis#getId()
      */
     public int getId() {
         return id;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#getDirection()
+    /*
+     * @see IAxis#getDirection()
      */
     public Direction getDirection() {
         return direction;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#getPosition()
+    /*
+     * @see IAxis#getPosition()
      */
     public Position getPosition() {
         return position;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#setPosition(org.swtchart.IAxis.Position)
+    /*
+     * @see IAxis#setPosition(Position)
      */
     public void setPosition(Position position) {
         if (position == null) {
@@ -149,12 +149,13 @@ public class Axis implements IAxis {
         chart.updateLayout();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#setRange(org.swtchart.Range)
+    /*
+     * @see IAxis#setRange(Range)
      */
     public void setRange(Range range) {
         if (range == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return; // to suppress warnings...
         }
 
         if (Double.isNaN(range.lower) || Double.isNaN(range.upper)
@@ -198,29 +199,29 @@ public class Axis implements IAxis {
         ((SeriesSet) chart.getSeriesSet()).compressAllSeries();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#getRange()
+    /*
+     * @see IAxis#getRange()
      */
     public Range getRange() {
         return new Range(min, max);
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#getTitle()
+    /*
+     * @see IAxis#getTitle()
      */
     public ITitle getTitle() {
         return title;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#getTick()
+    /*
+     * @see IAxis#getTick()
      */
     public AxisTick getTick() {
         return tick;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#enableLogScale(boolean)
+    /*
+     * @see IAxis#enableLogScale(boolean)
      */
     public void enableLogScale(boolean enabled) throws IllegalStateException {
 
@@ -286,22 +287,22 @@ public class Axis implements IAxis {
         return minimum;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#isLogScaleEnabled()
+    /*
+     * @see IAxis#isLogScaleEnabled()
      */
     public boolean isLogScaleEnabled() {
         return logScaleEnabled;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#getGrid()
+    /*
+     * @see IAxis#getGrid()
      */
     public IGrid getGrid() {
         return grid;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#adjustRange()
+    /*
+     * @see IAxis#adjustRange()
      */
     public void adjustRange() {
         if (isValidCategoryAxis()) {
@@ -336,8 +337,8 @@ public class Axis implements IAxis {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#zoomIn()
+    /*
+     * @see IAxis#zoomIn()
      */
     public void zoomIn() {
         double lower = min;
@@ -364,8 +365,8 @@ public class Axis implements IAxis {
         setRange(new Range(lower, upper));
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#zoomOut()
+    /*
+     * @see IAxis#zoomOut()
      */
     public void zoomOut() {
         double lower = min;
@@ -392,8 +393,8 @@ public class Axis implements IAxis {
         setRange(new Range(lower, upper));
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#scrollUp()
+    /*
+     * @see IAxis#scrollUp()
      */
     public void scrollUp() {
         double lower = min;
@@ -418,8 +419,8 @@ public class Axis implements IAxis {
         setRange(new Range(lower, upper));
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#scrollDown()
+    /*
+     * @see IAxis#scrollDown()
      */
     public void scrollDown() {
         double lower = min;
@@ -454,15 +455,15 @@ public class Axis implements IAxis {
                 && categorySeries.length != 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#isCategoryEnabled()
+    /*
+     * @see IAxis#isCategoryEnabled()
      */
     public boolean isCategoryEnabled() {
         return categoryAxisEnabled;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#enableCategory(boolean)
+    /*
+     * @see IAxis#enableCategory(boolean)
      */
     public void enableCategory(boolean enabled) {
         if (categoryAxisEnabled == enabled) {
@@ -486,12 +487,13 @@ public class Axis implements IAxis {
         ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#setCategorySeries(java.lang.String[])
+    /*
+     * @see IAxis#setCategorySeries(String[])
      */
     public void setCategorySeries(String[] series) {
         if (series == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return; // to suppress warnings...
         }
 
         if (direction == Direction.Y) {
@@ -513,8 +515,8 @@ public class Axis implements IAxis {
         ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.IAxis#getCategorySeries()
+    /*
+     * @see IAxis#getCategorySeries()
      */
     public String[] getCategorySeries() {
 
@@ -586,7 +588,7 @@ public class Axis implements IAxis {
         if (!isHorizontalAxis()) {
             return false;
         }
-        
+
         for (ISeries series : chart.getSeriesSet().getSeries()) {
             if (series.getXAxisId() != id) {
                 continue;
