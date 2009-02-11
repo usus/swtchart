@@ -22,370 +22,342 @@ import org.swtchart.internal.series.SeriesSet;
  */
 public class AxisSet implements IAxisSet {
 
-	/** the set of X axes */
-	private HashMap<Integer, Axis> xAxisMap;
+    /** the set of X axes */
+    private HashMap<Integer, Axis> xAxisMap;
 
-	/** the set of Y axes */
-	private HashMap<Integer, Axis> yAxisMap;
+    /** the set of Y axes */
+    private HashMap<Integer, Axis> yAxisMap;
 
-	/** the chart */
-	private Chart chart;
+    /** the chart */
+    private Chart chart;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param chart
-	 *            the chart
-	 */
-	public AxisSet(Chart chart) {
-		this.chart = chart;
+    /**
+     * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     */
+    public AxisSet(Chart chart) {
+        this.chart = chart;
 
-		xAxisMap = new HashMap<Integer, Axis>();
-		yAxisMap = new HashMap<Integer, Axis>();
+        xAxisMap = new HashMap<Integer, Axis>();
+        yAxisMap = new HashMap<Integer, Axis>();
 
-		// add default axes
-		Axis xAxis = new Axis(0, Direction.X, chart);
-		Axis yAxis = new Axis(0, Direction.Y, chart);
-		xAxisMap.put(0, xAxis);
-		yAxisMap.put(0, yAxis);
-	}
+        // add default axes
+        Axis xAxis = new Axis(0, Direction.X, chart);
+        Axis yAxis = new Axis(0, Direction.Y, chart);
+        xAxisMap.put(0, xAxis);
+        yAxisMap.put(0, yAxis);
+    }
 
-	/**
-	 * Gets the axis map for given direction.
-	 * 
-	 * @param direction
-	 *            the direction
-	 * @return the axis map
-	 */
-	private HashMap<Integer, Axis> getAxisMap(Direction direction) {
-		if (direction == Direction.X) {
-			return xAxisMap;
-		}
-		return yAxisMap;
-	}
+    /**
+     * Gets the axis map for given direction.
+     * 
+     * @param direction
+     *            the direction
+     * @return the axis map
+     */
+    private HashMap<Integer, Axis> getAxisMap(Direction direction) {
+        if (direction == Direction.X) {
+            return xAxisMap;
+        }
+        return yAxisMap;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#createXAxis()
-	 */
-	public int createXAxis() {
-		return createAxis(Direction.X);
-	}
+    /*
+     * @see IAxisSet#createXAxis()
+     */
+    public int createXAxis() {
+        return createAxis(Direction.X);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#createYAxis()
-	 */
-	public int createYAxis() {
-		return createAxis(Direction.Y);
-	}
+    /*
+     * @see IAxisSet#createYAxis()
+     */
+    public int createYAxis() {
+        return createAxis(Direction.Y);
+    }
 
-	/**
-	 * Creates the axis for given direction.
-	 * 
-	 * @param direction
-	 *            the direction of axis
-	 * @return the created axis id
-	 */
-	private int createAxis(Direction direction) {
-		int id = getUniqueId(direction);
-		Axis axis = new Axis(id, direction, chart);
-		getAxisMap(direction).put(id, axis);
-		chart.updateLayout();
+    /**
+     * Creates the axis for given direction.
+     * 
+     * @param direction
+     *            the direction of axis
+     * @return the created axis id
+     */
+    private int createAxis(Direction direction) {
+        int id = getUniqueId(direction);
+        Axis axis = new Axis(id, direction, chart);
+        getAxisMap(direction).put(id, axis);
+        chart.updateLayout();
 
-		SeriesSet series = (SeriesSet) chart.getSeriesSet();
-		if (series != null) {
-			series.compressAllSeries();
-		}
-		return id;
-	}
+        SeriesSet series = (SeriesSet) chart.getSeriesSet();
+        if (series != null) {
+            series.compressAllSeries();
+        }
+        return id;
+    }
 
-	/**
-	 * Gets a unique axis id.
-	 * 
-	 * @param direction
-	 *            the axis direction
-	 * @return a unique axis id
-	 */
-	private int getUniqueId(Direction direction) {
-		Set<Integer> keySet = getAxisMap(direction).keySet();
+    /**
+     * Gets a unique axis id.
+     * 
+     * @param direction
+     *            the axis direction
+     * @return a unique axis id
+     */
+    private int getUniqueId(Direction direction) {
+        Set<Integer> keySet = getAxisMap(direction).keySet();
 
-		int i = 0;
-		while (keySet.contains(i)) {
-			i++;
-		}
-		return i;
-	}
+        int i = 0;
+        while (keySet.contains(i)) {
+            i++;
+        }
+        return i;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#getXAxis(int)
-	 */
-	public IAxis getXAxis(int id) {
-		return getAxis(id, Direction.X);
-	}
+    /*
+     * @see IAxisSet#getXAxis(int)
+     */
+    public IAxis getXAxis(int id) {
+        return getAxis(id, Direction.X);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#getYAxis(int)
-	 */
-	public IAxis getYAxis(int id) {
-		return getAxis(id, Direction.Y);
-	}
+    /*
+     * @see IAxisSet#getYAxis(int)
+     */
+    public IAxis getYAxis(int id) {
+        return getAxis(id, Direction.Y);
+    }
 
-	/**
-	 * Gets the axis with axis id for given direction.
-	 * 
-	 * @param id
-	 *            the axis id
-	 * @param direction
-	 *            the direction
-	 * @return the axis
-	 */
-	private IAxis getAxis(int id, Direction direction) {
-		return getAxisMap(direction).get(id);
-	}
+    /**
+     * Gets the axis with axis id for given direction.
+     * 
+     * @param id
+     *            the axis id
+     * @param direction
+     *            the direction
+     * @return the axis
+     */
+    private IAxis getAxis(int id, Direction direction) {
+        return getAxisMap(direction).get(id);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#getXAxes()
-	 */
-	public IAxis[] getXAxes() {
-		return xAxisMap.values().toArray(new IAxis[0]);
-	}
+    /*
+     * @see IAxisSet#getXAxes()
+     */
+    public IAxis[] getXAxes() {
+        return xAxisMap.values().toArray(new IAxis[0]);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#getYAxes()
-	 */
-	public IAxis[] getYAxes() {
-		return yAxisMap.values().toArray(new IAxis[0]);
-	}
+    /*
+     * @see IAxisSet#getYAxes()
+     */
+    public IAxis[] getYAxes() {
+        return yAxisMap.values().toArray(new IAxis[0]);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#getAxes()
-	 */
-	public IAxis[] getAxes() {
-		Collection<Axis> axes = new ArrayList<Axis>();
-		axes.addAll(xAxisMap.values());
-		axes.addAll(yAxisMap.values());
-		return axes.toArray(new Axis[0]);
-	}
+    /*
+     * @see IAxisSet#getAxes()
+     */
+    public IAxis[] getAxes() {
+        Collection<Axis> axes = new ArrayList<Axis>();
+        axes.addAll(xAxisMap.values());
+        axes.addAll(yAxisMap.values());
+        return axes.toArray(new Axis[0]);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#getXAxisIds()
-	 */
-	public int[] getXAxisIds() {
-		return getAxisIds(Direction.X);
-	}
+    /*
+     * @see IAxisSet#getXAxisIds()
+     */
+    public int[] getXAxisIds() {
+        return getAxisIds(Direction.X);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#getYAxisIds()
-	 */
-	public int[] getYAxisIds() {
-		return getAxisIds(Direction.Y);
-	}
+    /*
+     * @see IAxisSet#getYAxisIds()
+     */
+    public int[] getYAxisIds() {
+        return getAxisIds(Direction.Y);
+    }
 
-	/**
-	 * Gets the axis ids for given direction.
-	 * 
-	 * @param direction
-	 *            the direction
-	 * @return the axis ids
-	 */
-	private int[] getAxisIds(Direction direction) {
-		Integer[] array = getAxisMap(direction).keySet()
-				.toArray(new Integer[0]);
+    /**
+     * Gets the axis ids for given direction.
+     * 
+     * @param direction
+     *            the direction
+     * @return the axis ids
+     */
+    private int[] getAxisIds(Direction direction) {
+        Integer[] array = getAxisMap(direction).keySet()
+                .toArray(new Integer[0]);
 
-		int[] ids = new int[array.length];
-		for (int i = 0; i < ids.length; i++) {
-			ids[i] = array[i];
-		}
-		Arrays.sort(ids);
+        int[] ids = new int[array.length];
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = array[i];
+        }
+        Arrays.sort(ids);
 
-		return ids;
-	}
+        return ids;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#deleteXAxis(int)
-	 */
-	public void deleteXAxis(int id) {
-		deleteAxis(id, Direction.X);
-	}
+    /*
+     * @see IAxisSet#deleteXAxis(int)
+     */
+    public void deleteXAxis(int id) {
+        deleteAxis(id, Direction.X);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#deleteYAxis(int)
-	 */
-	public void deleteYAxis(int id) {
-		deleteAxis(id, Direction.Y);
-	}
+    /*
+     * @see IAxisSet#deleteYAxis(int)
+     */
+    public void deleteYAxis(int id) {
+        deleteAxis(id, Direction.Y);
+    }
 
-	/**
-	 * Deletes the axis with the axis id for given direction.
-	 * 
-	 * @param id
-	 *            the axis id
-	 * @param direction
-	 *            the direction
-	 */
-	private void deleteAxis(int id, Direction direction) {
-		if (id == 0) {
-			SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
-		}
+    /**
+     * Deletes the axis with the axis id for given direction.
+     * 
+     * @param id
+     *            the axis id
+     * @param direction
+     *            the direction
+     */
+    private void deleteAxis(int id, Direction direction) {
+        if (id == 0) {
+            SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
+        }
 
-		if (getAxisMap(direction).get(id) == null) {
-			throw new IllegalArgumentException("Given axis id doesn't exist");
-		}
+        if (getAxisMap(direction).get(id) == null) {
+            throw new IllegalArgumentException("Given axis id doesn't exist");
+        }
 
-		((Axis) getAxis(id, direction)).dispose();
-		getAxisMap(direction).remove(id);
+        ((Axis) getAxis(id, direction)).dispose();
+        getAxisMap(direction).remove(id);
 
-		for (ISeries series : chart.getSeriesSet().getSeries()) {
-			if (direction == Direction.X) {
-				if (series.getXAxisId() == id) {
-					series.setXAxisId(0);
-				}
-			} else {
-				if (series.getYAxisId() == id) {
-					series.setYAxisId(0);
-				}
-			}
-		}
-		chart.updateLayout();
-	}
+        for (ISeries series : chart.getSeriesSet().getSeries()) {
+            if (direction == Direction.X) {
+                if (series.getXAxisId() == id) {
+                    series.setXAxisId(0);
+                }
+            } else {
+                if (series.getYAxisId() == id) {
+                    series.setYAxisId(0);
+                }
+            }
+        }
+        chart.updateLayout();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#adjustRange()
-	 */
-	public void adjustRange() {
-		for (IAxis axis : getAxes()) {
-			axis.adjustRange();
-		}
-	}
+    /*
+     * @see IAxisSet#adjustRange()
+     */
+    public void adjustRange() {
+        for (IAxis axis : getAxes()) {
+            axis.adjustRange();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#zoomIn()
-	 */
-	public void zoomIn() {
-		for (IAxis axis : getAxes()) {
-			axis.zoomIn();
-		}
-	}
+    /*
+     * @see IAxisSet#zoomIn()
+     */
+    public void zoomIn() {
+        for (IAxis axis : getAxes()) {
+            axis.zoomIn();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.IAxisSet#zoomOut()
-	 */
-	public void zoomOut() {
-		for (IAxis axis : getAxes()) {
-			axis.zoomOut();
-		}
-	}
+    /*
+     * @see IAxisSet#zoomOut()
+     */
+    public void zoomOut() {
+        for (IAxis axis : getAxes()) {
+            axis.zoomOut();
+        }
+    }
 
-	/**
-	 * Updates the layout data.
-	 */
-	public void updateLayoutData() {
-		IAxis[] horizontalAxes;
-		IAxis[] verticalAxes;
-		if (chart.getOrientation() == SWT.HORIZONTAL) {
-			horizontalAxes = getXAxes();
-			verticalAxes = getYAxes();
-		} else {
-			horizontalAxes = getYAxes();
-			verticalAxes = getXAxes();
-		}
+    /**
+     * Updates the layout data.
+     */
+    public void updateLayoutData() {
+        IAxis[] horizontalAxes;
+        IAxis[] verticalAxes;
+        if (chart.getOrientation() == SWT.HORIZONTAL) {
+            horizontalAxes = getXAxes();
+            verticalAxes = getYAxes();
+        } else {
+            horizontalAxes = getYAxes();
+            verticalAxes = getXAxes();
+        }
 
-		updateAxesLayoutData(horizontalAxes);
-		updateVerticalTick(horizontalAxes, verticalAxes);
-		updateAxesLayoutData(verticalAxes);
-		updateHorizontalTick(horizontalAxes, verticalAxes);
-	}
+        updateAxesLayoutData(horizontalAxes);
+        updateVerticalTick(horizontalAxes, verticalAxes);
+        updateAxesLayoutData(verticalAxes);
+        updateHorizontalTick(horizontalAxes, verticalAxes);
+    }
 
-	/**
-	 * Updates the layout data
-	 * 
-	 * @param axes
-	 */
-	private void updateAxesLayoutData(IAxis[] axes) {
-		for (IAxis axis : axes) {
-			((Axis) axis).updateLayoutData();
-		}
-	}
+    /**
+     * Updates the layout data
+     * 
+     * @param axes
+     */
+    private void updateAxesLayoutData(IAxis[] axes) {
+        for (IAxis axis : axes) {
+            ((Axis) axis).updateLayoutData();
+        }
+    }
 
-	/**
-	 * Updates the horizontal tick.
-	 * 
-	 * @param horizontalAxes
-	 *            the horizontal axes
-	 * @param verticalAxes
-	 *            the vertical axes
-	 */
-	private void updateHorizontalTick(IAxis[] horizontalAxes,
-			IAxis[] verticalAxes) {
-		int legendWidth = ((ChartLayoutData) ((Legend) chart.getLegend())
-				.getLayoutData()).widthHint;
-		int axesWidth = 0;
-		for (IAxis axis : verticalAxes) {
-			axesWidth += ((ChartLayoutData) ((Title) ((Axis) axis).getTitle())
-					.getLayoutData()).widthHint
-					+ ((ChartLayoutData) ((Axis) axis).getTick()
-							.getAxisTickLabels().getLayoutData()).widthHint
-					+ ((ChartLayoutData) ((Axis) axis).getTick()
-							.getAxisTickMarks().getLayoutData()).widthHint;
-		}
-		int axisWidth = chart.getSize().x - legendWidth - axesWidth - 10
-				- (legendWidth == 0 ? 0 : 5);
-		for (IAxis axis : horizontalAxes) {
-			((Axis) axis).getTick().updateTick(axisWidth);
-		}
-	}
+    /**
+     * Updates the horizontal tick.
+     * 
+     * @param horizontalAxes
+     *            the horizontal axes
+     * @param verticalAxes
+     *            the vertical axes
+     */
+    private void updateHorizontalTick(IAxis[] horizontalAxes,
+            IAxis[] verticalAxes) {
+        int legendWidth = ((ChartLayoutData) ((Legend) chart.getLegend())
+                .getLayoutData()).widthHint;
+        int axesWidth = 0;
+        for (IAxis axis : verticalAxes) {
+            axesWidth += ((ChartLayoutData) ((Title) ((Axis) axis).getTitle())
+                    .getLayoutData()).widthHint
+                    + ((ChartLayoutData) ((Axis) axis).getTick()
+                            .getAxisTickLabels().getLayoutData()).widthHint
+                    + ((ChartLayoutData) ((Axis) axis).getTick()
+                            .getAxisTickMarks().getLayoutData()).widthHint;
+        }
+        int axisWidth = chart.getSize().x - legendWidth - axesWidth - 10
+                - (legendWidth == 0 ? 0 : 5);
+        for (IAxis axis : horizontalAxes) {
+            ((Axis) axis).getTick().updateTick(axisWidth);
+        }
+    }
 
-	/**
-	 * Updates the vertical tick.
-	 * 
-	 * @param horizontalAxes
-	 *            the horizontal axes
-	 * @param verticalAxes
-	 *            the vertical axes
-	 */
-	private void updateVerticalTick(IAxis[] horizontalAxes, IAxis[] verticalAxes) {
-		int titleHeight = ((ChartLayoutData) ((Title) chart.getTitle())
-				.getLayoutData()).heightHint;
-		int axesHeight = 0;
-		for (IAxis axis : horizontalAxes) {
-			axesHeight += ((ChartLayoutData) ((Title) ((Axis) axis).getTitle())
-					.getLayoutData()).heightHint
-					+ ((ChartLayoutData) ((Axis) axis).getTick()
-							.getAxisTickLabels().getLayoutData()).heightHint
-					+ ((ChartLayoutData) ((Axis) axis).getTick()
-							.getAxisTickMarks().getLayoutData()).heightHint;
-		}
-		int axisHeight = chart.getSize().y - titleHeight - axesHeight - 10
-				- (titleHeight == 0 ? 0 : 5);
-		for (IAxis axis : verticalAxes) {
-			((Axis) axis).getTick().updateTick(axisHeight);
-		}
-	}
+    /**
+     * Updates the vertical tick.
+     * 
+     * @param horizontalAxes
+     *            the horizontal axes
+     * @param verticalAxes
+     *            the vertical axes
+     */
+    private void updateVerticalTick(IAxis[] horizontalAxes, IAxis[] verticalAxes) {
+        int titleHeight = ((ChartLayoutData) ((Title) chart.getTitle())
+                .getLayoutData()).heightHint;
+        int axesHeight = 0;
+        for (IAxis axis : horizontalAxes) {
+            axesHeight += ((ChartLayoutData) ((Title) ((Axis) axis).getTitle())
+                    .getLayoutData()).heightHint
+                    + ((ChartLayoutData) ((Axis) axis).getTick()
+                            .getAxisTickLabels().getLayoutData()).heightHint
+                    + ((ChartLayoutData) ((Axis) axis).getTick()
+                            .getAxisTickMarks().getLayoutData()).heightHint;
+        }
+        int axisHeight = chart.getSize().y - titleHeight - axesHeight - 10
+                - (titleHeight == 0 ? 0 : 5);
+        for (IAxis axis : verticalAxes) {
+            ((Axis) axis).getTick().updateTick(axisHeight);
+        }
+    }
 }
