@@ -25,238 +25,225 @@ import org.swtchart.internal.series.Series;
  */
 public class Legend extends Canvas implements ILegend, PaintListener {
 
-	/** the plot chart */
-	private Chart chart;
+    /** the plot chart */
+    private Chart chart;
 
-	/** the state indicating the legend visibility */
-	private boolean visible;
+    /** the state indicating the legend visibility */
+    private boolean visible;
 
-	/** the margin */
-	private static final int MARGIN = 5;
+    /** the margin */
+    private static final int MARGIN = 5;
 
-	/** the symbol width */
-	private static final int SYMBOL_WIDTH = 20;
+    /** the symbol width */
+    private static final int SYMBOL_WIDTH = 20;
 
-	/** the line width */
-	private static final int LINE_WIDTH = 2;
+    /** the line width */
+    private static final int LINE_WIDTH = 2;
 
-	/** the default foreground */
-	private static final RGB DEFAULT_FOREGROUND = Constants.BLACK;
+    /** the default foreground */
+    private static final RGB DEFAULT_FOREGROUND = Constants.BLACK;
 
-	/** the default background */
-	private static final RGB DEFAULT_BACKGROUND = Constants.WHITE;
+    /** the default background */
+    private static final RGB DEFAULT_BACKGROUND = Constants.WHITE;
 
-	/** the default font */
-	private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
+    /** the default font */
+    private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param chart
-	 *            the chart
-	 * @param style
-	 *            the style
-	 */
-	public Legend(Chart chart, int style) {
-		super(chart, style);
-		this.chart = chart;
+    /**
+     * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     * @param style
+     *            the style
+     */
+    public Legend(Chart chart, int style) {
+        super(chart, style);
+        this.chart = chart;
 
-		visible = true;
-		setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
-				SWT.NORMAL));
-		setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
-		setBackground(new Color(Display.getDefault(), DEFAULT_BACKGROUND));
-		addPaintListener(this);
-	}
+        visible = true;
+        setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
+                SWT.NORMAL));
+        setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
+        setBackground(new Color(Display.getDefault(), DEFAULT_BACKGROUND));
+        addPaintListener(this);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.swt.widgets.Control#setVisible(boolean)
-	 */
-	@Override
-	public void setVisible(boolean visible) {
+    /*
+     * @see Control#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(boolean visible) {
 
-		if (this.visible == visible) {
-			return;
-		}
+        if (this.visible == visible) {
+            return;
+        }
 
-		this.visible = visible;
-		chart.updateLayout();
-	}
+        this.visible = visible;
+        chart.updateLayout();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.swt.widgets.Control#isVisible()
-	 */
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
+    /*
+     * @see Control#isVisible()
+     */
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.swt.widgets.Canvas#setFont(org.eclipse.swt.graphics.Font)
-	 */
-	@Override
-	public void setFont(Font font) {
-		if (font == null) {
-			font = new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
-					SWT.NORMAL);
-		}
-		super.setFont(font);
-		chart.updateLayout();
-	}
+    /*
+     * @see Canvas#setFont(Font)
+     */
+    @Override
+    public void setFont(Font font) {
+        if (font == null) {
+            super.setFont(new Font(Display.getDefault(), "Tahoma",
+                    DEFAULT_FONT_SIZE, SWT.NORMAL));
+        } else {
+            super.setFont(font);
+        }
+        chart.updateLayout();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.swt.widgets.Control#setForeground(org.eclipse.swt.graphics
-	 * .Color)
-	 */
-	@Override
-	public void setForeground(Color color) {
-		if (color == null) {
-			color = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
-		}
-		super.setForeground(color);
-	}
+    /*
+     * @see Control#setForeground(Color)
+     */
+    @Override
+    public void setForeground(Color color) {
+        if (color == null) {
+            super.setForeground(new Color(Display.getDefault(),
+                    DEFAULT_FOREGROUND));
+        } else {
+            super.setForeground(color);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.swt.widgets.Control#setBackground(org.eclipse.swt.graphics
-	 * .Color)
-	 */
-	@Override
-	public void setBackground(Color color) {
-		if (color == null) {
-			color = new Color(Display.getDefault(), DEFAULT_BACKGROUND);
-		}
-		super.setBackground(color);
-	}
+    /*
+     * @see Control#setBackground(Color)
+     */
+    @Override
+    public void setBackground(Color color) {
+        if (color == null) {
+            super.setBackground(new Color(Display.getDefault(),
+                    DEFAULT_BACKGROUND));
+        } else {
+            super.setBackground(color);
+        }
+    }
 
-	/**
-	 * Update the layout data.
-	 */
-	public void updateLayoutData() {
+    /**
+     * Update the layout data.
+     */
+    public void updateLayoutData() {
 
-		// find max width of plot id text
-		ISeries[] seriesArray = chart.getSeriesSet().getSeries();
-		int max = 0;
-		for (ISeries series : seriesArray) {
-			String id = series.getId();
-			int width = Util.getExtentInGC(getFont(), id).x;
-			if (width > max) {
-				max = width;
-			}
-		}
+        // find max width of plot id text
+        ISeries[] seriesArray = chart.getSeriesSet().getSeries();
+        int max = 0;
+        for (ISeries series : seriesArray) {
+            String id = series.getId();
+            int width = Util.getExtentInGC(getFont(), id).x;
+            if (width > max) {
+                max = width;
+            }
+        }
 
-		// set the width and height of legend area
-		int width = 0;
-		if (visible && seriesArray.length != 0) {
-			width = max + SYMBOL_WIDTH + MARGIN * 3;
-		}
-		int step = Util.getExtentInGC(getFont(), "dummy").y + MARGIN;
-		int height = MARGIN + seriesArray.length * step;
+        // set the width and height of legend area
+        int width = 0;
+        if (visible && seriesArray.length != 0) {
+            width = max + SYMBOL_WIDTH + MARGIN * 3;
+        }
+        int step = Util.getExtentInGC(getFont(), "dummy").y + MARGIN;
+        int height = MARGIN + seriesArray.length * step;
 
-		setLayoutData(new ChartLayoutData(width, height));
-	}
+        setLayoutData(new ChartLayoutData(width, height));
+    }
 
-	/**
-	 * Draws the symbol of series.
-	 * 
-	 * @param gc
-	 *            the graphics context
-	 * @param r
-	 *            the rectangle to draw the symbol of series
-	 */
-	protected void drawSymbol(GC gc, Series series, Rectangle r) {
+    /**
+     * Draws the symbol of series.
+     * 
+     * @param gc
+     *            the graphics context
+     * @param r
+     *            the rectangle to draw the symbol of series
+     */
+    protected void drawSymbol(GC gc, Series series, Rectangle r) {
 
-		if (!visible) {
-			return;
-		}
+        if (!visible) {
+            return;
+        }
 
-		if (series instanceof ILineSeries) {
-			// draw plot line
-			gc.setForeground(((ILineSeries) series).getLineColor());
-			gc.setLineWidth(LINE_WIDTH);
-			int lineStyle = Util.getIndexDefinedInSWT(((ILineSeries) series)
-					.getLineStyle());
-			int x = r.x;
-			int y = (int) (r.y + r.height / 2d);
-			if (lineStyle != SWT.NONE) {
-				gc.setLineStyle(lineStyle);
-				gc.drawLine(x, y, x + SYMBOL_WIDTH, y);
-			}
+        if (series instanceof ILineSeries) {
+            // draw plot line
+            gc.setForeground(((ILineSeries) series).getLineColor());
+            gc.setLineWidth(LINE_WIDTH);
+            int lineStyle = Util.getIndexDefinedInSWT(((ILineSeries) series)
+                    .getLineStyle());
+            int x = r.x;
+            int y = (int) (r.y + r.height / 2d);
+            if (lineStyle != SWT.NONE) {
+                gc.setLineStyle(lineStyle);
+                gc.drawLine(x, y, x + SYMBOL_WIDTH, y);
+            }
 
-			// draw series symbol
-			Color color = ((ILineSeries) series).getSymbolColor();
-			Color[] colors = ((ILineSeries) series).getSymbolColors();
-			if (colors != null && colors.length > 0) {
-			    color = colors[0];
-			}
-			((LineSeries) series).drawSeriesSymbol(gc, x + SYMBOL_WIDTH / 2, y, color);
-		} else if (series instanceof IBarSeries) {
-			// draw riser
-			gc.setBackground(((IBarSeries) series).getBarColor());
-			int size = BarSeries.INITIAL_WIDTH_IN_PIXELS;
-			int x = (int) (r.x + size / 2d);
-			int y = (int) (r.y - size / 2d + r.height / 2d);
-			gc.fillRectangle(x, y, size, size);
-		}
-	}
+            // draw series symbol
+            Color color = ((ILineSeries) series).getSymbolColor();
+            Color[] colors = ((ILineSeries) series).getSymbolColors();
+            if (colors != null && colors.length > 0) {
+                color = colors[0];
+            }
+            ((LineSeries) series).drawSeriesSymbol(gc, x + SYMBOL_WIDTH / 2, y,
+                    color);
+        } else if (series instanceof IBarSeries) {
+            // draw riser
+            gc.setBackground(((IBarSeries) series).getBarColor());
+            int size = BarSeries.INITIAL_WIDTH_IN_PIXELS;
+            int x = (int) (r.x + size / 2d);
+            int y = (int) (r.y - size / 2d + r.height / 2d);
+            gc.fillRectangle(x, y, size, size);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events
-	 * .PaintEvent)
-	 */
-	public void paintControl(PaintEvent e) {
+    /*
+     * @see PaintListener#paintControl(PaintEvent)
+     */
+    public void paintControl(PaintEvent e) {
 
-		if (!visible) {
-			return;
-		}
+        if (!visible) {
+            return;
+        }
 
-		GC gc = e.gc;
-		gc.setFont(getFont());
-		int width = getSize().x;
-		int height = getSize().y;
-		int step = gc.textExtent("dummy").y + MARGIN;
-		ISeries[] seriesArray = chart.getSeriesSet().getSeries();
-		if (seriesArray.length == 0) {
-			return;
-		}
+        GC gc = e.gc;
+        gc.setFont(getFont());
+        int width = getSize().x;
+        int height = getSize().y;
+        int step = gc.textExtent("dummy").y + MARGIN;
+        ISeries[] seriesArray = chart.getSeriesSet().getSeries();
+        if (seriesArray.length == 0) {
+            return;
+        }
 
-		// draw frame
-		gc.setLineStyle(SWT.LINE_SOLID);
-		gc.setLineWidth(1);
-		gc.setForeground(new Color(Display.getDefault(), Constants.GRAY));
-		gc.drawRectangle(0, 0, width - 1, height - 1);
+        // draw frame
+        gc.setLineStyle(SWT.LINE_SOLID);
+        gc.setLineWidth(1);
+        gc.setForeground(new Color(Display.getDefault(), Constants.GRAY));
+        gc.drawRectangle(0, 0, width - 1, height - 1);
 
-		// draw content
-		for (int i = 0; i < seriesArray.length; i++) {
+        // draw content
+        for (int i = 0; i < seriesArray.length; i++) {
 
-			// draw plot line, symbol etc
-			int xPosition = MARGIN;
-			int yPosition = MARGIN + i * step;
-			drawSymbol(gc, (Series) seriesArray[i], new Rectangle(xPosition,
-					yPosition, SYMBOL_WIDTH, gc.textExtent("dummy").y));
+            // draw plot line, symbol etc
+            int xPosition = MARGIN;
+            int yPosition = MARGIN + i * step;
+            drawSymbol(gc, (Series) seriesArray[i], new Rectangle(xPosition,
+                    yPosition, SYMBOL_WIDTH, gc.textExtent("dummy").y));
 
-			// draw plot id
-			String id = seriesArray[i].getId();
-			gc.setBackground(getBackground());
-			gc.setForeground(getForeground());
-			xPosition = SYMBOL_WIDTH + 2 * MARGIN;
-			yPosition = MARGIN + i * step;
-			gc.drawText(id, xPosition, yPosition);
-		}
-	}
+            // draw plot id
+            String id = seriesArray[i].getId();
+            gc.setBackground(getBackground());
+            gc.setForeground(getForeground());
+            xPosition = SYMBOL_WIDTH + 2 * MARGIN;
+            yPosition = MARGIN + i * step;
+            gc.drawText(id, xPosition, yPosition);
+        }
+    }
 }
