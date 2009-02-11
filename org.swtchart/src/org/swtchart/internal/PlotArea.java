@@ -25,100 +25,95 @@ import org.swtchart.internal.series.SeriesSet;
  */
 public class PlotArea extends Canvas implements PaintListener {
 
-	/** the chart */
-	protected Chart chart;
+    /** the chart */
+    protected Chart chart;
 
-	/** the set of plots */
-	protected SeriesSet seriesSet;
+    /** the set of plots */
+    protected SeriesSet seriesSet;
 
-	/** the default background color */
-	private static final RGB DEFAULT_COLOR = Constants.WHITE;
+    /** the default background color */
+    private static final RGB DEFAULT_COLOR = Constants.WHITE;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param chart
-	 *            the chart
-	 * @param style
-	 *            the style
-	 */
-	public PlotArea(Chart chart, int style) {
-		super(chart, style | SWT.NO_BACKGROUND);
+    /**
+     * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     * @param style
+     *            the style
+     */
+    public PlotArea(Chart chart, int style) {
+        super(chart, style | SWT.NO_BACKGROUND);
 
-		this.chart = chart;
+        this.chart = chart;
 
-		seriesSet = new SeriesSet(chart);
+        seriesSet = new SeriesSet(chart);
 
-		setBackground(new Color(Display.getDefault(), DEFAULT_COLOR));
-		addPaintListener(this);
-	}
+        setBackground(new Color(Display.getDefault(), DEFAULT_COLOR));
+        addPaintListener(this);
+    }
 
-	/**
-	 * Gets the set of series.
-	 * 
-	 * @return the set of series
-	 */
-	public ISeriesSet getSeriesSet() {
-		return seriesSet;
-	}
+    /**
+     * Gets the set of series.
+     * 
+     * @return the set of series
+     */
+    public ISeriesSet getSeriesSet() {
+        return seriesSet;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.swt.widgets.Control#setBounds(int, int, int, int)
-	 */
-	@Override
-	public void setBounds(int x, int y, int width, int height) {
-		super.setBounds(x, y, width, height);
-		((SeriesSet) getSeriesSet()).compressAllSeries();
-	}
+    /*
+     * @see Control#setBounds(int, int, int, int)
+     */
+    @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
+        ((SeriesSet) getSeriesSet()).compressAllSeries();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.swt.widgets.Control#setBackground(org.eclipse.swt.graphics.Color)
-	 */
-	@Override
-	public void setBackground(Color color) {
-		if (color == null) {
-			color = new Color(Display.getDefault(), DEFAULT_COLOR);
-		}
-		super.setBackground(color);
-	}
+    /*
+     * @see Control#setBackground(Color)
+     */
+    @Override
+    public void setBackground(Color color) {
+        if (color == null) {
+            super.setBackground(new Color(Display.getDefault(), DEFAULT_COLOR));
+        } else {
+            super.setBackground(color);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
-	 */
-	public void paintControl(PaintEvent e) {
-		Point p = getSize();
-		Image bufferedImage = new Image(Display.getCurrent(), p.x, p.y);
-		GC gc = new GC(bufferedImage);
+    /*
+     * @see PaintListener#paintControl(PaintEvent)
+     */
+    public void paintControl(PaintEvent e) {
+        Point p = getSize();
+        Image bufferedImage = new Image(Display.getCurrent(), p.x, p.y);
+        GC gc = new GC(bufferedImage);
 
-		// draw the plot area background
-		gc.setBackground(getBackground());
-		gc.fillRectangle(0, 0, p.x, p.y);
+        // draw the plot area background
+        gc.setBackground(getBackground());
+        gc.fillRectangle(0, 0, p.x, p.y);
 
-		// draw grid
-		for (IAxis axis : chart.getAxisSet().getAxes()) {
-			((Grid) axis.getGrid()).draw(gc, p.x, p.y);
-		}
+        // draw grid
+        for (IAxis axis : chart.getAxisSet().getAxes()) {
+            ((Grid) axis.getGrid()).draw(gc, p.x, p.y);
+        }
 
-		// draw series. The line series should be drawn on bar series.
-		for (ISeries series : chart.getSeriesSet().getSeries()) {
-			if (series instanceof IBarSeries) {
-				((Series) series).draw(gc, p.x, p.y);
-			}
-		}
-		for (ISeries series : chart.getSeriesSet().getSeries()) {
-			if (series instanceof ILineSeries) {
-				((Series) series).draw(gc, p.x, p.y);
-			}
-		}
+        // draw series. The line series should be drawn on bar series.
+        for (ISeries series : chart.getSeriesSet().getSeries()) {
+            if (series instanceof IBarSeries) {
+                ((Series) series).draw(gc, p.x, p.y);
+            }
+        }
+        for (ISeries series : chart.getSeriesSet().getSeries()) {
+            if (series instanceof ILineSeries) {
+                ((Series) series).draw(gc, p.x, p.y);
+            }
+        }
 
-		e.gc.drawImage(bufferedImage, 0, 0);
-		bufferedImage.dispose();
-		gc.dispose();
-	}
+        e.gc.drawImage(bufferedImage, 0, 0);
+        bufferedImage.dispose();
+        gc.dispose();
+    }
 }
