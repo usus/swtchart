@@ -28,7 +28,7 @@ public class LineSeries extends Series implements ILineSeries {
 
     /** the symbol colors */
     private Color[] symbolColors;
-    
+
     /** the symbol type */
     private PlotSymbolType symbolType;
 
@@ -79,19 +79,19 @@ public class LineSeries extends Series implements ILineSeries {
         lineColor = new Color(Display.getDefault(), DEFAULT_LINE_COLOR);
 
         areaEnabled = false;
-        
+
         compressor = new CompressLineSeries();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#getLineStyle()
+    /*
+     * @see ILineSeries#getLineStyle()
      */
     public LineStyle getLineStyle() {
         return lineStyle;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#setLineStyle(org.swtchart.LineStyle)
+    /*
+     * @see ILineSeries#setLineStyle(LineStyle)
      */
     public void setLineStyle(LineStyle style) {
         if (style == null) {
@@ -105,15 +105,15 @@ public class LineSeries extends Series implements ILineSeries {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#getLineColor()
+    /*
+     * @see ILineSeries#getLineColor()
      */
     public Color getLineColor() {
         return lineColor;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#setLineColor(org.eclipse.swt.graphics.Color)
+    /*
+     * @see ILineSeries#setLineColor(Color)
      */
     public void setLineColor(Color color) {
         if (color != null && color.isDisposed()) {
@@ -127,15 +127,15 @@ public class LineSeries extends Series implements ILineSeries {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#getSymbolType()
+    /*
+     * @see ILineSeries#getSymbolType()
      */
     public PlotSymbolType getSymbolType() {
         return symbolType;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#setSymbolType(org.swtchart.ILineSeries.PlotSymbolType)
+    /*
+     * @see ILineSeries#setSymbolType(PlotSymbolType)
      */
     public void setSymbolType(PlotSymbolType type) {
         if (type == null) {
@@ -145,32 +145,33 @@ public class LineSeries extends Series implements ILineSeries {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#getSymbolSize()
+    /*
+     * @see ILineSeries#getSymbolSize()
      */
     public int getSymbolSize() {
         return symbolSize;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#setSymbolSize(int)
+    /*
+     * @see ILineSeries#setSymbolSize(int)
      */
     public void setSymbolSize(int size) {
         if (size <= 0) {
-            size = DEFAULT_SIZE;
+            this.symbolSize = DEFAULT_SIZE;
+        } else {
+            this.symbolSize = size;
         }
-        this.symbolSize = size;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#getSymbolColor()
+    /*
+     * @see ILineSeries#getSymbolColor()
      */
     public Color getSymbolColor() {
         return symbolColor;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#setSymbolColor(org.eclipse.swt.graphics.Color)
+    /*
+     * @see ILineSeries#setSymbolColor(Color)
      */
     public void setSymbolColor(Color color) {
         if (color != null && color.isDisposed()) {
@@ -183,9 +184,9 @@ public class LineSeries extends Series implements ILineSeries {
             this.symbolColor = color;
         }
     }
-    
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#getSymbolColors()
+
+    /*
+     * @see ILineSeries#getSymbolColors()
      */
     public Color[] getSymbolColors() {
         if (symbolColors == null) {
@@ -193,13 +194,14 @@ public class LineSeries extends Series implements ILineSeries {
         }
 
         Color[] copiedSymbolColors = new Color[symbolColors.length];
-        System.arraycopy(symbolColors, 0, copiedSymbolColors, 0, symbolColors.length);
+        System.arraycopy(symbolColors, 0, copiedSymbolColors, 0,
+                symbolColors.length);
 
         return copiedSymbolColors;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#setSymbolColors(org.eclipse.swt.graphics.Color[])
+    /*
+     * @see ILineSeries#setSymbolColors(Color [])
      */
     public void setSymbolColors(Color[] colors) {
         if (colors == null) {
@@ -217,9 +219,10 @@ public class LineSeries extends Series implements ILineSeries {
         System.arraycopy(colors, 0, symbolColors, 0, colors.length);
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.internal.series.Series#setCompressor()
+    /*
+     * @see Series#setCompressor()
      */
+    @Override
     protected void setCompressor() {
         if (isXMonotoneIncreasing) {
             compressor = new CompressLineSeries();
@@ -230,45 +233,47 @@ public class LineSeries extends Series implements ILineSeries {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#enableArea(boolean)
+    /*
+     * @see ILineSeries#enableArea(boolean)
      */
     public void enableArea(boolean enabled) {
         areaEnabled = enabled;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#isAreaEnabled()
+    /*
+     * @see ILineSeries#isAreaEnabled()
      */
     public boolean isAreaEnabled() {
         return areaEnabled;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#enableStep(boolean)
+    /*
+     * @see ILineSeries#enableStep(boolean)
      */
     public void enableStep(boolean enabled) {
         stepEnabled = enabled;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ILineSeries#isStepEnabled()
+    /*
+     * @see ILineSeries#isStepEnabled()
      */
     public boolean isStepEnabled() {
         return stepEnabled;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.internal.series.Series#getXRangeToDraw(boolean)
+    /*
+     * @see Series#getXRangeToDraw(boolean)
      */
+    @Override
     public Range getXRangeToDraw(boolean isLogScale) {
         int length = chart.getPlotArea().getSize().x;
         return getRangeToDraw(isLogScale, getXRange(), length);
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.internal.series.Series#getYRangeToDraw(boolean)
+    /*
+     * @see Series#getYRangeToDraw(boolean)
      */
+    @Override
     public Range getYRangeToDraw(boolean isLogScale) {
         int length = chart.getPlotArea().getSize().y;
         return getRangeToDraw(isLogScale, getYRange(), length);
@@ -289,7 +294,7 @@ public class LineSeries extends Series implements ILineSeries {
         if (length <= 0) {
             return range;
         }
-        
+
         double lowerPlotMargin = getSymbolSize() + MARGIN_AT_MIN_MAX_PLOT;
         double upperPlotMargin = getSymbolSize() + MARGIN_AT_MIN_MAX_PLOT;
 
@@ -315,9 +320,10 @@ public class LineSeries extends Series implements ILineSeries {
         return new Range(lower, upper);
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.internal.series.Series#draw(org.eclipse.swt.graphics.GC, int, int, org.swtchart.internal.axis.Axis, org.swtchart.internal.axis.Axis)
+    /*
+     * @see Series#draw(GC, int, int, Axis, Axis)
      */
+    @Override
     protected void draw(GC gc, int width, int height, Axis xAxis, Axis yAxis) {
         if (xAxis.isValidCategoryAxis()) {
             if (lineStyle != LineStyle.NONE) {
@@ -387,14 +393,14 @@ public class LineSeries extends Series implements ILineSeries {
             } else {
                 gc.drawLine(p.x1, p.y1, p.x2, p.y2);
             }
-            
+
             // draw area
             if (areaEnabled) {
                 drawArea(gc, p, isHorizontal);
             }
         }
     }
-    
+
     /**
      * Gets the horizontal series.
      * 
@@ -405,11 +411,10 @@ public class LineSeries extends Series implements ILineSeries {
     private double[] getHorizontalSeries(boolean isHorizontal) {
         if (isHorizontal) {
             return compressor.getCompressedXSeries();
-        } else {
-            return compressor.getCompressedYSeries();
         }
+        return compressor.getCompressedYSeries();
     }
-    
+
     /**
      * Gets the vertical series.
      * 
@@ -420,11 +425,10 @@ public class LineSeries extends Series implements ILineSeries {
     private double[] getVerticalSeries(boolean isHorizontal) {
         if (isHorizontal) {
             return compressor.getCompressedYSeries();
-        } else {
-            return compressor.getCompressedXSeries();
         }
+        return compressor.getCompressedXSeries();
     }
-    
+
     /**
      * Gets the line points to draw line and area.
      * 
@@ -476,17 +480,17 @@ public class LineSeries extends Series implements ILineSeries {
             }
             return new LinePoints(h1, height - v1, h2, height - v2, h2, height
                     - v0, h1, height - v0);
-        } else {
-            if (isHAxisLogScale) {
-                v0 = 0;
-            } else {
-                v0 = (int) ((0 - hRange.lower) / (hRange.upper - hRange.lower) * width);
-            }
-            return new LinePoints(h1, height - v1, h2, height - v2, v0, height
-                    - v2, v0, height - v1);
         }
+
+        if (isHAxisLogScale) {
+            v0 = 0;
+        } else {
+            v0 = (int) ((0 - hRange.lower) / (hRange.upper - hRange.lower) * width);
+        }
+        return new LinePoints(h1, height - v1, h2, height - v2, v0,
+                height - v2, v0, height - v1);
     }
-    
+
     /**
      * Draws line series on category axis.
      * 
@@ -509,8 +513,8 @@ public class LineSeries extends Series implements ILineSeries {
         Range xRange = xAxis.getRange();
         Range yRange = yAxis.getRange();
 
-        int xWidth = isHorizontal? width : height;
-        int yWidth = isHorizontal? height : width;
+        int xWidth = isHorizontal ? width : height;
+        int yWidth = isHorizontal ? height : width;
 
         gc.setLineStyle(Util.getIndexDefinedInSWT(lineStyle));
         gc.setForeground(lineColor);
@@ -525,8 +529,8 @@ public class LineSeries extends Series implements ILineSeries {
                 break;
             }
 
-            LinePoints p = getLinePointsOnCategoryAxis(isLogScale, isHorizontal, xRange,
-                    yRange, xWidth, yWidth, i);
+            LinePoints p = getLinePointsOnCategoryAxis(isLogScale,
+                    isHorizontal, xRange, yRange, xWidth, yWidth, i);
 
             // draw line
             if (stepEnabled) {
@@ -587,10 +591,9 @@ public class LineSeries extends Series implements ILineSeries {
             if (isHorizontal) {
                 return new LinePoints(x1, yWidth - y1, x2, yWidth - y2, x2,
                         yWidth - 0, x1, yWidth - 0);
-            } else {
-                return new LinePoints(y1, xWidth - x1, y2, xWidth - x2, 0,
-                        xWidth - x2, 0, xWidth - x1);
             }
+            return new LinePoints(y1, xWidth - x1, y2, xWidth - x2, 0, xWidth
+                    - x2, 0, xWidth - x1);
         } else if (stackEnabled) {
             int v3 = (int) ((stackSeries[i + 1] - ySeries[i + 1] - yRange.lower)
                     / (yRange.upper - yRange.lower) * yWidth);
@@ -599,19 +602,17 @@ public class LineSeries extends Series implements ILineSeries {
             if (isHorizontal) {
                 return new LinePoints(x1, yWidth - y1, x2, yWidth - y2, x2,
                         yWidth - v3, x1, yWidth - v4);
-            } else {
-                return new LinePoints(y1, xWidth - x1, y2, xWidth - x2, v3,
-                        xWidth - x2, v4, xWidth - x1);
             }
+            return new LinePoints(y1, xWidth - x1, y2, xWidth - x2, v3, xWidth
+                    - x2, v4, xWidth - x1);
         } else {
             int v0 = (int) ((0 - yRange.lower) / (yRange.upper - yRange.lower) * yWidth);
             if (isHorizontal) {
                 return new LinePoints(x1, yWidth - y1, x2, yWidth - y2, x2,
                         yWidth - v0, x1, yWidth - v0);
-            } else {
-                return new LinePoints(y1, xWidth - x1, y2, xWidth - x2, v0,
-                        xWidth - x2, v0, xWidth - x1);
             }
+            return new LinePoints(y1, xWidth - x1, y2, xWidth - x2, v0, xWidth
+                    - x2, v0, xWidth - x1);
         }
     }
 
@@ -674,7 +675,7 @@ public class LineSeries extends Series implements ILineSeries {
                 .isLogScaleEnabled();
         boolean isVLogScale = isHorizontal ? yAxis.isLogScaleEnabled() : xAxis
                 .isLogScaleEnabled();
-    
+
         for (int i = 0; i < hSeries.length; i++) {
             int h;
             if (isHLogScale) {
@@ -686,7 +687,7 @@ public class LineSeries extends Series implements ILineSeries {
                 h = (int) ((hSeries[i] - hRange.lower)
                         / (hRange.upper - hRange.lower) * width);
             }
-    
+
             int v;
             if (isVLogScale) {
                 double digitMax = Math.log10(vRange.upper);
@@ -697,7 +698,7 @@ public class LineSeries extends Series implements ILineSeries {
                 v = (int) ((vSeries[i] - vRange.lower)
                         / (vRange.upper - vRange.lower) * height);
             }
-    
+
             Color color = symbolColor;
             if (symbolColors != null && symbolColors.length > i) {
                 color = symbolColors[i];
@@ -723,7 +724,7 @@ public class LineSeries extends Series implements ILineSeries {
         gc.setAntialias(SWT.ON);
         gc.setForeground(color);
         gc.setBackground(color);
-    
+
         switch (symbolType) {
         case CIRCLE:
             gc.fillOval(h - symbolSize, v - symbolSize, symbolSize * 2,
@@ -789,8 +790,8 @@ public class LineSeries extends Series implements ILineSeries {
         Range xRange = xAxis.getRange();
         Range yRange = yAxis.getRange();
 
-        int xWidth = isHorizontal? width : height;
-        int yWidth = isHorizontal? height : width;
+        int xWidth = isHorizontal ? width : height;
+        int yWidth = isHorizontal ? height : width;
 
         for (int i = (int) xRange.lower; i < (int) xRange.upper + 1; i++) {
             if (i >= ySeries.length) {
@@ -827,24 +828,24 @@ public class LineSeries extends Series implements ILineSeries {
             }
         }
     }
-    
+
     /**
      * The line points to draw either a line between plots or an area.
      */
     private static class LinePoints {
-        
+
         /** the x coordinate of first point of line */
         public int x1;
-        
+
         /** the y coordinate of first point of line */
         public int y1;
-        
+
         /** the x coordinate of second point of line */
         public int x2;
-        
+
         /** the y coordinate of second point of line */
         public int y2;
-        
+
         /** the x coordinate of third point of line to draw area */
         public int x3;
 
@@ -853,10 +854,10 @@ public class LineSeries extends Series implements ILineSeries {
 
         /** the x coordinate of fourth point of line to draw area */
         public int x4;
-        
+
         /** the y coordinate of fourth point of line to draw area */
-        public int y4; 
-        
+        public int y4;
+
         /**
          * The constructor.
          */
@@ -868,7 +869,7 @@ public class LineSeries extends Series implements ILineSeries {
             this.x4 = x4;
             this.y4 = y4;
         }
-        
+
         /**
          * The constructor.
          */
