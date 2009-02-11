@@ -7,28 +7,26 @@ import org.swtchart.Chart;
  */
 public class ChartTitle extends Title {
 
-	/** the default text */
-	private static final String DEFAULT_TEXT = "Chart Title";
+    /** the default text */
+    private static final String DEFAULT_TEXT = "Chart Title";
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param chart
-	 *            the plot chart
-	 * @param style
-	 *            the style
-	 */
-	public ChartTitle(Chart chart, int style) {
-		super(chart, style);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param chart
+     *            the plot chart
+     * @param style
+     *            the style
+     */
+    public ChartTitle(Chart chart, int style) {
+        super(chart, style);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.internal.Title#getDefaultText()
-	 */
-	@Override
-	protected String getDefaultText() {
-		return DEFAULT_TEXT;
-	}
+    /*
+     * @see Title#getDefaultText()
+     */
+    @Override
+    protected String getDefaultText() {
+        return DEFAULT_TEXT;
+    }
 }
