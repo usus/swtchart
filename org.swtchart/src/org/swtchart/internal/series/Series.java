@@ -91,15 +91,15 @@ abstract public class Series implements ISeries {
         seriesLabel = new SeriesLabel();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#getId()
+    /*
+     * @see ISeries#getId()
      */
     public String getId() {
         return id;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#setVisible(boolean)
+    /*
+     * @see ISeries#setVisible(boolean)
      */
     public void setVisible(boolean visible) {
         if (this.visible == visible) {
@@ -111,29 +111,29 @@ abstract public class Series implements ISeries {
         ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#isVisible()
+    /*
+     * @see ISeries#isVisible()
      */
     public boolean isVisible() {
         return visible;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#getType()
+    /*
+     * @see ISeries#getType()
      */
     public SeriesType getType() {
         return type;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#isStackEnabled()
+    /*
+     * @see ISeries#isStackEnabled()
      */
     public boolean isStackEnabled() {
         return stackEnabled;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#enableStack(boolean)
+    /*
+     * @see ISeries#enableStack(boolean)
      */
     public void enableStack(boolean enabled) {
         if (enabled && minY < 0) {
@@ -150,85 +150,86 @@ abstract public class Series implements ISeries {
         ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#setXSeries(double[])
+    /*
+     * @see ISeries#setXSeries(double[])
      */
     public void setXSeries(double[] series) {
 
         if (series == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
-        } else {
-            xSeries = new double[series.length];
-            System.arraycopy(series, 0, xSeries, 0, series.length);
-            isDateSeries = false;
+            return; // to suppress warning...
+        }
 
-            if (xSeries.length == 0) {
-                return;
+        xSeries = new double[series.length];
+        System.arraycopy(series, 0, xSeries, 0, series.length);
+        isDateSeries = false;
+
+        if (xSeries.length == 0) {
+            return;
+        }
+
+        // find the min and max value of x series
+        minX = xSeries[0];
+        maxX = xSeries[0];
+        for (int i = 1; i < xSeries.length; i++) {
+            if (minX > xSeries[i]) {
+                minX = xSeries[i];
             }
-            
-            // find the min and max value of x series
-            minX = xSeries[0];
-            maxX = xSeries[0];
-            for (int i = 1; i < xSeries.length; i++) {
-                if (minX > xSeries[i]) {
-                    minX = xSeries[i];
-                }
-                if (maxX < xSeries[i]) {
-                    maxX = xSeries[i];
-                }
-
-                if (xSeries[i - 1] > xSeries[i]) {
-                    isXMonotoneIncreasing = false;
-                }
+            if (maxX < xSeries[i]) {
+                maxX = xSeries[i];
             }
 
-            setCompressor();
-
-            compressor.setXSeries(xSeries);
-            if (ySeries != null) {
-                compressor.setYSeries(ySeries);
+            if (xSeries[i - 1] > xSeries[i]) {
+                isXMonotoneIncreasing = false;
             }
-            
-            if (minX <= 0) {
-                IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
-                if (axis != null) {
-                    axis.enableLogScale(false);
-                }
+        }
+
+        setCompressor();
+
+        compressor.setXSeries(xSeries);
+        if (ySeries != null) {
+            compressor.setYSeries(ySeries);
+        }
+
+        if (minX <= 0) {
+            IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
+            if (axis != null) {
+                axis.enableLogScale(false);
             }
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#getXSeries()
+    /*
+     * @see ISeries#getXSeries()
      */
     public double[] getXSeries() {
         if (xSeries == null) {
             return null;
         }
-           
+
         double[] copiedSeries = new double[xSeries.length];
         System.arraycopy(xSeries, 0, copiedSeries, 0, xSeries.length);
 
         return copiedSeries;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#setYSeries(double[])
+    /*
+     * @see ISeries#setYSeries(double[])
      */
     public void setYSeries(double[] series) {
 
         if (series == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
-            return;// 'return' is not necessary, but just in case.
+            return; // to suppress warning...
         }
 
         ySeries = new double[series.length];
         System.arraycopy(series, 0, ySeries, 0, series.length);
-        
+
         if (ySeries.length == 0) {
             return;
         }
-        
+
         // find the min and max value of y series
         minY = ySeries[0];
         maxY = ySeries[0];
@@ -255,7 +256,7 @@ abstract public class Series implements ISeries {
 
         compressor.setXSeries(xSeries);
         compressor.setYSeries(ySeries);
-        
+
         if (minX <= 0) {
             IAxis axis = chart.getAxisSet().getXAxis(xAxisId);
             if (axis != null) {
@@ -270,38 +271,39 @@ abstract public class Series implements ISeries {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#getYSeries()
+    /*
+     * @see ISeries#getYSeries()
      */
     public double[] getYSeries() {
-        if (ySeries == null){
+        if (ySeries == null) {
             return null;
         }
-        
+
         double[] copiedSeries = new double[ySeries.length];
         System.arraycopy(ySeries, 0, copiedSeries, 0, ySeries.length);
 
         return copiedSeries;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#setXDateSeries(java.util.Date[])
+    /*
+     * @see ISeries#setXDateSeries(Date[])
      */
     public void setXDateSeries(Date[] series) {
         if (series == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
-        } else {
-            double[] xDateSeries = new double[series.length];
-            for (int i = 0; i < series.length; i++) {
-                xDateSeries[i] = series[i].getTime();
-            }
-            setXSeries(xDateSeries);
-            isDateSeries = true;
+            return; // to suppress warning...
         }
+
+        double[] xDateSeries = new double[series.length];
+        for (int i = 0; i < series.length; i++) {
+            xDateSeries[i] = series[i].getTime();
+        }
+        setXSeries(xDateSeries);
+        isDateSeries = true;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#getXDateSeries()
+    /*
+     * @see ISeries#getXDateSeries()
      */
     public Date[] getXDateSeries() {
         if (!isDateSeries) {
@@ -310,11 +312,11 @@ abstract public class Series implements ISeries {
 
         Date[] series = new Date[xSeries.length];
         for (int i = 0; i < series.length; i++) {
-            series[i] = new Date((long)xSeries[i]);
+            series[i] = new Date((long) xSeries[i]);
         }
         return series;
     }
-    
+
     /**
      * Gets the state indicating if date series is set.
      * 
@@ -401,15 +403,15 @@ abstract public class Series implements ISeries {
      */
     abstract protected void setCompressor();
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#getXAxisId()
+    /*
+     * @see ISeries#getXAxisId()
      */
     public int getXAxisId() {
         return xAxisId;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#setXAxisId(int)
+    /*
+     * @see ISeries#setXAxisId(int)
      */
     public void setXAxisId(int id) {
         if (xAxisId == id) {
@@ -427,22 +429,22 @@ abstract public class Series implements ISeries {
         ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#getYAxisId()
+    /*
+     * @see ISeries#getYAxisId()
      */
     public int getYAxisId() {
         return yAxisId;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#setYAxisId(int)
+    /*
+     * @see ISeries#setYAxisId(int)
      */
     public void setYAxisId(int id) {
         yAxisId = id;
     }
 
-    /* (non-Javadoc)
-     * @see org.swtchart.ISeries#getLabel()
+    /*
+     * @see ISeries#getLabel()
      */
     public ISeriesLabel getLabel() {
         return seriesLabel;
