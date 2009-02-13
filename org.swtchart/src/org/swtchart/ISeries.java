@@ -2,66 +2,68 @@ package org.swtchart;
 
 import java.util.Date;
 
+import org.eclipse.swt.graphics.Point;
+
 /**
  * Series.
  */
 public interface ISeries {
 
-	/**
-	 * A Series type.
-	 */
-	public enum SeriesType {
+    /**
+     * A Series type.
+     */
+    public enum SeriesType {
 
-		/** the line */
-		LINE("Line"),
+        /** the line */
+        LINE("Line"),
 
-		/** the bar */
-		BAR("Bar");
+        /** the bar */
+        BAR("Bar");
 
-		/** the label for series type */
-		public final String label;
+        /** the label for series type */
+        public final String label;
 
-		/**
-		 * Constructor.
-		 * 
-		 * @param label
-		 *            the label for series type
-		 */
-		private SeriesType(String label) {
-			this.label = label;
-		}
-	}
+        /**
+         * Constructor.
+         * 
+         * @param label
+         *            the label for series type
+         */
+        private SeriesType(String label) {
+            this.label = label;
+        }
+    }
 
-	/**
-	 * Gets the series id.
-	 * 
-	 * @return the series id
-	 */
-	String getId();
+    /**
+     * Gets the series id.
+     * 
+     * @return the series id
+     */
+    String getId();
 
-	/**
-	 * Sets the visibility state.
-	 * 
-	 * @param visible
-	 *            the visibility state
-	 */
-	void setVisible(boolean visible);
+    /**
+     * Sets the visibility state.
+     * 
+     * @param visible
+     *            the visibility state
+     */
+    void setVisible(boolean visible);
 
-	/**
-	 * Gets the visibility state.
-	 * 
-	 * @return true if series is visible
-	 */
-	boolean isVisible();
+    /**
+     * Gets the visibility state.
+     * 
+     * @return true if series is visible
+     */
+    boolean isVisible();
 
-	/**
-	 * Gets the series type.
-	 * 
-	 * @return the series type
-	 */
-	SeriesType getType();
+    /**
+     * Gets the series type.
+     * 
+     * @return the series type
+     */
+    SeriesType getType();
 
-	/**
+    /**
      * Enables the stack series. The series has to contain only positive values.
      * 
      * @param enabled
@@ -69,30 +71,30 @@ public interface ISeries {
      * @throws IllegalArgumentException
      *             if series contains negative values.
      */
-	void enableStack(boolean enabled);
+    void enableStack(boolean enabled);
 
-	/**
-	 * Gets the state indicating if stack is enabled.
-	 * 
-	 * @return the state indicating if stack is enabled
-	 */
-	boolean isStackEnabled();
+    /**
+     * Gets the state indicating if stack is enabled.
+     * 
+     * @return the state indicating if stack is enabled
+     */
+    boolean isStackEnabled();
 
-	/**
-	 * Sets the X series.
-	 * 
-	 * @param series
-	 *            the X series
-	 */
-	void setXSeries(double[] series);
+    /**
+     * Sets the X series.
+     * 
+     * @param series
+     *            the X series
+     */
+    void setXSeries(double[] series);
 
-	/**
-	 * Sets the Y series.
-	 * 
-	 * @param series
-	 *            the Y series
-	 */
-	void setYSeries(double[] series);
+    /**
+     * Sets the Y series.
+     * 
+     * @param series
+     *            the Y series
+     */
+    void setYSeries(double[] series);
 
     /**
      * Gets the X series. If the X series is not set, <tt>null</tt> will be
@@ -100,15 +102,15 @@ public interface ISeries {
      * 
      * @return the X series
      */
-	double[] getXSeries();
-    
-	/**
-	 * Gets the Y series. If the Y series haven't been set yet,
-     * <tt>null</tt> will be returned.
-	 * 
-	 * @return the Y series
-	 */
-	double[] getYSeries();
+    double[] getXSeries();
+
+    /**
+     * Gets the Y series. If the Y series haven't been set yet, <tt>null</tt>
+     * will be returned.
+     * 
+     * @return the Y series
+     */
+    double[] getYSeries();
 
     /**
      * Sets the X date series.
@@ -128,40 +130,49 @@ public interface ISeries {
      */
     Date[] getXDateSeries();
 
-	/**
-	 * Gets the X axis id.
-	 * 
-	 * @return the X axis id
-	 */
-	int getXAxisId();
+    /**
+     * Gets the X axis id.
+     * 
+     * @return the X axis id
+     */
+    int getXAxisId();
 
-	/**
-	 * Sets the X axis id.
-	 * 
-	 * @param id
-	 *            the X axis id.
-	 */
-	void setXAxisId(int id);
+    /**
+     * Sets the X axis id.
+     * 
+     * @param id
+     *            the X axis id.
+     */
+    void setXAxisId(int id);
 
-	/**
-	 * Gets the Y axis id.
-	 * 
-	 * @return the Y axis id
-	 */
-	int getYAxisId();
+    /**
+     * Gets the Y axis id.
+     * 
+     * @return the Y axis id
+     */
+    int getYAxisId();
 
-	/**
-	 * Sets the Y axis id.
-	 * 
-	 * @param id
-	 *            the Y axis id.
-	 */
-	void setYAxisId(int id);
+    /**
+     * Sets the Y axis id.
+     * 
+     * @param id
+     *            the Y axis id.
+     */
+    void setYAxisId(int id);
 
-	/**
-	 * Gets the label.
-	 * 
-	 * @return the label
-	 */
-	ISeriesLabel getLabel();
+    /**
+     * Gets the label.
+     * 
+     * @return the label
+     */
+    ISeriesLabel getLabel();
+
+    /**
+     * Gets the pixel coordinates corresponding to the given series index.
+     * 
+     * @param index
+     *            the series index
+     * @return the pixel coordinates
+     */
+    Point getPixelCoordinates(int index);
 }

@@ -4,12 +4,14 @@ import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.ISeries;
 import org.swtchart.ISeriesLabel;
 import org.swtchart.Range;
+import org.swtchart.IAxis.Direction;
 import org.swtchart.internal.axis.Axis;
 import org.swtchart.internal.compress.ICompress;
 
@@ -457,6 +459,63 @@ abstract public class Series implements ISeries {
      */
     protected void setStackSeries(double[] stackSeries) {
         this.stackSeries = stackSeries;
+    }
+
+    /*
+     * @see ISeries#getPixelCoordinates(int)
+     */
+    @Override
+    public Point getPixelCoordinates(int index) {
+
+        // get the horizontal and vertical axes
+        IAxis hAxis;
+        IAxis vAxis;
+        if (chart.getOrientation() == SWT.HORIZONTAL) {
+            hAxis = chart.getAxisSet().getXAxis(xAxisId);
+            vAxis = chart.getAxisSet().getYAxis(yAxisId);
+        } else if (chart.getOrientation() == SWT.VERTICAL) {
+            hAxis = chart.getAxisSet().getYAxis(yAxisId);
+            vAxis = chart.getAxisSet().getXAxis(xAxisId);
+        } else {
+            throw new IllegalStateException("unknown chart orientation"); //$NON-NLS-1$
+        }
+
+        // get the pixel coordinates
+        return new Point(getPixelCoordinate(hAxis, index), getPixelCoordinate(
+                vAxis, index));
+    }
+
+    /**
+     * Gets the pixel coordinates with given axis and series index.
+     * 
+     * @param axis
+     *            the axis
+     * @param index
+     *            the series index
+     * @return the pixel coordinates
+     */
+    private int getPixelCoordinate(IAxis axis, int index) {
+
+        // get the data coordinate
+        double dataCoordinate;
+        if (axis.getDirection() == Direction.X) {
+            if (axis.isCategoryEnabled()) {
+                dataCoordinate = index;
+            } else {
+                dataCoordinate = xSeries[index];
+            }
+        } else if (axis.getDirection() == Direction.Y) {
+            if (isStackEnabled()) {
+                dataCoordinate = stackSeries[index];
+            } else {
+                dataCoordinate = ySeries[index];
+            }
+        } else {
+            throw new IllegalStateException("unknown axis direction"); //$NON-NLS-1$
+        }
+
+        // get the pixel coordinate
+        return axis.getPixelCoordinate(dataCoordinate);
     }
 
     /**

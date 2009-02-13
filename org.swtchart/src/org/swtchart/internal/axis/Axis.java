@@ -531,6 +531,82 @@ public class Axis implements IAxis {
         return copiedCategorySeries;
     }
 
+    /*
+     * @see IAxis#getPixelCoordinate(double)
+     */
+    @Override
+    public int getPixelCoordinate(double dataCoordinate) {
+        int pixelCoordinate;
+        if (isHorizontalAxis()) {
+            int width = chart.getPlotArea().getBounds().width;
+
+            if (logScaleEnabled) {
+                pixelCoordinate = (int) ((Math.log10(dataCoordinate) - Math
+                        .log10(min))
+                        / (Math.log10(max) - Math.log10(min)) * width);
+            } else if (categoryAxisEnabled) {
+                pixelCoordinate = (int) ((dataCoordinate + 0.5 - min)
+                        / (max + 1 - min) * width);
+            } else {
+                pixelCoordinate = (int) ((dataCoordinate - min) / (max - min) * width);
+            }
+        } else {
+            int height = chart.getPlotArea().getBounds().height;
+
+            if (logScaleEnabled) {
+                pixelCoordinate = (int) ((Math.log10(max) - Math
+                        .log10(dataCoordinate))
+                        / (Math.log10(max) - Math.log10(min)) * height);
+            } else if (categoryAxisEnabled) {
+                pixelCoordinate = (int) ((max - dataCoordinate + 0.5)
+                        / (max + 1 - min) * height);
+            } else {
+                pixelCoordinate = (int) ((max - dataCoordinate) / (max - min) * height);
+            }
+        }
+        return pixelCoordinate;
+    }
+
+    /*
+     * @see IAxis#getDataCoordinate(int)
+     */
+    @Override
+    public double getDataCoordinate(int pixelCoordinate) {
+        double dataCoordinate;
+        if (isHorizontalAxis()) {
+            int width = chart.getPlotArea().getBounds().width;
+
+            if (logScaleEnabled) {
+                dataCoordinate = Math
+                        .pow(10, pixelCoordinate / (double) width
+                                * (Math.log10(max) - Math.log10(min))
+                                + Math.log10(min));
+            } else if (categoryAxisEnabled) {
+                dataCoordinate = pixelCoordinate / (double) width
+                        * (max + 1 - min) + min - 0.5;
+            } else {
+                dataCoordinate = pixelCoordinate / (double) width * (max - min)
+                        + min;
+            }
+        } else {
+            int height = chart.getPlotArea().getBounds().height;
+
+            if (logScaleEnabled) {
+                dataCoordinate = Math
+                        .pow(10, Math.log10(max) - pixelCoordinate
+                                / (double) height
+                                * (Math.log10(max) - Math.log10(min)));
+            } else if (categoryAxisEnabled) {
+                dataCoordinate = max + 0.5 - pixelCoordinate / (double) height
+                        * (max + 1 - min);
+            } else {
+                dataCoordinate = (height - pixelCoordinate) / (double) height
+                        * (max - min) + min;
+            }
+        }
+        return dataCoordinate;
+    }
+
     /**
      * Sets the number of risers per category.
      * 
