@@ -502,12 +502,24 @@ abstract public class Series implements ISeries {
             if (axis.isCategoryEnabled()) {
                 dataCoordinate = index;
             } else {
+                if (index < 0 || xSeries.length <= index) {
+                    throw new IllegalArgumentException(
+                            "Series index is out of range."); //$NON-NLS-1$
+                }
                 dataCoordinate = xSeries[index];
             }
         } else if (axis.getDirection() == Direction.Y) {
             if (isStackEnabled()) {
+                if (index < 0 || stackSeries.length <= index) {
+                    throw new IllegalArgumentException(
+                            "Series index is out of range."); //$NON-NLS-1$
+                }
                 dataCoordinate = stackSeries[index];
             } else {
+                if (index < 0 || ySeries.length <= index) {
+                    throw new IllegalArgumentException(
+                            "Series index is out of range."); //$NON-NLS-1$
+                }
                 dataCoordinate = ySeries[index];
             }
         } else {
