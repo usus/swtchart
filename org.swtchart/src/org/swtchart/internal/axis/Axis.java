@@ -470,17 +470,22 @@ public class Axis implements IAxis {
             return;
         }
 
-        if (direction == Direction.Y) {
-            throw new IllegalStateException("Y axis cannot be category axis.");
+        if (enabled) {
+            if (direction == Direction.Y) {
+                throw new IllegalStateException(
+                        "Y axis cannot be category axis.");
+            }
+
+            if (isValidCategoryAxis()) {
+                min = (min < 0) ? 0 : (int) min;
+                max = (max >= categorySeries.length) ? max = categorySeries.length - 1
+                        : (int) max;
+            }
+
+            logScaleEnabled = false;
         }
 
         categoryAxisEnabled = enabled;
-
-        if (isValidCategoryAxis()) {
-            min = (min < 0) ? 0 : (int) min;
-            max = (max >= categorySeries.length) ? max = categorySeries.length - 1
-                    : (int) max;
-        }
 
         chart.updateLayout();
 

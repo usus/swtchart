@@ -142,8 +142,9 @@ public interface IAxis {
     void scrollDown();
 
     /**
-     * Enables category. Category is applicable only for X axis. If category
-     * series are not yet set, category won't be enabled.
+     * Enables category. Category is applicable only for X axis. If enabling
+     * category, log scale will be disabled. If category series are not yet set,
+     * category won't be enabled.
      * 
      * @param enabled
      *            true if enabling category
