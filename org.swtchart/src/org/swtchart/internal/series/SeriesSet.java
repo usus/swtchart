@@ -1,7 +1,7 @@
 package org.swtchart.internal.series;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -24,7 +24,7 @@ public class SeriesSet implements ISeriesSet {
     private Chart chart;
 
     /** the series */
-    private HashMap<String, ISeries> seriesMap;
+    private LinkedHashMap<String, ISeries> seriesMap;
 
     /**
      * Constructor.
@@ -35,7 +35,7 @@ public class SeriesSet implements ISeriesSet {
     public SeriesSet(Chart chart) {
         this.chart = chart;
 
-        seriesMap = new HashMap<String, ISeries>();
+        seriesMap = new LinkedHashMap<String, ISeries>();
     }
 
     /*
