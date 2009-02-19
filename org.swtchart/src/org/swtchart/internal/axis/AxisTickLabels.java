@@ -180,7 +180,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
             Integer[] steps = possibleTickSteps.get(timeUnit);
             for (int i = 0; i < steps.length - 1; i++) {
                 if (gridStepHint < (getPeriodInMillis(timeUnit, steps[i]) + getPeriodInMillis(
-                        timeUnit, steps[i + 1])) / 2) {
+                        timeUnit, steps[i + 1])) / 2d) {
                     BigDecimal gridStep = new BigDecimal(Long.valueOf(
                             getPeriodInMillis(timeUnit, steps[i])).toString());
                     updateTickLabelForLinearScale(length, gridStep);
@@ -232,7 +232,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         int step = steps[steps.length - 1];
         for (int i = 0; i < steps.length - 1; i++) {
             if (gridStepHint < (getPeriodInMillis(tickStepUnit, steps[i]) + getPeriodInMillis(
-                    tickStepUnit, steps[i + 1])) / 2) {
+                    tickStepUnit, steps[i + 1])) / 2d) {
                 step = steps[i];
                 break;
             }
@@ -460,7 +460,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         for (Integer unit : units) {
             Integer[] steps = possibleTickSteps.get(unit);
             if (gridStepHint < (getPeriodInMillis(unit, steps[steps.length - 2]) + getPeriodInMillis(
-                    unit, steps[steps.length - 1])) / 2) {
+                    unit, steps[steps.length - 1])) / 2d) {
                 return unit;
             }
         }
