@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2009 SWTChart project. All rights reserved. 
+ * 
+ * This code is distributed under the terms of the Eclipse Public License v1.0
+ * which is available at http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
 package org.swtchart;
 
 import org.eclipse.swt.graphics.Color;
@@ -7,94 +13,94 @@ import org.eclipse.swt.graphics.Color;
  */
 public interface ILineSeries extends ISeries {
 
-	/**
-	 * A plot symbol type.
-	 */
-	public enum PlotSymbolType {
+    /**
+     * A plot symbol type.
+     */
+    public enum PlotSymbolType {
 
-		/** none */
-		NONE("None"),
+        /** none */
+        NONE("None"),
 
-		/** circle */
-		CIRCLE("Circle"),
+        /** circle */
+        CIRCLE("Circle"),
 
-		/** square */
-		SQUARE("Square"),
+        /** square */
+        SQUARE("Square"),
 
-		/** diamond */
-		DIAMOND("Diamond"),
+        /** diamond */
+        DIAMOND("Diamond"),
 
-		/** triangle */
-		TRIANGLE("Triangle"),
+        /** triangle */
+        TRIANGLE("Triangle"),
 
-		/** inverted triangle */
-		INVERTED_TRIANGLE("Inverted Triangle"),
+        /** inverted triangle */
+        INVERTED_TRIANGLE("Inverted Triangle"),
 
-		/** cross */
-		CROSS("Cross"),
+        /** cross */
+        CROSS("Cross"),
 
-		/** plus */
-		PLUS("Plus");
+        /** plus */
+        PLUS("Plus");
 
-		/** the label for plot symbol */
-		public final String label;
+        /** the label for plot symbol */
+        public final String label;
 
-		/**
-		 * Constructor.
-		 * 
-		 * @param label
-		 *            plot symbol label
-		 */
-		private PlotSymbolType(String label) {
-			this.label = label;
-		}
-	}
+        /**
+         * Constructor.
+         * 
+         * @param label
+         *            plot symbol label
+         */
+        private PlotSymbolType(String label) {
+            this.label = label;
+        }
+    }
 
-	/**
-	 * Gets the symbol type.
-	 * 
-	 * @return the symbol type
-	 */
-	PlotSymbolType getSymbolType();
+    /**
+     * Gets the symbol type.
+     * 
+     * @return the symbol type
+     */
+    PlotSymbolType getSymbolType();
 
-	/**
-	 * Sets the symbol type. If null is given, default type
-	 * <tt>PlotSymbolType.CIRCLE</tt> will be set.
-	 * 
-	 * @param type
-	 *            the symbol type
-	 */
-	void setSymbolType(PlotSymbolType type);
+    /**
+     * Sets the symbol type. If null is given, default type
+     * <tt>PlotSymbolType.CIRCLE</tt> will be set.
+     * 
+     * @param type
+     *            the symbol type
+     */
+    void setSymbolType(PlotSymbolType type);
 
-	/**
-	 * Gets the symbol size in pixels.
-	 * 
-	 * @return the symbol size
-	 */
-	int getSymbolSize();
+    /**
+     * Gets the symbol size in pixels.
+     * 
+     * @return the symbol size
+     */
+    int getSymbolSize();
 
-	/**
-	 * Sets the symbol size in pixels. The default size is 4.
-	 * 
-	 * @param size
-	 *            the symbol size
-	 */
-	void setSymbolSize(int size);
+    /**
+     * Sets the symbol size in pixels. The default size is 4.
+     * 
+     * @param size
+     *            the symbol size
+     */
+    void setSymbolSize(int size);
 
-	/**
-	 * Gets the symbol color.
-	 * 
-	 * @return the symbol color
-	 */
-	Color getSymbolColor();
+    /**
+     * Gets the symbol color.
+     * 
+     * @return the symbol color
+     */
+    Color getSymbolColor();
 
-	/**
-	 * Sets the symbol color. If null is given, default color will be set.
-	 * 
-	 * @param color
-	 *            the symbol color
-	 */
-	void setSymbolColor(Color color);
+    /**
+     * Sets the symbol color. If null is given, default color will be set.
+     * 
+     * @param color
+     *            the symbol color
+     */
+    void setSymbolColor(Color color);
 
     /**
      * Gets the symbol colors.
@@ -106,7 +112,7 @@ public interface ILineSeries extends ISeries {
     /**
      * Sets the symbol colors. Typically, the number of symbol colors is the
      * same as the number of plots. If the number of symbol colors is less than
-     * the number of plots, the rest of plots will have the common color which 
+     * the number of plots, the rest of plots will have the common color which
      * is set with <tt>setSymbolColor(Color)</tt>.
      * 
      * <p>
@@ -114,42 +120,42 @@ public interface ILineSeries extends ISeries {
      * 
      * @param color
      *            the symbol colors. If <tt>null</tt> is given, the color which
-     *            is set with <tt>setSymbolColor(Color)</tt> will be commonly used
-     *            for all plots.
+     *            is set with <tt>setSymbolColor(Color)</tt> will be commonly
+     *            used for all plots.
      */
     void setSymbolColors(Color[] colors);
-    
-	/**
-	 * Gets line style.
-	 * 
-	 * @return line style.
-	 */
-	LineStyle getLineStyle();
 
-	/**
-	 * Sets line style. If null is given, default line style will be set.
-	 * 
-	 * @param style
-	 *            line style
-	 */
-	void setLineStyle(LineStyle style);
+    /**
+     * Gets line style.
+     * 
+     * @return line style.
+     */
+    LineStyle getLineStyle();
 
-	/**
-	 * Gets the line color.
-	 * 
-	 * @return the line color
-	 */
-	Color getLineColor();
+    /**
+     * Sets line style. If null is given, default line style will be set.
+     * 
+     * @param style
+     *            line style
+     */
+    void setLineStyle(LineStyle style);
 
-	/**
-	 * Sets line color. If null is given, default color will be set.
-	 * 
-	 * @param color
-	 *            the line color
-	 */
-	void setLineColor(Color color);
-	
-	/**
+    /**
+     * Gets the line color.
+     * 
+     * @return the line color
+     */
+    Color getLineColor();
+
+    /**
+     * Sets line color. If null is given, default color will be set.
+     * 
+     * @param color
+     *            the line color
+     */
+    void setLineColor(Color color);
+
+    /**
      * Enables the area chart.
      * 
      * @param enabled
@@ -163,7 +169,7 @@ public interface ILineSeries extends ISeries {
      * @return true if area chart is enabled
      */
     boolean isAreaEnabled();
-    
+
     /**
      * Enables the step chart.
      * 

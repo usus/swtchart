@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2009 SWTChart project. All rights reserved. 
+ * 
+ * This code is distributed under the terms of the Eclipse Public License v1.0
+ * which is available at http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
 package org.swtchart;
 
 /**
@@ -5,34 +11,34 @@ package org.swtchart;
  */
 public enum LineStyle {
 
-	/** none */
-	NONE("None"),
+    /** none */
+    NONE("None"),
 
-	/** solid */
-	SOLID("Solid"),
+    /** solid */
+    SOLID("Solid"),
 
-	/** dash */
-	DASH("Dash"),
+    /** dash */
+    DASH("Dash"),
 
-	/** dot */
-	DOT("Dot"),
+    /** dot */
+    DOT("Dot"),
 
-	/** dash dot */
-	DASHDOT("Dash Dot"),
+    /** dash dot */
+    DASHDOT("Dash Dot"),
 
-	/** dash dot dot */
-	DASHDOTDOT("Dash Dot Dot");
+    /** dash dot dot */
+    DASHDOTDOT("Dash Dot Dot");
 
-	/** the label for line style */
-	public final String label;
+    /** the label for line style */
+    public final String label;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param label
-	 *            the label for line style
-	 */
-	private LineStyle(String label) {
-		this.label = label;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param label
+     *            the label for line style
+     */
+    private LineStyle(String label) {
+        this.label = label;
+    }
 }

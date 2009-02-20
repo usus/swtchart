@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2009 SWTChart project. All rights reserved. 
+ * 
+ * This code is distributed under the terms of the Eclipse Public License v1.0
+ * which is available at http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
 package org.swtchart.internal.compress;
 
 import java.util.ArrayList;
@@ -7,223 +13,211 @@ import java.util.ArrayList;
  */
 public abstract class Compress implements ICompress {
 
-	/** the previous X grid index */
-	protected int previousXGridIndex;
+    /** the previous X grid index */
+    protected int previousXGridIndex;
 
-	/** the previous Y grid index */
-	protected int previousYGridIndex;
+    /** the previous Y grid index */
+    protected int previousYGridIndex;
 
-	/** the configuration for compressor */
-	protected CompressConfig config;
+    /** the configuration for compressor */
+    protected CompressConfig config;
 
-	/** the previous configuration for compressor */
-	protected CompressConfig prevConfig;
+    /** the previous configuration for compressor */
+    protected CompressConfig prevConfig;
 
-	/** the flag indicating whether the data is compressed */
-	protected boolean compressed;
+    /** the flag indicating whether the data is compressed */
+    protected boolean compressed;
 
-	/** the source X series to be compressed */
-	protected double[] xSeries = null;
+    /** the source X series to be compressed */
+    protected double[] xSeries = null;
 
-	/** the source Y series to be compressed */
-	protected double[] ySeries = null;
+    /** the source Y series to be compressed */
+    protected double[] ySeries = null;
 
-	/** the compressed X series */
-	protected transient double[] compressedXSeries = null;
+    /** the compressed X series */
+    protected transient double[] compressedXSeries = null;
 
-	/** the compressed Y series */
-	protected transient double[] compressedYSeries = null;
+    /** the compressed Y series */
+    protected transient double[] compressedYSeries = null;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.internal.compress.ICompress#setXSeries(double[])
-	 */
-	public void setXSeries(double[] xSeries) {
-		double[] copiedSeries = new double[xSeries.length];
-		System.arraycopy(xSeries, 0, copiedSeries, 0, xSeries.length);
+    /*
+     * @see ICompress#setXSeries(double[])
+     */
+    public void setXSeries(double[] xSeries) {
+        double[] copiedSeries = new double[xSeries.length];
+        System.arraycopy(xSeries, 0, copiedSeries, 0, xSeries.length);
 
-		this.xSeries = copiedSeries;
-		compressedXSeries = copiedSeries;
+        this.xSeries = copiedSeries;
+        compressedXSeries = copiedSeries;
 
-		compressed = false;
-	}
+        compressed = false;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.internal.compress.ICompress#setYSeries(double[])
-	 */
-	public void setYSeries(double[] ySeries) {
-		double[] copiedSeries = new double[ySeries.length];
-		System.arraycopy(ySeries, 0, copiedSeries, 0, ySeries.length);
+    /*
+     * @see ICompress#setYSeries(double[])
+     */
+    public void setYSeries(double[] ySeries) {
+        double[] copiedSeries = new double[ySeries.length];
+        System.arraycopy(ySeries, 0, copiedSeries, 0, ySeries.length);
 
-		this.ySeries = copiedSeries;
-		compressedYSeries = copiedSeries;
+        this.ySeries = copiedSeries;
+        compressedYSeries = copiedSeries;
 
-		compressed = false;
-	}
+        compressed = false;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.internal.compress.ICompress#getCompressedXSeries()
-	 */
-	public double[] getCompressedXSeries() {
-		double[] copiedSeries = new double[compressedXSeries.length];
-		System.arraycopy(compressedXSeries, 0, copiedSeries, 0,
-				compressedXSeries.length);
+    /*
+     * @see ICompress#getCompressedXSeries()
+     */
+    public double[] getCompressedXSeries() {
+        double[] copiedSeries = new double[compressedXSeries.length];
+        System.arraycopy(compressedXSeries, 0, copiedSeries, 0,
+                compressedXSeries.length);
 
-		return copiedSeries;
-	}
+        return copiedSeries;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.internal.compress.ICompress#getCompressedYSeries()
-	 */
-	public double[] getCompressedYSeries() {
-		double[] copiedSeries = new double[compressedYSeries.length];
-		System.arraycopy(compressedYSeries, 0, copiedSeries, 0,
-				compressedYSeries.length);
+    /*
+     * @see ICompress#getCompressedYSeries()
+     */
+    public double[] getCompressedYSeries() {
+        double[] copiedSeries = new double[compressedYSeries.length];
+        System.arraycopy(compressedYSeries, 0, copiedSeries, 0,
+                compressedYSeries.length);
 
-		return copiedSeries;
-	}
+        return copiedSeries;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.swtchart.internal.compress.ICompress#compress(org.swtchart.internal
-	 * .compress.CompressConfig)
-	 */
-	final public boolean compress(CompressConfig compressConfig) {
+    /*
+     * @see ICompress#compress(CompressConfig)
+     */
+    final public boolean compress(CompressConfig compressConfig) {
 
-		if ((compressConfig.equals(prevConfig) && compressed)
-				|| xSeries == null || ySeries == null) {
-			return false;
-		}
+        if ((compressConfig.equals(prevConfig) && compressed)
+                || xSeries == null || ySeries == null) {
+            return false;
+        }
 
-		// store the previous configuration
-		prevConfig = new CompressConfig(compressConfig);
+        // store the previous configuration
+        prevConfig = new CompressConfig(compressConfig);
 
-		this.config = compressConfig;
-		previousXGridIndex = -1;
-		previousYGridIndex = -1;
+        this.config = compressConfig;
+        previousXGridIndex = -1;
+        previousYGridIndex = -1;
 
-		ArrayList<Double> xList = new ArrayList<Double>();
-		ArrayList<Double> yList = new ArrayList<Double>();
+        ArrayList<Double> xList = new ArrayList<Double>();
+        ArrayList<Double> yList = new ArrayList<Double>();
 
-		// add necessary plots to the array
-		addNecessaryPlots(xList, yList);
+        // add necessary plots to the array
+        addNecessaryPlots(xList, yList);
 
-		compressedXSeries = new double[xList.size()];
-		compressedYSeries = new double[yList.size()];
-		for (int i = 0; i < xList.size(); i++) {
-			compressedXSeries[i] = xList.get(i);
-			compressedYSeries[i] = yList.get(i);
-		}
+        compressedXSeries = new double[xList.size()];
+        compressedYSeries = new double[yList.size()];
+        for (int i = 0; i < xList.size(); i++) {
+            compressedXSeries[i] = xList.get(i);
+            compressedYSeries[i] = yList.get(i);
+        }
 
-		compressed = true;
+        compressed = true;
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Adds the necessary plots.
-	 * 
-	 * @param xList
-	 *            the array in which x coordinate for necessary plot is stored
-	 * @param yList
-	 *            the array in which y coordinate for necessary plot is stored
-	 */
-	abstract protected void addNecessaryPlots(ArrayList<Double> xList,
-			ArrayList<Double> yList);
+    /**
+     * Adds the necessary plots.
+     * 
+     * @param xList
+     *            the array in which x coordinate for necessary plot is stored
+     * @param yList
+     *            the array in which y coordinate for necessary plot is stored
+     */
+    abstract protected void addNecessaryPlots(ArrayList<Double> xList,
+            ArrayList<Double> yList);
 
-	/**
-	 * Adds the given coordinate to list.
-	 * 
-	 * @param xList
-	 *            the list to store the X coordinate
-	 * @param yList
-	 *            the list to store the Y coordinate
-	 * @param x
-	 *            the X coordinate
-	 * @param y
-	 *            the Y coordinate
-	 */
-	protected void addToList(ArrayList<Double> xList, ArrayList<Double> yList,
-			double x, double y) {
-		xList.add(new Double(x));
-		yList.add(new Double(y));
-	}
+    /**
+     * Adds the given coordinate to list.
+     * 
+     * @param xList
+     *            the list to store the X coordinate
+     * @param yList
+     *            the list to store the Y coordinate
+     * @param x
+     *            the X coordinate
+     * @param y
+     *            the Y coordinate
+     */
+    protected void addToList(ArrayList<Double> xList, ArrayList<Double> yList,
+            double x, double y) {
+        xList.add(new Double(x));
+        yList.add(new Double(y));
+    }
 
-	/**
-	 * Checks if the given coordinate is in the same grid as previous.
-	 * 
-	 * @param x
-	 *            the X coordinate
-	 * @param y
-	 *            the Y coordinate
-	 * @return true if the given coordinate is in the same grid as previous
-	 */
-	protected boolean isInSameGridAsPrevious(double x, double y) {
-		int xGridIndex;
-		int yGridIndex;
+    /**
+     * Checks if the given coordinate is in the same grid as previous.
+     * 
+     * @param x
+     *            the X coordinate
+     * @param y
+     *            the Y coordinate
+     * @return true if the given coordinate is in the same grid as previous
+     */
+    protected boolean isInSameGridAsPrevious(double x, double y) {
+        int xGridIndex;
+        int yGridIndex;
 
-		// calculate the X grid index
-		if (config.isXLogScale()) {
-			double lower = Math.log10(config.getXLowerValue());
-			double upper = Math.log10(config.getXUpperValue());
-			xGridIndex = (int) ((Math.log10(x) - lower) / (upper - lower) * config
-					.getWidthInPixel());
-		} else {
-			xGridIndex = (int) ((x - config.getXLowerValue())
-					/ (config.getXUpperValue() - config.getXLowerValue()) * config
-					.getWidthInPixel());
-		}
+        // calculate the X grid index
+        if (config.isXLogScale()) {
+            double lower = Math.log10(config.getXLowerValue());
+            double upper = Math.log10(config.getXUpperValue());
+            xGridIndex = (int) ((Math.log10(x) - lower) / (upper - lower) * config
+                    .getWidthInPixel());
+        } else {
+            xGridIndex = (int) ((x - config.getXLowerValue())
+                    / (config.getXUpperValue() - config.getXLowerValue()) * config
+                    .getWidthInPixel());
+        }
 
-		// calculate the Y grid index
-		if (config.isYLogScale()) {
-			double lower = Math.log10(config.getYLowerValue());
-			double upper = Math.log10(config.getYUpperValue());
-			yGridIndex = (int) ((Math.log10(y) - lower) / (upper - lower) * config
-					.getHeightInPixel());
-		} else {
-			yGridIndex = (int) ((y - config.getYLowerValue())
-					/ (config.getYUpperValue() - config.getYLowerValue()) * config
-					.getHeightInPixel());
-		}
+        // calculate the Y grid index
+        if (config.isYLogScale()) {
+            double lower = Math.log10(config.getYLowerValue());
+            double upper = Math.log10(config.getYUpperValue());
+            yGridIndex = (int) ((Math.log10(y) - lower) / (upper - lower) * config
+                    .getHeightInPixel());
+        } else {
+            yGridIndex = (int) ((y - config.getYLowerValue())
+                    / (config.getYUpperValue() - config.getYLowerValue()) * config
+                    .getHeightInPixel());
+        }
 
-		// check if the grid index is the same as previous
-		boolean isInSameGridAsPrevious = (xGridIndex == previousXGridIndex && yGridIndex == previousYGridIndex);
+        // check if the grid index is the same as previous
+        boolean isInSameGridAsPrevious = (xGridIndex == previousXGridIndex && yGridIndex == previousYGridIndex);
 
-		// store the previous grid index
-		previousXGridIndex = xGridIndex;
-		previousYGridIndex = yGridIndex;
+        // store the previous grid index
+        previousXGridIndex = xGridIndex;
+        previousYGridIndex = yGridIndex;
 
-		return isInSameGridAsPrevious;
-	}
+        return isInSameGridAsPrevious;
+    }
 
-	/**
-	 * Checks if the given value is in range.
-	 * 
-	 * @param x
-	 *            the X value
-	 * @return true if the given X value is in range.
-	 */
-	protected boolean isInXRange(double x) {
-		return (x >= config.getXLowerValue() && x <= config.getXUpperValue());
-	}
+    /**
+     * Checks if the given value is in range.
+     * 
+     * @param x
+     *            the X value
+     * @return true if the given X value is in range.
+     */
+    protected boolean isInXRange(double x) {
+        return (x >= config.getXLowerValue() && x <= config.getXUpperValue());
+    }
 
-	/**
-	 * Checks if the given value is in range.
-	 * 
-	 * @param y
-	 *            the Y value
-	 * @return true if the given Y value is in range.
-	 */
-	protected boolean isInYRange(double y) {
-		return (y >= config.getYLowerValue() && y <= config.getYUpperValue());
-	}
+    /**
+     * Checks if the given value is in range.
+     * 
+     * @param y
+     *            the Y value
+     * @return true if the given Y value is in range.
+     */
+    protected boolean isInYRange(double y) {
+        return (y >= config.getYLowerValue() && y <= config.getYUpperValue());
+    }
 }
