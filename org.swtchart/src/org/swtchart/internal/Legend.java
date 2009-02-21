@@ -6,6 +6,12 @@
  *******************************************************************************/
 package org.swtchart.internal;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -234,22 +240,108 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         gc.setForeground(new Color(Display.getDefault(), Constants.GRAY));
         gc.drawRectangle(0, 0, width - 1, height - 1);
 
+        // sort the series array
+        ISeries[] sortedSeriesArray = sort(seriesArray);
+
         // draw content
-        for (int i = 0; i < seriesArray.length; i++) {
+        for (int i = 0; i < sortedSeriesArray.length; i++) {
 
             // draw plot line, symbol etc
             int xPosition = MARGIN;
             int yPosition = MARGIN + i * step;
-            drawSymbol(gc, (Series) seriesArray[i], new Rectangle(xPosition,
-                    yPosition, SYMBOL_WIDTH, gc.textExtent("dummy").y));
+            drawSymbol(gc, (Series) sortedSeriesArray[i], new Rectangle(
+                    xPosition, yPosition, SYMBOL_WIDTH,
+                    gc.textExtent("dummy").y));
 
             // draw plot id
-            String id = seriesArray[i].getId();
+            String id = sortedSeriesArray[i].getId();
             gc.setBackground(getBackground());
             gc.setForeground(getForeground());
             xPosition = SYMBOL_WIDTH + 2 * MARGIN;
             yPosition = MARGIN + i * step;
             gc.drawText(id, xPosition, yPosition);
         }
+    }
+
+    /**
+     * Sorts the given series array. For instance, if there are two stack series
+     * in horizontal orientation, the top of stack series should appear at top
+     * of legend.
+     * <p>
+     * If there are multiple x axes, the given series array will be sorted with
+     * x axis first. And then, the series in each x axis will be sorted with
+     * {@link Legend#sort(List, boolean, boolean)}.
+     * 
+     * @param seriesArray
+     *            the series array
+     * @return the sorted series array
+     */
+    private ISeries[] sort(ISeries[] seriesArray) {
+
+        // create a map between axis id and series list
+        Map<Integer, List<ISeries>> map = new HashMap<Integer, List<ISeries>>();
+        for (ISeries series : seriesArray) {
+            int axisId = series.getXAxisId();
+            List<ISeries> list = map.get(axisId);
+            if (list == null) {
+                list = new ArrayList<ISeries>();
+            }
+            list.add(series);
+            map.put(axisId, list);
+        }
+
+        // sort an each series list
+        List<ISeries> sortedArray = new ArrayList<ISeries>();
+        boolean isVertical = chart.getOrientation() == SWT.VERTICAL;
+        for (Integer key : map.keySet()) {
+            boolean isCategoryEnabled = chart.getAxisSet().getXAxis(key)
+                    .isCategoryEnabled();
+            sortedArray
+                    .addAll(sort(map.get(key), isCategoryEnabled, isVertical));
+        }
+
+        return sortedArray.toArray(new ISeries[0]);
+    }
+
+    /**
+     * Sorts the given series list which belongs to a certain x axis.
+     * <ul>
+     * <li>The stacked series will be gathered, and the order of stack series
+     * will be reversed.</li> <li>In the case of vertical orientation, the order
+     * of whole series will be reversed.</li>
+     * </ul>
+     * 
+     * @param seriesList
+     *            the series list which belongs to a certain x axis
+     * @param isCategoryEnabled
+     *            true if category is enabled
+     * @param isVertical
+     *            true in the case of vertical orientation
+     * @return the sorted series array
+     */
+    private List<ISeries> sort(List<ISeries> seriesList,
+            boolean isCategoryEnabled, boolean isVertical) {
+        List<ISeries> sortedArray = new ArrayList<ISeries>();
+
+        // gather the stacked series reversing the order of stack series
+        int insertIndex = -1;
+        for (int i = 0; i < seriesList.size(); i++) {
+            if (isCategoryEnabled && seriesList.get(i).isStackEnabled()) {
+                if (insertIndex == -1) {
+                    insertIndex = i;
+                } else {
+                    sortedArray.add(insertIndex, seriesList.get(i));
+                    continue;
+                }
+            }
+            sortedArray.add(seriesList.get(i));
+        }
+
+        // reverse the order of whole series in the case of vertical orientation
+        if (isVertical) {
+            Collections.reverse(sortedArray);
+        }
+
+        return sortedArray;
     }
 }
