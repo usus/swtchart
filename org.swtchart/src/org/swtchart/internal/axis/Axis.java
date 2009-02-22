@@ -339,7 +339,7 @@ public class Axis implements IAxis {
                     maximum = range.upper;
                 }
             }
-            if (minimum != Double.MAX_VALUE && maximum != Double.MIN_VALUE) {
+            if (minimum < Double.MAX_VALUE && maximum > Double.MIN_VALUE) {
                 setRange(new Range(minimum, maximum));
             }
         }
