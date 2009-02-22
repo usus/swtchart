@@ -37,6 +37,12 @@ public class PlotArea extends Canvas implements PaintListener {
     /** the set of plots */
     protected SeriesSet seriesSet;
 
+    /** the image cache */
+    private Image imageCache;
+
+    /** the state indicating if image cache has to be updated */
+    private boolean updateImageCache;
+
     /** the default background color */
     private static final RGB DEFAULT_COLOR = Constants.WHITE;
 
@@ -93,33 +99,55 @@ public class PlotArea extends Canvas implements PaintListener {
      * @see PaintListener#paintControl(PaintEvent)
      */
     public void paintControl(PaintEvent e) {
-        Point p = getSize();
-        Image bufferedImage = new Image(Display.getCurrent(), p.x, p.y);
-        GC gc = new GC(bufferedImage);
-
-        // draw the plot area background
-        gc.setBackground(getBackground());
-        gc.fillRectangle(0, 0, p.x, p.y);
-
-        // draw grid
-        for (IAxis axis : chart.getAxisSet().getAxes()) {
-            ((Grid) axis.getGrid()).draw(gc, p.x, p.y);
-        }
-
-        // draw series. The line series should be drawn on bar series.
-        for (ISeries series : chart.getSeriesSet().getSeries()) {
-            if (series instanceof IBarSeries) {
-                ((Series) series).draw(gc, p.x, p.y);
+        if (updateImageCache) {
+            Point p = getSize();
+            if (imageCache != null && !imageCache.isDisposed()) {
+                imageCache.dispose();
             }
-        }
-        for (ISeries series : chart.getSeriesSet().getSeries()) {
-            if (series instanceof ILineSeries) {
-                ((Series) series).draw(gc, p.x, p.y);
-            }
-        }
+            imageCache = new Image(Display.getCurrent(), p.x, p.y);
+            GC gc = new GC(imageCache);
 
-        e.gc.drawImage(bufferedImage, 0, 0);
-        bufferedImage.dispose();
-        gc.dispose();
+            // draw the plot area background
+            gc.setBackground(getBackground());
+            gc.fillRectangle(0, 0, p.x, p.y);
+
+            // draw grid
+            for (IAxis axis : chart.getAxisSet().getAxes()) {
+                ((Grid) axis.getGrid()).draw(gc, p.x, p.y);
+            }
+
+            // draw series. The line series should be drawn on bar series.
+            for (ISeries series : chart.getSeriesSet().getSeries()) {
+                if (series instanceof IBarSeries) {
+                    ((Series) series).draw(gc, p.x, p.y);
+                }
+            }
+            for (ISeries series : chart.getSeriesSet().getSeries()) {
+                if (series instanceof ILineSeries) {
+                    ((Series) series).draw(gc, p.x, p.y);
+                }
+            }
+            gc.dispose();
+            updateImageCache = false;
+        }
+        e.gc.drawImage(imageCache, 0, 0);
+    }
+
+    /**
+     * The method to be invoked when chart layout is changed.
+     */
+    public void layoutChanged() {
+        updateImageCache = true;
+    }
+
+    /*
+     * @see Widget#dispose()
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (imageCache != null && !imageCache.isDisposed()) {
+            imageCache.dispose();
+        }
     }
 }

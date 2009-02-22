@@ -208,6 +208,7 @@ public class Chart extends Composite implements Listener {
 
         if (axisSet != null) {
             axisSet.updateLayoutData();
+            plotArea.layoutChanged();
         }
 
         layout();
