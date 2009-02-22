@@ -11,7 +11,6 @@ import java.util.Date;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.ISeries;
@@ -554,8 +553,6 @@ abstract public class Series implements ISeries {
             return;
         }
 
-        Rectangle oldRect = gc.getClipping();
-
         Axis xAxis = (Axis) chart.getAxisSet().getXAxis(getXAxisId());
         Axis yAxis = (Axis) chart.getAxisSet().getYAxis(getYAxisId());
         if (xAxis == null || yAxis == null) {
@@ -563,8 +560,6 @@ abstract public class Series implements ISeries {
         }
 
         draw(gc, width, height, xAxis, yAxis);
-
-        gc.setClipping(oldRect);
     }
 
     /**
