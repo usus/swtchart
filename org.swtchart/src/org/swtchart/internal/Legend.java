@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -293,11 +294,11 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         // sort an each series list
         List<ISeries> sortedArray = new ArrayList<ISeries>();
         boolean isVertical = chart.getOrientation() == SWT.VERTICAL;
-        for (Integer key : map.keySet()) {
-            boolean isCategoryEnabled = chart.getAxisSet().getXAxis(key)
-                    .isCategoryEnabled();
-            sortedArray
-                    .addAll(sort(map.get(key), isCategoryEnabled, isVertical));
+        for (Entry<Integer, List<ISeries>> entry : map.entrySet()) {
+            boolean isCategoryEnabled = chart.getAxisSet().getXAxis(
+                    entry.getKey()).isCategoryEnabled();
+            sortedArray.addAll(sort(entry.getValue(), isCategoryEnabled,
+                    isVertical));
         }
 
         return sortedArray.toArray(new ISeries[0]);
