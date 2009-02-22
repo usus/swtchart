@@ -21,7 +21,7 @@ public class CompressBarSeries extends Compress {
             ArrayList<Double> yList) {
 
         double prevX = xSeries[0];
-        double maxY = Double.MIN_VALUE;
+        double maxY = -Double.MAX_VALUE;
 
         for (int i = 0; i < xSeries.length; i++) {
             if (xSeries[i] >= config.getXLowerValue()) {
@@ -30,7 +30,7 @@ public class CompressBarSeries extends Compress {
                         maxY = ySeries[i];
                     }
                 } else {
-                    if (maxY > Double.MIN_VALUE) {
+                    if (maxY > -Double.MAX_VALUE) {
                         addToList(xList, yList, prevX, maxY);
                     }
                     prevX = xSeries[i];
