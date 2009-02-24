@@ -184,7 +184,7 @@ public interface IAxis {
     /**
      * Gets the pixel coordinate corresponding to the given data coordinate.
      * 
-     * @param coordinate
+     * @param dataCoordinate
      *            the data coordinate
      * @return the pixel coordinate on plot area
      */
@@ -194,7 +194,7 @@ public interface IAxis {
      * Gets the data coordinate corresponding to the given pixel coordinate on
      * plot area.
      * 
-     * @param coordinate
+     * @param pixelCoodrinate
      *            the pixel coordinate on plot area
      * @return the data coordinate
      */
