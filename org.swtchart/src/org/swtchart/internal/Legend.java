@@ -176,6 +176,8 @@ public class Legend extends Canvas implements ILegend, PaintListener {
      * 
      * @param gc
      *            the graphics context
+     * @param series
+     *            the series
      * @param r
      *            the rectangle to draw the symbol of series
      */
