@@ -186,7 +186,8 @@ public interface ILineSeries extends ISeries {
     boolean isStepEnabled();
 
     /**
-     * Gets the anti-aliasing value for drawing line.
+     * Gets the anti-aliasing value for drawing line. The default value is
+     * <tt>SWT.DEFAULT<tt>.
      * 
      * @return the anti-aliasing value which can be <tt>SWT.DEFAULT</tt>,
      *         <tt>SWT.ON</tt> or <tt>SWT.OFF</tt>.
@@ -195,6 +196,13 @@ public interface ILineSeries extends ISeries {
 
     /**
      * Sets the anti-aliasing value for drawing line.
+     * <p>
+     * If number of data points is too large, the series is drawn as a
+     * collection of dots rather than lines. In this case, the anti-alias
+     * doesnÅft really make effect, and just causes performance degradation.
+     * Therefore, client code may automatically enable/disable the anti-alias
+     * for each series depending on the number of data points, or alternatively
+     * may let end-user configure it.
      * 
      * @param antialias
      *            the anti-aliasing value which can be <tt>SWT.DEFAULT</tt>,
