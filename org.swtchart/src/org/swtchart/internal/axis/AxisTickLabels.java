@@ -362,6 +362,8 @@ public class AxisTickLabels extends Canvas implements PaintListener {
      * 
      * @param length
      *            axis length (>0)
+     * @param tickStep
+     *            the tick step
      */
     private void updateTickLabelForLinearScale(int length, BigDecimal tickStep) {
         double min = axis.getRange().lower;
@@ -611,8 +613,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
      *            maximum value
      * @return rounded value.
      */
-    private BigDecimal getGridStep(int lengthInPixels, double min, double max)
-            throws IllegalArgumentException {
+    private BigDecimal getGridStep(int lengthInPixels, double min, double max) {
         if (lengthInPixels <= 0) {
             throw new IllegalArgumentException(
                     "lengthInPixels must be positive value.");

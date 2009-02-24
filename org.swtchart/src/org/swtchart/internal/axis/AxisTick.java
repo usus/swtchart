@@ -154,6 +154,9 @@ public class AxisTick implements IAxisTick {
 
     /**
      * Updates the tick around per 64 pixel.
+     * 
+     * @param length
+     *            the axis length
      */
     protected void updateTick(int length) {
         if (length <= 0) {
