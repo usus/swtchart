@@ -50,6 +50,9 @@ public class LineSeries extends Series implements ILineSeries {
     /** the state indicating if step chart is enabled */
     private boolean stepEnabled;
 
+    /** the anti-aliasing value for drawing line */
+    private int antialias;
+
     /** the alpha value to draw area */
     private static final int ALPHA = 50;
 
@@ -68,11 +71,19 @@ public class LineSeries extends Series implements ILineSeries {
     /** the default symbol type */
     private static final PlotSymbolType DEFAULT_SYMBOL_TYPE = PlotSymbolType.CIRCLE;
 
+    /** the default anti-aliasing value */
+    private static final int DEFAULT_ANTIALIAS = SWT.DEFAULT;
+
     /** the margin in pixels attached at the minimum/maximum plot */
     private static final int MARGIN_AT_MIN_MAX_PLOT = 6;
 
     /**
      * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     * @param id
+     *            the series id
      */
     protected LineSeries(Chart chart, String id) {
         super(chart, id);
@@ -85,6 +96,8 @@ public class LineSeries extends Series implements ILineSeries {
         lineColor = new Color(Display.getDefault(), DEFAULT_LINE_COLOR);
 
         areaEnabled = false;
+
+        antialias = DEFAULT_ANTIALIAS;
 
         compressor = new CompressLineSeries();
     }
@@ -331,6 +344,8 @@ public class LineSeries extends Series implements ILineSeries {
      */
     @Override
     protected void draw(GC gc, int width, int height, Axis xAxis, Axis yAxis) {
+        int oldAntialias = gc.getAntialias();
+        gc.setAntialias(antialias);
         if (xAxis.isValidCategoryAxis()) {
             if (lineStyle != LineStyle.NONE) {
                 drawLineAndAreaOnCategoryAxis(gc, width, height, xAxis, yAxis);
@@ -346,6 +361,7 @@ public class LineSeries extends Series implements ILineSeries {
                 drawSymbols(gc, width, height, xAxis, yAxis);
             }
         }
+        gc.setAntialias(oldAntialias);
     }
 
     /**
@@ -438,6 +454,26 @@ public class LineSeries extends Series implements ILineSeries {
     /**
      * Gets the line points to draw line and area.
      * 
+     * @param isHAxisLogScale
+     *            true if horizontal axis is log scale
+     * @param isVAxisLogScale
+     *            true if vertical axis is log scale
+     * @param isHorizontal
+     *            true if orientation is horizontal
+     * @param hRange
+     *            the horizontal axis range
+     * @param vRange
+     *            the vertical axis range
+     * @param hSeries
+     *            the horizontal series
+     * @param vSeries
+     *            the vertical series
+     * @param width
+     *            the width in pixels
+     * @param height
+     *            the height in pixels
+     * @param i
+     *            the index of series
      * @return the line points
      */
     private LinePoints getLinePoints(boolean isHAxisLogScale,
@@ -495,6 +531,24 @@ public class LineSeries extends Series implements ILineSeries {
         }
         return new LinePoints(h1, height - v1, h2, height - v2, v0,
                 height - v2, v0, height - v1);
+    }
+
+    /*
+     * @see ILineSeries#getAntialias()
+     */
+    public int getAntialias() {
+        return antialias;
+    }
+
+    /*
+     * @see ILineSeries#setAntialias(int)
+     */
+    public void setAntialias(int antialias) {
+        if (antialias != SWT.DEFAULT && antialias != SWT.ON
+                && antialias != SWT.OFF) {
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+        }
+        this.antialias = antialias;
     }
 
     /**
@@ -561,6 +615,20 @@ public class LineSeries extends Series implements ILineSeries {
     /**
      * Gets the line points to draw line and area on category axis.
      * 
+     * @param isLogScale
+     *            true if log scale is enabled
+     * @param isHorizontal
+     *            true if orientation is horizontal
+     * @param xRange
+     *            the x axis range
+     * @param yRange
+     *            the y axis range
+     * @param xWidth
+     *            the x axis width
+     * @param yWidth
+     *            the y axis width
+     * @param i
+     *            the index of category
      * @return the line points
      */
     private LinePoints getLinePointsOnCategoryAxis(boolean isLogScale,
@@ -629,6 +697,8 @@ public class LineSeries extends Series implements ILineSeries {
      *            the graphic context
      * @param p
      *            the line points
+     * @param isHorizontal
+     *            true if orientation is horizontal
      */
     private void drawArea(GC gc, LinePoints p, boolean isHorizontal) {
         int alpha = gc.getAlpha();
@@ -727,6 +797,7 @@ public class LineSeries extends Series implements ILineSeries {
      *            the symbol color
      */
     public void drawSeriesSymbol(GC gc, int h, int v, Color color) {
+        int oldAntialias = gc.getAntialias();
         gc.setAntialias(SWT.ON);
         gc.setForeground(color);
         gc.setBackground(color);
@@ -771,7 +842,7 @@ public class LineSeries extends Series implements ILineSeries {
         default:
             break;
         }
-        gc.setAntialias(SWT.OFF);
+        gc.setAntialias(oldAntialias);
     }
 
     /**
@@ -866,6 +937,23 @@ public class LineSeries extends Series implements ILineSeries {
 
         /**
          * The constructor.
+         * 
+         * @param x1
+         *            the x coordinate of first point of line
+         * @param y1
+         *            the y coordinate of first point of line
+         * @param x2
+         *            the x coordinate of second point of line
+         * @param y2
+         *            the y coordinate of second point of line
+         * @param x3
+         *            the x coordinate of third point of line to draw area
+         * @param y3
+         *            the y coordinate of third point of line to draw area
+         * @param x4
+         *            the x coordinate of fourth point of line to draw area
+         * @param y4
+         *            the y coordinate of fourth point of line to draw area
          */
         public LinePoints(int x1, int y1, int x2, int y2, int x3, int y3,
                 int x4, int y4) {
@@ -878,6 +966,15 @@ public class LineSeries extends Series implements ILineSeries {
 
         /**
          * The constructor.
+         * 
+         * @param x1
+         *            the x coordinate of first point of line
+         * @param y1
+         *            the y coordinate of first point of line
+         * @param x2
+         *            the x coordinate of second point of line
+         * @param y2
+         *            the y coordinate of second point of line
          */
         public LinePoints(int x1, int y1, int x2, int y2) {
             this.x1 = x1;

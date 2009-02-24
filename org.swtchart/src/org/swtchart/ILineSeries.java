@@ -118,7 +118,7 @@ public interface ILineSeries extends ISeries {
      * <p>
      * By default, <tt>null</tt> is set.
      * 
-     * @param color
+     * @param colors
      *            the symbol colors. If <tt>null</tt> is given, the color which
      *            is set with <tt>setSymbolColor(Color)</tt> will be commonly
      *            used for all plots.
@@ -184,4 +184,21 @@ public interface ILineSeries extends ISeries {
      * @return true if step chart is enabled
      */
     boolean isStepEnabled();
+
+    /**
+     * Gets the anti-aliasing value for drawing line.
+     * 
+     * @return the anti-aliasing value which can be <tt>SWT.DEFAULT</tt>,
+     *         <tt>SWT.ON</tt> or <tt>SWT.OFF</tt>.
+     */
+    int getAntialias();
+
+    /**
+     * Sets the anti-aliasing value for drawing line.
+     * 
+     * @param antialias
+     *            the anti-aliasing value which can be <tt>SWT.DEFAULT</tt>,
+     *            <tt>SWT.ON</tt> or <tt>SWT.OFF</tt>.
+     */
+    void setAntialias(int antialias);
 }
