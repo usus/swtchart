@@ -84,6 +84,11 @@ abstract public class Series implements ISeries {
 
     /**
      * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     * @param id
+     *            the series id
      */
     protected Series(Chart chart, String id) {
         super();
@@ -327,8 +332,7 @@ abstract public class Series implements ISeries {
     /**
      * Gets the state indicating if date series is set.
      * 
-     * @param enabled
-     *            true if date series is set
+     * @return true if date series is set
      */
     public boolean isDateSeries() {
         return isDateSeries;
@@ -469,7 +473,6 @@ abstract public class Series implements ISeries {
     /*
      * @see ISeries#getPixelCoordinates(int)
      */
-    @Override
     public Point getPixelCoordinates(int index) {
 
         // get the horizontal and vertical axes

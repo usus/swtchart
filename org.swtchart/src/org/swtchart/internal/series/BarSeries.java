@@ -50,6 +50,11 @@ public class BarSeries extends Series implements IBarSeries {
 
     /**
      * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     * @param id
+     *            the series id
      */
     protected BarSeries(Chart chart, String id) {
         super(chart, id);
