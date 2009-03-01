@@ -60,6 +60,7 @@ public class PlotArea extends Canvas implements PaintListener {
         this.chart = chart;
 
         seriesSet = new SeriesSet(chart);
+        updateImageCache = true;
 
         setBackground(new Color(Display.getDefault(), DEFAULT_COLOR));
         addPaintListener(this);
@@ -133,10 +134,12 @@ public class PlotArea extends Canvas implements PaintListener {
         e.gc.drawImage(imageCache, 0, 0);
     }
 
-    /**
-     * The method to be invoked when chart layout is changed.
+    /*
+     * @see Control#redraw()
      */
-    public void layoutChanged() {
+    @Override
+    public void redraw() {
+        super.redraw();
         updateImageCache = true;
     }
 
