@@ -402,6 +402,7 @@ public class InteractiveChart extends Chart implements PaintListener {
         PreferenceDialog dialog = new PreferenceDialog(getShell(), manager);
         dialog.create();
         dialog.getShell().setText("Properties");
+        dialog.getTreeViewer().expandAll();
         dialog.open();
     }
 
