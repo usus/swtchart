@@ -26,177 +26,176 @@ import org.swtchart.ISeries;
  */
 public class SeriesLabelPage extends AbstractSelectorPage {
 
-	private ISeries[] series;
+    /** the series array */
+    private ISeries[] series;
 
-	private Button showLabelButton;
+    /** the show label button */
+    protected Button showLabelButton;
 
-	private Label colorLabel;
+    /** the color label */
+    private Label colorLabel;
 
-	private ColorSelector colorButton;
+    /** the color button */
+    protected ColorSelector colorButton;
 
-	private Label fontSizeLabel;
+    /** the font size label */
+    private Label fontSizeLabel;
 
-	private Spinner fontSizeSpinner;
+    /** the font size spinner */
+    protected Spinner fontSizeSpinner;
 
-	private boolean[] visibleStates;
+    /** the states indicating the visibility of series */
+    protected boolean[] visibleStates;
 
-	private Color[] colors;
+    /** the colors */
+    protected Color[] colors;
 
-	private int[] fontSizes;
+    /** the font size */
+    protected int[] fontSizes;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param chart
-	 *            the chart
-	 * @param axes
-	 *            the axes
-	 * @param title
-	 *            the title
-	 */
-	public SeriesLabelPage(Chart chart, String title) {
-		super(chart, title, "Series:");
+    /**
+     * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     * @param axes
+     *            the axes
+     * @param title
+     *            the title
+     */
+    public SeriesLabelPage(Chart chart, String title) {
+        super(chart, title, "Series:");
 
-		series = chart.getSeriesSet().getSeries();
+        series = chart.getSeriesSet().getSeries();
 
-		visibleStates = new boolean[series.length];
-		colors = new Color[series.length];
-		fontSizes = new int[series.length];
-	}
+        visibleStates = new boolean[series.length];
+        colors = new Color[series.length];
+        fontSizes = new int[series.length];
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ext.internal.properties.AbstractSelectorPage#getListItems()
-	 */
-	@Override
-	protected String[] getListItems() {
-		String[] items = new String[series.length];
-		for (int i = 0; i < items.length; i++) {
-			items[i] = String.valueOf(series[i].getId());
-		}
-		return items;
-	}
+    /*
+     * @see AbstractSelectorPage#getListItems()
+     */
+    @Override
+    protected String[] getListItems() {
+        String[] items = new String[series.length];
+        for (int i = 0; i < items.length; i++) {
+            items[i] = String.valueOf(series[i].getId());
+        }
+        return items;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ext.internal.properties.AbstractSelectorPage#selectInitialValues()
-	 */
-	@Override
-	protected void selectInitialValues() {
-		for (int i = 0; i < series.length; i++) {
-			visibleStates[i] = series[i].getLabel().isVisible();
-			colors[i] = series[i].getLabel().getForeground();
-			fontSizes[i] = series[i].getLabel().getFont().getFontData()[0]
-					.getHeight();
-		}
-	}
+    /*
+     * @see AbstractSelectorPage#selectInitialValues()
+     */
+    @Override
+    protected void selectInitialValues() {
+        for (int i = 0; i < series.length; i++) {
+            visibleStates[i] = series[i].getLabel().isVisible();
+            colors[i] = series[i].getLabel().getForeground();
+            fontSizes[i] = series[i].getLabel().getFont().getFontData()[0]
+                    .getHeight();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.swtchart.ext.internal.properties.AbstractSelectorPage#updateControlSelections()
-	 */
-	@Override
-	protected void updateControlSelections() {
-		showLabelButton.setSelection(visibleStates[selectedIndex]);
-		setControlsEnable(visibleStates[selectedIndex]);
-		colorButton.setColorValue(colors[selectedIndex].getRGB());
-		fontSizeSpinner.setSelection(fontSizes[selectedIndex]);
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.swtchart.ext.internal.properties.AbstractSelectorPage#addRightPanelContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected void addRightPanelContents(Composite parent) {
-		addSeriesLabelPanel(parent);
-	}
+    /*
+     * @see AbstractSelectorPage#updateControlSelections()
+     */
+    @Override
+    protected void updateControlSelections() {
+        showLabelButton.setSelection(visibleStates[selectedIndex]);
+        setControlsEnable(visibleStates[selectedIndex]);
+        colorButton.setColorValue(colors[selectedIndex].getRGB());
+        fontSizeSpinner.setSelection(fontSizes[selectedIndex]);
+    }
 
-	/**
-	 * Adds the series label panel.
-	 * 
-	 * @param parent
-	 *            the parent to add the series label panel
-	 */
-	private void addSeriesLabelPanel(Composite parent) {
-		Composite group = new Composite(parent, SWT.NONE);
-		group.setLayout(new GridLayout(2, false));
+    /*
+     * @see AbstractSelectorPage#addRightPanelContents(Composite)
+     */
+    @Override
+    protected void addRightPanelContents(Composite parent) {
+        addSeriesLabelPanel(parent);
+    }
 
-		showLabelButton = createCheckBoxControl(group, "Show label");
-		showLabelButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean visible = showLabelButton.getSelection();
-				visibleStates[selectedIndex] = visible;
-				setControlsEnable(visible);
-			}
-		});
+    /**
+     * Adds the series label panel.
+     * 
+     * @param parent
+     *            the parent to add the series label panel
+     */
+    private void addSeriesLabelPanel(Composite parent) {
+        Composite group = new Composite(parent, SWT.NONE);
+        group.setLayout(new GridLayout(2, false));
 
-		colorLabel = createLabelControl(group, "Color:");
-		colorButton = createColorButtonControl(group);
-		colorButton.addListener(new IPropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent event) {
-				colors[selectedIndex] = new Color(Display.getDefault(),
-						colorButton.getColorValue());
-			}
-		});
+        showLabelButton = createCheckBoxControl(group, "Show label");
+        showLabelButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean visible = showLabelButton.getSelection();
+                visibleStates[selectedIndex] = visible;
+                setControlsEnable(visible);
+            }
+        });
 
-		fontSizeLabel = createLabelControl(group, "Font size:");
-		fontSizeSpinner = createSpinnerControl(group, 8, 30);
-		fontSizeSpinner.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				fontSizes[selectedIndex] = fontSizeSpinner.getSelection();
-			}
-		});
-	}
+        colorLabel = createLabelControl(group, "Color:");
+        colorButton = createColorButtonControl(group);
+        colorButton.addListener(new IPropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                colors[selectedIndex] = new Color(Display.getDefault(),
+                        colorButton.getColorValue());
+            }
+        });
 
-	/**
-	 * Sets the enable state of controls.
-	 * 
-	 * @param enabled
-	 *            true if controls are enabled
-	 */
-	private void setControlsEnable(boolean enabled) {
-		colorLabel.setEnabled(enabled);
-		colorButton.setEnabled(enabled);
-		fontSizeLabel.setEnabled(enabled);
-		fontSizeSpinner.setEnabled(enabled);
-	}
+        fontSizeLabel = createLabelControl(group, "Font size:");
+        fontSizeSpinner = createSpinnerControl(group, 8, 30);
+        fontSizeSpinner.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                fontSizes[selectedIndex] = fontSizeSpinner.getSelection();
+            }
+        });
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ext.internal.preference.AbstractPreferencePage#apply()
-	 */
-	@Override
-	public void apply() {
-		for (int i = 0; i < series.length; i++) {
-			series[i].getLabel().setVisible(visibleStates[i]);
-			series[i].getLabel().setForeground(colors[i]);
-			FontData fontData = series[i].getLabel().getFont().getFontData()[0];
-			Font font = new Font(series[i].getLabel().getFont().getDevice(),
-					fontData.getName(), fontSizes[i], fontData.getStyle());
-			series[i].getLabel().setFont(font);
-		}
-	}
+    /**
+     * Sets the enable state of controls.
+     * 
+     * @param enabled
+     *            true if controls are enabled
+     */
+    protected void setControlsEnable(boolean enabled) {
+        colorLabel.setEnabled(enabled);
+        colorButton.setEnabled(enabled);
+        fontSizeLabel.setEnabled(enabled);
+        fontSizeSpinner.setEnabled(enabled);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
-	 */
-	@Override
-	protected void performDefaults() {
-		visibleStates[selectedIndex] = false;
-		colors[selectedIndex] = new Color(Display.getDefault(), Constants.BLACK);
-		fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
+    /*
+     * @see AbstractPreferencePage#apply()
+     */
+    @Override
+    public void apply() {
+        for (int i = 0; i < series.length; i++) {
+            series[i].getLabel().setVisible(visibleStates[i]);
+            series[i].getLabel().setForeground(colors[i]);
+            FontData fontData = series[i].getLabel().getFont().getFontData()[0];
+            Font font = new Font(series[i].getLabel().getFont().getDevice(),
+                    fontData.getName(), fontSizes[i], fontData.getStyle());
+            series[i].getLabel().setFont(font);
+        }
+    }
 
-		updateControlSelections();
-		
-		super.performDefaults();
-	}
+    /*
+     * @see PreferencePage#performDefaults()
+     */
+    @Override
+    protected void performDefaults() {
+        visibleStates[selectedIndex] = false;
+        colors[selectedIndex] = new Color(Display.getDefault(), Constants.BLACK);
+        fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
+
+        updateControlSelections();
+
+        super.performDefaults();
+    }
 }

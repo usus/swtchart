@@ -26,192 +26,184 @@ import org.swtchart.IAxis.Direction;
  */
 public class AxisTickPage extends AbstractSelectorPage {
 
-	private IAxis[] axes;
+    /** the axes */
+    private IAxis[] axes;
 
-	private Button showTickButton;
+    /** the show tick button */
+    protected Button showTickButton;
 
-	private Label fontSizeLabel;
+    /** the label for font size */
+    private Label fontSizeLabel;
 
-	private Spinner fontSizeSpinner;
+    /** the spinner for font size */
+    protected Spinner fontSizeSpinner;
 
-	private Label foregroundLabel;
+    /** the foreground label */
+    private Label foregroundLabel;
 
-	private ColorSelector foregroundButton;
+    /** the foreground button */
+    protected ColorSelector foregroundButton;
 
-	private boolean[] visibilityStates;
+    /** the states indicating the visibility of axis ticks */
+    protected boolean[] visibilityStates;
 
-	private int[] fontSizes;
+    /** the font sizes */
+    protected int[] fontSizes;
 
-	private Color[] foregroundColors;
+    /** the foreground colors */
+    protected Color[] foregroundColors;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param chart
-	 *            the chart
-	 * @param direction
-	 *            the direction
-	 * @param title
-	 *            the title
-	 */
-	public AxisTickPage(Chart chart, Direction direction, String title) {
-		super(chart, title, "Axes:");
-		if (direction == Direction.X) {
-			this.axes = chart.getAxisSet().getXAxes();
-		} else if (direction == Direction.Y) {
-			this.axes = chart.getAxisSet().getYAxes();
-		}
+    /**
+     * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     * @param direction
+     *            the direction
+     * @param title
+     *            the title
+     */
+    public AxisTickPage(Chart chart, Direction direction, String title) {
+        super(chart, title, "Axes:");
+        if (direction == Direction.X) {
+            this.axes = chart.getAxisSet().getXAxes();
+        } else if (direction == Direction.Y) {
+            this.axes = chart.getAxisSet().getYAxes();
+        }
 
-		visibilityStates = new boolean[axes.length];
-		fontSizes = new int[axes.length];
-		foregroundColors = new Color[axes.length];
-	}
+        visibilityStates = new boolean[axes.length];
+        fontSizes = new int[axes.length];
+        foregroundColors = new Color[axes.length];
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.swtchart.ext.internal.properties.AbstractSelectorPage#getListItems()
-	 */
-	@Override
-	protected String[] getListItems() {
-		String[] items = new String[axes.length];
-		for (int i = 0; i < items.length; i++) {
-			items[i] = String.valueOf(axes[i].getId());
-		}
-		return items;
-	}
+    /*
+     * @see AbstractSelectorPage#getListItems()
+     */
+    @Override
+    protected String[] getListItems() {
+        String[] items = new String[axes.length];
+        for (int i = 0; i < items.length; i++) {
+            items[i] = String.valueOf(axes[i].getId());
+        }
+        return items;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.swtchart.ext.internal.properties.AbstractSelectorPage#selectInitialValues
-	 * ()
-	 */
-	@Override
-	protected void selectInitialValues() {
-		for (int i = 0; i < axes.length; i++) {
-			visibilityStates[i] = axes[i].getTick().isVisible();
-			fontSizes[i] = axes[i].getTick().getFont().getFontData()[0]
-					.getHeight();
-			foregroundColors[i] = axes[i].getTick().getForeground();
-		}
-	}
+    /*
+     * @see AbstractSelectorPage#selectInitialValues()
+     */
+    @Override
+    protected void selectInitialValues() {
+        for (int i = 0; i < axes.length; i++) {
+            visibilityStates[i] = axes[i].getTick().isVisible();
+            fontSizes[i] = axes[i].getTick().getFont().getFontData()[0]
+                    .getHeight();
+            foregroundColors[i] = axes[i].getTick().getForeground();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.swtchart.ext.internal.properties.AbstractSelectorPage#
-	 * updateControlSelections()
-	 */
-	@Override
-	protected void updateControlSelections() {
-		showTickButton.setSelection(visibilityStates[selectedIndex]);
-		setControlsEnable(visibilityStates[selectedIndex]);
-		fontSizeSpinner.setSelection(fontSizes[selectedIndex]);
-		foregroundButton
-				.setColorValue(foregroundColors[selectedIndex].getRGB());
-	}
+    /*
+     * @see AbstractSelectorPage#updateControlSelections()
+     */
+    @Override
+    protected void updateControlSelections() {
+        showTickButton.setSelection(visibilityStates[selectedIndex]);
+        setControlsEnable(visibilityStates[selectedIndex]);
+        fontSizeSpinner.setSelection(fontSizes[selectedIndex]);
+        foregroundButton
+                .setColorValue(foregroundColors[selectedIndex].getRGB());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.swtchart.ext.internal.properties.AbstractSelectorPage#
-	 * addRightPanelContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected void addRightPanelContents(Composite parent) {
-		addTickPanel(parent);
-	}
+    /*
+     * @see AbstractSelectorPage#addRightPanelContents(Composite)
+     */
+    @Override
+    protected void addRightPanelContents(Composite parent) {
+        addTickPanel(parent);
+    }
 
-	/**
-	 * Create the tick panel.
-	 * 
-	 * @param parent
-	 *            the parent to add the tick panel
-	 */
-	private void addTickPanel(Composite composite) {
-		Composite group = new Composite(composite, SWT.NONE);
-		GridData gridData = new GridData(GridData.FILL_BOTH);
-		gridData.horizontalSpan = 2;
-		group.setLayoutData(gridData);
-		group.setLayout(new GridLayout(2, true));
+    /**
+     * Create the tick panel.
+     * 
+     * @param parent
+     *            the parent to add the tick panel
+     */
+    private void addTickPanel(Composite parent) {
+        Composite group = new Composite(parent, SWT.NONE);
+        GridData gridData = new GridData(GridData.FILL_BOTH);
+        gridData.horizontalSpan = 2;
+        group.setLayoutData(gridData);
+        group.setLayout(new GridLayout(2, true));
 
-		showTickButton = createCheckBoxControl(group, "Show tick");
-		showTickButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean visible = showTickButton.getSelection();
-				visibilityStates[selectedIndex] = visible;
-				setControlsEnable(visible);
-			}
-		});
+        showTickButton = createCheckBoxControl(group, "Show tick");
+        showTickButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean visible = showTickButton.getSelection();
+                visibilityStates[selectedIndex] = visible;
+                setControlsEnable(visible);
+            }
+        });
 
-		fontSizeLabel = createLabelControl(group, "Font size:");
-		fontSizeSpinner = createSpinnerControl(group, 8, 30);
-		fontSizeSpinner.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fontSizes[selectedIndex] = fontSizeSpinner.getSelection();
-			}
-		});
+        fontSizeLabel = createLabelControl(group, "Font size:");
+        fontSizeSpinner = createSpinnerControl(group, 8, 30);
+        fontSizeSpinner.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                fontSizes[selectedIndex] = fontSizeSpinner.getSelection();
+            }
+        });
 
-		foregroundLabel = createLabelControl(group, "Color:");
-		foregroundButton = createColorButtonControl(group);
-		foregroundButton.addListener(new IPropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent event) {
-				foregroundColors[selectedIndex] = new Color(Display
-						.getDefault(), foregroundButton.getColorValue());
-			}
-		});
-	}
+        foregroundLabel = createLabelControl(group, "Color:");
+        foregroundButton = createColorButtonControl(group);
+        foregroundButton.addListener(new IPropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                foregroundColors[selectedIndex] = new Color(Display
+                        .getDefault(), foregroundButton.getColorValue());
+            }
+        });
+    }
 
-	/**
-	 * Sets the enable state of controls.
-	 * 
-	 * @param enabled
-	 *            true if controls are enabled
-	 */
-	private void setControlsEnable(boolean enabled) {
-		fontSizeLabel.setEnabled(enabled);
-		fontSizeSpinner.setEnabled(enabled);
-		foregroundLabel.setEnabled(enabled);
-		foregroundButton.setEnabled(enabled);
-	}
+    /**
+     * Sets the enable state of controls.
+     * 
+     * @param enabled
+     *            true if controls are enabled
+     */
+    protected void setControlsEnable(boolean enabled) {
+        fontSizeLabel.setEnabled(enabled);
+        fontSizeSpinner.setEnabled(enabled);
+        foregroundLabel.setEnabled(enabled);
+        foregroundButton.setEnabled(enabled);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.swtchart.ext.internal.preference.AbstractPreferencePage#apply()
-	 */
-	@Override
-	public void apply() {
-		for (int i = 0; i < axes.length; i++) {
-			axes[i].getTick().setVisible(visibilityStates[i]);
-			FontData fontData = axes[i].getTick().getFont().getFontData()[0];
-			Font font = new Font(axes[i].getTick().getFont().getDevice(),
-					fontData.getName(), fontSizes[i], fontData.getStyle());
-			axes[i].getTick().setFont(font);
-			axes[i].getTick().setForeground(foregroundColors[i]);
-		}
-	}
+    /*
+     * @see AbstractPreferencePage#apply()
+     */
+    @Override
+    public void apply() {
+        for (int i = 0; i < axes.length; i++) {
+            axes[i].getTick().setVisible(visibilityStates[i]);
+            FontData fontData = axes[i].getTick().getFont().getFontData()[0];
+            Font font = new Font(axes[i].getTick().getFont().getDevice(),
+                    fontData.getName(), fontSizes[i], fontData.getStyle());
+            axes[i].getTick().setFont(font);
+            axes[i].getTick().setForeground(foregroundColors[i]);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
-	 */
-	@Override
-	protected void performDefaults() {
-		visibilityStates[selectedIndex] = true;
-		fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
-		foregroundColors[selectedIndex] = new Color(Display.getDefault(),
-				Constants.BLUE);
+    /*
+     * @see PreferencePage#performDefaults()
+     */
+    @Override
+    protected void performDefaults() {
+        visibilityStates[selectedIndex] = true;
+        fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
+        foregroundColors[selectedIndex] = new Color(Display.getDefault(),
+                Constants.BLUE);
 
-		updateControlSelections();
+        updateControlSelections();
 
-		super.performDefaults();
-	}
+        super.performDefaults();
+    }
 }

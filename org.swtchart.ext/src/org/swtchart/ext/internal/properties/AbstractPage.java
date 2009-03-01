@@ -19,170 +19,175 @@ import org.swtchart.Chart;
  */
 public abstract class AbstractPage extends PreferencePage {
 
-	/** the chart */
-	protected Chart chart;
+    /** the chart */
+    protected Chart chart;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param chart
-	 *            the chart
-	 * @param title
-	 *            the title
-	 */
-	public AbstractPage(Chart chart, String title) {
-		this.chart = chart;
-		setTitle(title);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param chart
+     *            the chart
+     * @param title
+     *            the title
+     */
+    public AbstractPage(Chart chart, String title) {
+        this.chart = chart;
+        setTitle(title);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
-	 */
-	@Override
-	public boolean performOk() {
-		if (getControl() != null) {
-			apply();
-			chart.redraw();
-		}
-		return true;
-	}
+    /*
+     * @see PreferencePage#performOk()
+     */
+    @Override
+    public boolean performOk() {
+        if (getControl() != null) {
+            apply();
+            chart.redraw();
+        }
+        return true;
+    }
 
-	/**
-	 * Apply the values specified on controls.
-	 */
-	abstract public void apply();
+    /**
+     * Apply the values specified on controls.
+     */
+    abstract public void apply();
 
-	/**
-	 * Creates the group control which contains two columns for controls.
-	 * 
-	 * @param parent
-	 *            the parent to create the group control
-	 * @param text
-	 *            the group name
-	 * @param equal
-	 *            true if making columns equal width
-	 */
-	protected Group createGroupControl(Composite parent, String text, boolean equal) {
-		Group group = new Group(parent, SWT.NULL);
-		group.setText(text);
-		
-		group.setLayout(new GridLayout(2, equal));
-		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    /**
+     * Creates the group control which contains two columns for controls.
+     * 
+     * @param parent
+     *            the parent to create the group control
+     * @param text
+     *            the group name
+     * @param equal
+     *            true if making columns equal width
+     * @return the group
+     */
+    protected Group createGroupControl(Composite parent, String text,
+            boolean equal) {
+        Group group = new Group(parent, SWT.NULL);
+        group.setText(text);
 
-		return group;
-	}
+        group.setLayout(new GridLayout(2, equal));
+        group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-	/**
-	 * Creates the label.
-	 * 
-	 * @param parent
-	 *            the parent to create the label
-	 * @param text
-	 *            the label text
-	 */
-	protected Label createLabelControl(Composite parent, String text) {
-		Label label = new Label(parent, SWT.NULL);
-		label.setText(text);
+        return group;
+    }
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 1;
-		label.setLayoutData(gridData);
+    /**
+     * Creates the label.
+     * 
+     * @param parent
+     *            the parent to create the label
+     * @param text
+     *            the label text
+     * @return the label
+     */
+    protected Label createLabelControl(Composite parent, String text) {
+        Label label = new Label(parent, SWT.NULL);
+        label.setText(text);
 
-		return label;
-	}
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        gridData.horizontalSpan = 1;
+        label.setLayoutData(gridData);
 
-	/**
-	 * Creates the color selector.
-	 * 
-	 * @param parent
-	 *            the parent to create the color selector
-	 */
-	protected ColorSelector createColorButtonControl(Composite parent) {
-		return new ColorSelector(parent);
-	}
+        return label;
+    }
 
-	/**
-	 * Creates the check box.
-	 * 
-	 * @param parent
-	 *            the parent to create the check box
-	 * @param label
-	 *            the label text
-	 * @return {@link Button} control
-	 */
-	protected Button createCheckBoxControl(Composite parent, String label) {
-		Composite composite = new Composite(parent, SWT.NULL);
-		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
-		composite.setLayoutData(gridData);
-		composite.setLayout(new GridLayout(2, false));
+    /**
+     * Creates the color selector.
+     * 
+     * @param parent
+     *            the parent to create the color selector
+     * @return the color selector
+     */
+    protected ColorSelector createColorButtonControl(Composite parent) {
+        return new ColorSelector(parent);
+    }
 
-		Button button = new Button(composite, SWT.CHECK);
-		GridData gridData1 = new GridData();
-		gridData1.horizontalSpan = 1;
-		button.setLayoutData(gridData1);
+    /**
+     * Creates the check box.
+     * 
+     * @param parent
+     *            the parent to create the check box
+     * @param label
+     *            the label text
+     * @return {@link Button} control
+     */
+    protected Button createCheckBoxControl(Composite parent, String label) {
+        Composite composite = new Composite(parent, SWT.NULL);
+        GridData gridData = new GridData();
+        gridData.horizontalSpan = 2;
+        composite.setLayoutData(gridData);
+        composite.setLayout(new GridLayout(2, false));
 
-		createLabelControl(composite, label);
+        Button button = new Button(composite, SWT.CHECK);
+        GridData gridData1 = new GridData();
+        gridData1.horizontalSpan = 1;
+        button.setLayoutData(gridData1);
 
-		return button;
-	}
+        createLabelControl(composite, label);
 
-	/**
-	 * Creates the text field.
-	 * 
-	 * @param parent
-	 *            the parent to create the text field
-	 */
-	protected Text createTextControl(Composite parent) {
-		Text text = new Text(parent, SWT.BORDER | SWT.SINGLE);
+        return button;
+    }
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 1;
-		text.setLayoutData(gridData);
+    /**
+     * Creates the text field.
+     * 
+     * @param parent
+     *            the parent to create the text field
+     * @return the text
+     */
+    protected Text createTextControl(Composite parent) {
+        Text text = new Text(parent, SWT.BORDER | SWT.SINGLE);
 
-		return text;
-	}
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        gridData.horizontalSpan = 1;
+        text.setLayoutData(gridData);
 
-	/**
-	 * Creates the combo control.
-	 * 
-	 * @param parent
-	 *            the parent to create the combo
-	 * @param items
-	 *            the combo items
-	 */
-	protected Combo createComboControl(Composite parent, String[] items) {
-		Combo combo = new Combo(parent, SWT.BORDER | SWT.SINGLE);
-		combo.setItems(items);
+        return text;
+    }
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 1;
-		combo.setLayoutData(gridData);
+    /**
+     * Creates the combo control.
+     * 
+     * @param parent
+     *            the parent to create the combo
+     * @param items
+     *            the combo items
+     * @return the combo
+     */
+    protected Combo createComboControl(Composite parent, String[] items) {
+        Combo combo = new Combo(parent, SWT.BORDER | SWT.SINGLE);
+        combo.setItems(items);
 
-		return combo;
-	}
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        gridData.horizontalSpan = 1;
+        combo.setLayoutData(gridData);
 
-	/**
-	 * Creates the spinner.
-	 * 
-	 * @param parent
-	 *            the parent to create the spinner
-	 * @param min
-	 *            the minimum value of spinner
-	 * @param max
-	 *            the maximum value of spinner
-	 */
-	protected Spinner createSpinnerControl(Composite parent, int min, int max) {
-		Spinner spinner = new Spinner(parent, SWT.BORDER);
-		spinner.setMinimum(min);
-		spinner.setMaximum(max);
+        return combo;
+    }
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 1;
-		spinner.setLayoutData(gridData);
+    /**
+     * Creates the spinner.
+     * 
+     * @param parent
+     *            the parent to create the spinner
+     * @param min
+     *            the minimum value of spinner
+     * @param max
+     *            the maximum value of spinner
+     * @return the spinner
+     */
+    protected Spinner createSpinnerControl(Composite parent, int min, int max) {
+        Spinner spinner = new Spinner(parent, SWT.BORDER);
+        spinner.setMinimum(min);
+        spinner.setMaximum(max);
 
-		return spinner;
-	}
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        gridData.horizontalSpan = 1;
+        spinner.setLayoutData(gridData);
+
+        return spinner;
+    }
 }
