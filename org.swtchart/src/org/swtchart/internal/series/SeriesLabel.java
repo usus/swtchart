@@ -12,10 +12,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Constants;
 import org.swtchart.ISeriesLabel;
+import org.swtchart.internal.Util;
 
 /**
  * A series label.
@@ -38,7 +40,7 @@ public class SeriesLabel implements ISeriesLabel {
     private static final RGB DEFAULT_COLOR = Constants.BLACK;
 
     /** the default label format */
-    private static final String DEFAULT_FORMAT = "############.###########";
+    private static final String DEFAULT_FORMAT = "#.###########";
 
     /** the default font */
     private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
@@ -140,15 +142,54 @@ public class SeriesLabel implements ISeriesLabel {
      *            the vertical coordinate to draw label
      * @param ySeriesValue
      *            the Y series value
+     * @param alignment
+     *            the alignment of label position (SWT.CENTER or SWT.BOTTOM)
      */
-    protected void draw(GC gc, int h, int v, double ySeriesValue) {
+    protected void draw(GC gc, int h, int v, double ySeriesValue, int alignment) {
         if (!isVisible) {
             return;
         }
 
         gc.setForeground(color);
         gc.setFont(font);
-        String text = new DecimalFormat(format).format(ySeriesValue);
-        gc.drawString(text, h, v, true);
+        
+        // get text
+        String text;
+        if (isDecimalFormat(format)) {
+            text = new DecimalFormat(format).format(ySeriesValue);
+        } else {
+            text = format.replaceAll("'", "");
+        }
+
+        // draw label
+        if (alignment == SWT.CENTER) {
+            Point p = Util.getExtentInGC(font, text);
+            gc.drawString(text, (int) (h - p.x / 2d), (int) (v - p.y / 2d),
+                    true);
+        } else if (alignment == SWT.BOTTOM) {
+            gc.drawString(text, h, v, true);
+        }
+    }
+
+    /**
+     * Gets the state indicating if decimal format is given.
+     * 
+     * @param text
+     *            the text to be checked
+     * @return true if decimal format is given
+     */
+    private boolean isDecimalFormat(String text) {
+        String nonEscapedPart = "";
+        String[] elements = text.split("'");
+        if (elements != null) {
+            for (int i = 0; i < elements.length; i += 2) {
+                nonEscapedPart += elements[i];
+            }
+        }
+
+        if (!nonEscapedPart.contains("#") && !nonEscapedPart.contains("0")) {
+            return false;
+        }
+        return true;
     }
 }

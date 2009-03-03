@@ -16,7 +16,7 @@ public interface ISeriesLabel {
 
     /**
      * Sets the format for numeric value. If null is given, default format
-     * "############.###########" will be set.
+     * "#.###########" will be set.
      * 
      * @param format
      *            the format

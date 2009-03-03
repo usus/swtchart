@@ -307,14 +307,14 @@ public class BarSeries extends Series implements IBarSeries {
 
             if (isHorizontal) {
                 drawRiser(gc, x, height - y, riserwidth, riserHeight);
-
-                ((SeriesLabel) seriesLabel).draw(gc, (int) x, height - y,
-                        series[i]);
+                ((SeriesLabel) seriesLabel).draw(gc, (int) x,
+                        (int) (height - y + riserHeight / 2d), series[i],
+                        SWT.CENTER);
             } else {
                 drawRiser(gc, y, height - x, riserwidth, riserHeight);
-
-                ((SeriesLabel) seriesLabel).draw(gc, y, (int) (height - x),
-                        series[i]);
+                ((SeriesLabel) seriesLabel).draw(gc,
+                        (int) (y - riserHeight / 2d), (int) (height - x),
+                        series[i], SWT.CENTER);
             }
         }
     }
@@ -424,12 +424,14 @@ public class BarSeries extends Series implements IBarSeries {
 
             if (isHorizontal) {
                 drawRiser(gc, x, height - y, riserwidth, riserHeight);
-                ((SeriesLabel) seriesLabel).draw(gc, x, height - y,
-                        yCompressedSeries[i]);
+                ((SeriesLabel) seriesLabel).draw(gc, x,
+                        (int) (height - y + riserHeight / 2d),
+                        yCompressedSeries[i], SWT.CENTER);
             } else {
                 drawRiser(gc, y, height - x, riserwidth, riserHeight);
-                ((SeriesLabel) seriesLabel).draw(gc, y, height - x,
-                        yCompressedSeries[i]);
+                ((SeriesLabel) seriesLabel).draw(gc,
+                        (int) (y - riserHeight / 2d), height - x,
+                        yCompressedSeries[i], SWT.CENTER);
             }
         }
     }
