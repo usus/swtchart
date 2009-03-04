@@ -199,7 +199,7 @@ public interface ILineSeries extends ISeries {
      * <p>
      * If number of data points is too large, the series is drawn as a
      * collection of dots rather than lines. In this case, the anti-alias
-     * doesnÅft really make effect, and just causes performance degradation.
+     * doesn't really make effect, and just causes performance degradation.
      * Therefore, client code may automatically enable/disable the anti-alias
      * for each series depending on the number of data points, or alternatively
      * may let end-user configure it.
