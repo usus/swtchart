@@ -547,7 +547,6 @@ public class Axis implements IAxis {
     /*
      * @see IAxis#getPixelCoordinate(double)
      */
-    @Override
     public int getPixelCoordinate(double dataCoordinate) {
         int pixelCoordinate;
         if (isHorizontalAxis()) {
@@ -583,7 +582,6 @@ public class Axis implements IAxis {
     /*
      * @see IAxis#getDataCoordinate(int)
      */
-    @Override
     public double getDataCoordinate(int pixelCoordinate) {
         double dataCoordinate;
         if (isHorizontalAxis()) {
