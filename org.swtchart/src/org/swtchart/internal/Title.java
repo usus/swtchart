@@ -13,9 +13,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
@@ -200,33 +200,33 @@ public class Title extends Canvas implements ITitle, PaintListener {
 
             gc.drawString(text, x, 0, true);
         } else {
-            int textWidth = 0;
-            int textHeight = 0;
 
-            gc.setFont(getFont());
-            Color background = gc.getBackground();
-            textWidth = gc.textExtent(text).x;
-            textHeight = gc.textExtent(text).y;
+            // create image to draw text
+            int textWidth = gc.textExtent(text).x;
+            int textHeight = gc.textExtent(text).y;
             Image image = new Image(Display.getCurrent(), textWidth, textHeight);
             GC tmpGc = new GC(image);
             tmpGc.setForeground(getForeground());
-            tmpGc.setBackground(background);
+            tmpGc.setBackground(getBackground());
             tmpGc.setFont(getFont());
             tmpGc.drawText(text, 0, 0);
-            ImageData imageData = Util.rotate(image.getImageData());
-            image.dispose();
-            tmpGc.dispose();
 
-            if (imageData == null) {
-                return;
-            }
+            // set transform to rotate
+            Transform transform = new Transform(gc.getDevice());
+            transform.translate(0, textWidth);
+            transform.rotate(270);
+            gc.setTransform(transform);
 
-            int y = (int) (height / 2.0 - textWidth / 2.0);
+            // draw the image on the rotated graphics context
+            int y = (int) (height / 2d - textWidth / 2d);
             if (y < 0) {
                 y = 0;
             }
-            image = new Image(Display.getCurrent(), imageData);
-            e.gc.drawImage(image, 0, y);
+            gc.drawImage(image, -y, 0);
+
+            // dispose resources
+            tmpGc.dispose();
+            transform.dispose();
             image.dispose();
         }
     }

@@ -10,7 +10,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.LineStyle;
@@ -19,43 +18,6 @@ import org.swtchart.LineStyle;
  * A utility class providing generic methods.
  */
 public final class Util {
-
-    /**
-     * Rotates the given image data. If the given image data is
-     * <code>null</code>, <code>null</code> will be returned.
-     * 
-     * @param imageData
-     *            the image data to be rotated
-     * @return the rotated image data
-     * @throws IllegalArgumentException
-     *             if the given image data is <code>null</code>.
-     */
-    public static ImageData rotate(ImageData imageData)
-            throws IllegalArgumentException {
-
-        if (imageData == null) {
-            return null;
-        }
-
-        int scanlinePad = imageData.height * imageData.bytesPerLine
-                / imageData.width;
-        byte[] data = new byte[imageData.data.length];
-
-        for (int y = 0; y < imageData.height; y++) {
-            for (int x = 0; x < imageData.width; x++) {
-                int srcPos = y * imageData.bytesPerLine + x
-                        * imageData.bytesPerLine / imageData.width;
-                int destPos = (imageData.width - x - 1) * scanlinePad + y
-                        * imageData.bytesPerLine / imageData.width;
-                int length = imageData.bytesPerLine / imageData.width;
-
-                System.arraycopy(imageData.data, srcPos, data, destPos, length);
-            }
-        }
-
-        return new ImageData(imageData.height, imageData.width,
-                imageData.depth, imageData.palette, scanlinePad, data);
-    }
 
     /**
      * Gets the text extent with given font in GC. If the given text or font is
