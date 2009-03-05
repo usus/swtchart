@@ -780,7 +780,7 @@ public class LineSeries extends Series implements ILineSeries {
                 color = symbolColors[i];
             }
             drawSeriesSymbol(gc, h, height - v, color);
-            ((SeriesLabel) seriesLabel).draw(gc, h, height - v, vSeries[i],
+            ((SeriesLabel) seriesLabel).draw(gc, h, height - v, vSeries[i], i,
                     SWT.BOTTOM);
         }
     }
@@ -900,11 +900,11 @@ public class LineSeries extends Series implements ILineSeries {
             if (isHorizontal) {
                 drawSeriesSymbol(gc, x, height - y, color);
                 ((SeriesLabel) seriesLabel).draw(gc, x, height - y, ySeries[i],
-                        SWT.BOTTOM);
+                        i, SWT.BOTTOM);
             } else {
                 drawSeriesSymbol(gc, y, height - x, color);
                 ((SeriesLabel) seriesLabel).draw(gc, y, height - x, ySeries[i],
-                        SWT.BOTTOM);
+                        i, SWT.BOTTOM);
             }
         }
     }

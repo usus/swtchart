@@ -6,6 +6,8 @@
  *******************************************************************************/
 package org.swtchart;
 
+import java.text.DecimalFormat;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 
@@ -15,8 +17,12 @@ import org.eclipse.swt.graphics.Font;
 public interface ISeriesLabel {
 
     /**
-     * Sets the format for numeric value. If null is given, default format
-     * "#.###########" will be set.
+     * Sets the decimal format {@link DecimalFormat} or/plus plain string.
+     * <p>
+     * If formats have been set with <tt>setFormats(String[])</tt>, the format
+     * set with this method will be ignored.
+     * <p>
+     * If null is given, default format "#.###########" will be set.
      * 
      * @param format
      *            the format
@@ -24,11 +30,28 @@ public interface ISeriesLabel {
     void setFormat(String format);
 
     /**
-     * Gets the format for numeric value.
+     * Gets the format for label.
      * 
-     * @return the format for numeric value
+     * @return the format
      */
     String getFormat();
+
+    /**
+     * Sets the formats for all data points. If null is given, formats will be
+     * cleared, and the format set with <tt>setFormat(String)</tt> will be used
+     * instead.
+     * 
+     * @param formats
+     *            the formats
+     */
+    void setFormats(String[] formats);
+
+    /**
+     * Gets the formats for all data points.
+     * 
+     * @return the formats
+     */
+    String[] getFormats();
 
     /**
      * Sets the label color. If null is given, default color will be set.

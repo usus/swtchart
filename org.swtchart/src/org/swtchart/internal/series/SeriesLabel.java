@@ -36,6 +36,9 @@ public class SeriesLabel implements ISeriesLabel {
     /** the format for series label */
     private String format;
 
+    /** the formats for series labels */
+    private String[] formats;
+
     /** the default label color */
     private static final RGB DEFAULT_COLOR = Constants.BLACK;
 
@@ -72,6 +75,27 @@ public class SeriesLabel implements ISeriesLabel {
         } else {
             this.format = format;
         }
+    }
+
+    /*
+     * @see ISeriesLabel#getFormats()
+     */
+    public String[] getFormats() {
+        if (formats == null) {
+            return null;
+        }
+
+        String[] copiedFormats = new String[formats.length];
+        System.arraycopy(formats, 0, copiedFormats, 0, formats.length);
+
+        return copiedFormats;
+    }
+
+    /*
+     * @see ISeriesLabel#setFormats(String[])
+     */
+    public void setFormats(String[] formats) {
+        this.formats = formats;
     }
 
     /*
@@ -142,23 +166,35 @@ public class SeriesLabel implements ISeriesLabel {
      *            the vertical coordinate to draw label
      * @param ySeriesValue
      *            the Y series value
+     * @param seriesIndex
+     *            the series index
      * @param alignment
      *            the alignment of label position (SWT.CENTER or SWT.BOTTOM)
      */
-    protected void draw(GC gc, int h, int v, double ySeriesValue, int alignment) {
+    protected void draw(GC gc, int h, int v, double ySeriesValue,
+            int seriesIndex, int alignment) {
         if (!isVisible) {
             return;
         }
 
         gc.setForeground(color);
         gc.setFont(font);
-        
+
+        // get format
+        String format1 = format;
+        if (formats != null && formats.length > seriesIndex) {
+            format1 = formats[seriesIndex];
+        }
+        if (format1 == null || format1.equals("")) {
+            return;
+        }
+
         // get text
         String text;
-        if (isDecimalFormat(format)) {
-            text = new DecimalFormat(format).format(ySeriesValue);
+        if (isDecimalFormat(format1)) {
+            text = new DecimalFormat(format1).format(ySeriesValue);
         } else {
-            text = format.replaceAll("'", "");
+            text = format1.replaceAll("'", "");
         }
 
         // draw label
