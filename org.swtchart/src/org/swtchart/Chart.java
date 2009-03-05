@@ -214,6 +214,17 @@ public class Chart extends Composite implements Listener {
     }
 
     /*
+     * @see Control#update()
+     */
+    @Override
+    public void update() {
+        super.update();
+        for (Control child : getChildren()) {
+            child.update();
+        }
+    }
+
+    /*
      * @see Control#redraw()
      */
     @Override

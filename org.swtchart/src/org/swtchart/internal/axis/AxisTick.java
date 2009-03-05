@@ -8,6 +8,7 @@ package org.swtchart.internal.axis;
 
 import java.text.Format;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.swtchart.Chart;
@@ -92,6 +93,9 @@ public class AxisTick implements IAxisTick {
      * @see IAxisTick#setFont(Font)
      */
     public void setFont(Font font) {
+        if (font != null && font.isDisposed()) {
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+        }
         axisTickLabels.setFont(font);
         chart.updateLayout();
     }

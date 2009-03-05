@@ -135,6 +135,15 @@ public class PlotArea extends Canvas implements PaintListener {
     }
 
     /*
+     * @see Control#update()
+     */
+    @Override
+    public void update() {
+        super.update();
+        updateImageCache = true;
+    }
+
+    /*
      * @see Control#redraw()
      */
     @Override
