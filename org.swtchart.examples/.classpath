@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/org.swtchart_0.3.0.v20081203.jar"/>
+    <classpathentry kind="lib" path="lib/org.swtchart_0.4.0.v20090306.jar"/>
 	<classpathentry kind="lib" path="lib/swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
