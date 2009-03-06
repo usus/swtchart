@@ -7,6 +7,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -86,7 +87,10 @@ public class LegendPage extends AbstractPage {
     private void addLegendPanel(Composite parent) {
 
         Composite group = new Composite(parent, SWT.NONE);
-        group.setLayout(new GridLayout(2, true));
+        GridData gridData = new GridData();
+        gridData.horizontalSpan = 2;
+        group.setLayoutData(gridData);
+        group.setLayout(new GridLayout(2, false));
 
         showLegendButton = createCheckBoxControl(group, "Show legend");
         showLegendButton.addSelectionListener(new SelectionAdapter() {

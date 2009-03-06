@@ -108,10 +108,10 @@ public class GridPage extends AbstractSelectorPage {
      */
     private void addGridPanel(Composite parent) {
         Composite group = new Composite(parent, SWT.NONE);
-        GridData gridData = new GridData(GridData.FILL_BOTH);
+        GridData gridData = new GridData();
         gridData.horizontalSpan = 2;
         group.setLayoutData(gridData);
-        group.setLayout(new GridLayout(2, true));
+        group.setLayout(new GridLayout(2, false));
 
         createLabelControl(group, "Line style:");
         LineStyle[] values = LineStyle.values();
