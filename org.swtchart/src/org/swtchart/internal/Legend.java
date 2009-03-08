@@ -155,7 +155,6 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     /*
      * @see ILegend#getPosition()
      */
-    @Override
     public int getPosition() {
         return position;
     }
@@ -163,7 +162,6 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     /*
      * @see ILegend#setPosition(int)
      */
-    @Override
     public void setPosition(int value) {
         if (position != SWT.LEFT && position != SWT.RIGHT
                 && position != SWT.TOP && position != SWT.BOTTOM) {
