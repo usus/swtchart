@@ -63,7 +63,7 @@ public class LineSeries extends Series implements ILineSeries {
     private static final LineStyle DEFAULT_LINE_STYLE = LineStyle.SOLID;
 
     /** the default line width */
-    private static final int DEFAULT_WIDTH = 1;
+    private static final int DEFAULT_LINE_WIDTH = 1;
 
     /** the default line color */
     private static final RGB DEFAULT_LINE_COLOR = Constants.BLUE;
@@ -104,6 +104,7 @@ public class LineSeries extends Series implements ILineSeries {
         areaEnabled = false;
 
         antialias = DEFAULT_ANTIALIAS;
+        lineWidth = DEFAULT_LINE_WIDTH;
 
         compressor = new CompressLineSeries();
     }
@@ -166,7 +167,7 @@ public class LineSeries extends Series implements ILineSeries {
     @Override
     public void setLineWidth(int width) {
         if (width <= 0) {
-            this.lineWidth = DEFAULT_WIDTH;
+            this.lineWidth = DEFAULT_LINE_WIDTH;
         } else {
             this.lineWidth = width;
         }
