@@ -50,4 +50,36 @@ public interface ISeriesSet {
      *             if there is no series for the given id.
      */
     void deleteSeries(String id);
+
+    /**
+     * Brings the series for given id forward.
+     * 
+     * @param id
+     *            the series id
+     */
+    void bringForward(String id);
+
+    /**
+     * Brings the series for given id to front.
+     * 
+     * @param id
+     *            the series id
+     */
+    void bringToFront(String id);
+
+    /**
+     * Sends the series for given id backward.
+     * 
+     * @param id
+     *            the series id
+     */
+    void sendBackward(String id);
+
+    /**
+     * Sends the series for given id to back.
+     * 
+     * @param id
+     *            the series id
+     */
+    void sendToBack(String id);
 }

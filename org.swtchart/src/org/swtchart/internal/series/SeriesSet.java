@@ -9,6 +9,7 @@ package org.swtchart.internal.series;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -114,12 +115,7 @@ public class SeriesSet implements ISeriesSet {
      * @see ISeriesSet#deleteSeries(String)
      */
     public void deleteSeries(String id) {
-        if (id == null) {
-            SWT.error(SWT.ERROR_NULL_ARGUMENT);
-        }
-        if (seriesMap.get(id) == null) {
-            throw new IllegalArgumentException("Given series id doesn't exist");
-        }
+        validateSeriesId(id);
 
         seriesMap.remove(id);
 
@@ -127,6 +123,99 @@ public class SeriesSet implements ISeriesSet {
 
         // legend will be hidden if this is the last series
         chart.updateLayout();
+    }
+
+    /*
+     * @see ISeriesSet#bringForward(String)
+     */
+    public void bringForward(String id) {
+        validateSeriesId(id);
+
+        String seriesId = null;
+        LinkedHashMap<String, ISeries> newSeriesMap = new LinkedHashMap<String, ISeries>();
+        for (Entry<String, ISeries> entry : seriesMap.entrySet()) {
+
+            if (entry.getKey().equals(id)) {
+                seriesId = id;
+                continue;
+            }
+
+            newSeriesMap.put(entry.getKey(), entry.getValue());
+
+            if (seriesId != null) {
+                newSeriesMap.put(seriesId, seriesMap.get(seriesId));
+                seriesId = null;
+            }
+        }
+        if (seriesId != null) {
+            newSeriesMap.put(seriesId, seriesMap.get(seriesId));
+        }
+        seriesMap = newSeriesMap;
+    }
+
+    /*
+     * @see ISeriesSet#bringToFront(String)
+     */
+    public void bringToFront(String id) {
+        validateSeriesId(id);
+
+        ISeries series = seriesMap.get(id);
+        seriesMap.remove(id);
+        seriesMap.put(series.getId(), series);
+    }
+
+    /*
+     * @see ISeriesSet#sendBackward(String)
+     */
+    public void sendBackward(String id) {
+        validateSeriesId(id);
+
+        String seriesId = null;
+        LinkedHashMap<String, ISeries> newSeriesMap = new LinkedHashMap<String, ISeries>();
+        for (Entry<String, ISeries> entry : seriesMap.entrySet()) {
+
+            if (!entry.getKey().equals(id) || seriesId == null) {
+                newSeriesMap.put(entry.getKey(), entry.getValue());
+                seriesId = entry.getKey();
+                continue;
+            }
+
+            newSeriesMap.remove(seriesId);
+            newSeriesMap.put(entry.getKey(), entry.getValue());
+            newSeriesMap.put(seriesId, seriesMap.get(seriesId));
+        }
+        seriesMap = newSeriesMap;
+    }
+
+    /*
+     * @see ISeriesSet#sendToBack(String)
+     */
+    public void sendToBack(String id) {
+        validateSeriesId(id);
+
+        LinkedHashMap<String, ISeries> newSeriesMap = new LinkedHashMap<String, ISeries>();
+        newSeriesMap.put(id, seriesMap.get(id));
+        for (Entry<String, ISeries> entry : seriesMap.entrySet()) {
+            if (!entry.getKey().equals(id)) {
+                newSeriesMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        seriesMap = newSeriesMap;
+    }
+
+    /**
+     * Validates the given series id.
+     * 
+     * @param id
+     *            the series id.
+     */
+    private void validateSeriesId(String id) {
+        if (id == null) {
+            SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        }
+        if (seriesMap.get(id) == null) {
+            throw new IllegalArgumentException("Given series id doesn't exist");
+        }
     }
 
     /**
