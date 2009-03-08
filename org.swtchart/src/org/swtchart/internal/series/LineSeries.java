@@ -156,7 +156,6 @@ public class LineSeries extends Series implements ILineSeries {
     /*
      * @see ILineSeries#getLineWidth()
      */
-    @Override
     public int getLineWidth() {
         return lineWidth;
     }
@@ -164,7 +163,6 @@ public class LineSeries extends Series implements ILineSeries {
     /*
      * @see ILineSeries#setLineWidth(int)
      */
-    @Override
     public void setLineWidth(int width) {
         if (width <= 0) {
             this.lineWidth = DEFAULT_LINE_WIDTH;
