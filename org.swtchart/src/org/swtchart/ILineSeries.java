@@ -156,6 +156,23 @@ public interface ILineSeries extends ISeries {
     void setLineColor(Color color);
 
     /**
+     * Gets the line width.
+     * 
+     * @return the line width
+     */
+    int getLineWidth();
+
+    /**
+     * Sets the width of line connecting data points and also line drawing
+     * symbol if applicable (i.e. <tt>PlotSymbolType.CROSS</tt> or
+     * <tt>PlotSymbolType.PLUS</tt>). The default width is 1.
+     * 
+     * @param width
+     *            the line width
+     */
+    void setLineWidth(int width);
+
+    /**
      * Enables the area chart.
      * 
      * @param enabled

@@ -44,6 +44,9 @@ public class LineSeries extends Series implements ILineSeries {
     /** the line color */
     private Color lineColor;
 
+    /** the line width */
+    private int lineWidth;
+
     /** the state indicating if area chart is enabled */
     private boolean areaEnabled;
 
@@ -58,6 +61,9 @@ public class LineSeries extends Series implements ILineSeries {
 
     /** the default line style */
     private static final LineStyle DEFAULT_LINE_STYLE = LineStyle.SOLID;
+
+    /** the default line width */
+    private static final int DEFAULT_WIDTH = 1;
 
     /** the default line color */
     private static final RGB DEFAULT_LINE_COLOR = Constants.BLUE;
@@ -143,6 +149,26 @@ public class LineSeries extends Series implements ILineSeries {
             this.lineColor = new Color(Display.getDefault(), DEFAULT_LINE_COLOR);
         } else {
             this.lineColor = color;
+        }
+    }
+
+    /*
+     * @see ILineSeries#getLineWidth()
+     */
+    @Override
+    public int getLineWidth() {
+        return lineWidth;
+    }
+
+    /*
+     * @see ILineSeries#setLineWidth(int)
+     */
+    @Override
+    public void setLineWidth(int width) {
+        if (width <= 0) {
+            this.lineWidth = DEFAULT_WIDTH;
+        } else {
+            this.lineWidth = width;
         }
     }
 
@@ -345,7 +371,9 @@ public class LineSeries extends Series implements ILineSeries {
     @Override
     protected void draw(GC gc, int width, int height, Axis xAxis, Axis yAxis) {
         int oldAntialias = gc.getAntialias();
+        int oldLineWidth = gc.getLineWidth();
         gc.setAntialias(antialias);
+        gc.setLineWidth(lineWidth);
         if (xAxis.isValidCategoryAxis()) {
             if (lineStyle != LineStyle.NONE) {
                 drawLineAndAreaOnCategoryAxis(gc, width, height, xAxis, yAxis);
@@ -362,6 +390,7 @@ public class LineSeries extends Series implements ILineSeries {
             }
         }
         gc.setAntialias(oldAntialias);
+        gc.setLineWidth(oldLineWidth);
     }
 
     /**
