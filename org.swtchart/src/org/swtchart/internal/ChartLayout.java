@@ -9,6 +9,7 @@ package org.swtchart.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -67,10 +68,10 @@ public class ChartLayout extends Layout {
     private int rightAxisOffset = 0;
 
     /** the margin */
-    private static final int MARGIN = 5;
+    public static final int MARGIN = 5;
 
     /** the padding */
-    private static final int PADDING = 5;
+    public static final int PADDING = 5;
 
     /**
      * Axis layout data.
@@ -255,9 +256,26 @@ public class ChartLayout extends Layout {
      *            the rectangle to layout
      */
     private void layoutLegend(Rectangle r) {
+        int legendPosition = legend.getPosition();
+
         int tHeight = titleHeight + ((titleHeight == 0) ? 0 : PADDING);
-        int x = r.width - legendWidth - MARGIN;
-        int y = (tHeight + r.height - legendHeight) / 2;
+        int x;
+        int y;
+        if (legendPosition == SWT.RIGHT) {
+            x = r.width - legendWidth - MARGIN;
+            y = (tHeight + r.height - legendHeight) / 2;
+        } else if (legendPosition == SWT.LEFT) {
+            x = MARGIN;
+            y = (tHeight + r.height - legendHeight) / 2;
+        } else if (legendPosition == SWT.TOP) {
+            x = (r.width - legendWidth) / 2;
+            y = tHeight + MARGIN;
+        } else if (legendPosition == SWT.BOTTOM) {
+            x = (r.width - legendWidth) / 2;
+            y = r.height - legendHeight - MARGIN;
+        } else {
+            throw new IllegalStateException();
+        }
         int width = legendWidth;
         int height = legendHeight;
 
@@ -275,13 +293,34 @@ public class ChartLayout extends Layout {
      *            the rectangle to layout
      */
     private void layoutPlot(Rectangle r) {
-        int x = leftAxisWidth + MARGIN;
-        int y = titleHeight + topAxisHeight + MARGIN
-                + ((titleHeight == 0) ? 0 : PADDING);
-        int width = r.width - leftAxisWidth - rightAxisWidth - legendWidth
-                - MARGIN * 2 - ((legendWidth == 0) ? 0 : PADDING);
-        int height = r.height - bottomAxisHeight - topAxisHeight - titleHeight
-                - MARGIN * 2 - ((titleHeight == 0) ? 0 : PADDING);
+        int legendPosition = legend.getPosition();
+
+        int x = leftAxisWidth
+                + MARGIN
+                + (legendPosition == SWT.LEFT ? legendWidth
+                        + (legendWidth == 0 ? 0 : PADDING) : 0);
+        int y = titleHeight
+                + topAxisHeight
+                + MARGIN
+                + (titleHeight == 0 ? 0 : PADDING)
+                + (legendPosition == SWT.TOP ? legendHeight
+                        + (legendHeight == 0 ? 0 : PADDING) : 0);
+        int width = r.width
+                - leftAxisWidth
+                - rightAxisWidth
+                - (legendPosition == SWT.LEFT || legendPosition == SWT.RIGHT ? legendWidth
+                        + (legendWidth == 0 ? 0 : PADDING)
+                        : 0) - MARGIN * 2;
+        int height = r.height
+                - bottomAxisHeight
+                - topAxisHeight
+                - titleHeight
+                - MARGIN
+                * 2
+                - (titleHeight == 0 ? 0 : PADDING)
+                - (legendPosition == SWT.TOP || legendPosition == SWT.BOTTOM ? legendHeight
+                        + (legendHeight == 0 ? 0 : PADDING)
+                        : 0);
 
         plot.setBounds(x, y, width, height);
     }
@@ -329,12 +368,25 @@ public class ChartLayout extends Layout {
      *            the layout data
      */
     private void layoutBottomAxis(Rectangle r, AxisLayoutData layoutData) {
+        int legendPosition = legend.getPosition();
 
-        int width = r.width - leftAxisWidth - rightAxisWidth - legendWidth
-                - MARGIN * 2 - ((legendWidth == 0) ? 0 : PADDING);
+        int width = r.width
+                - leftAxisWidth
+                - rightAxisWidth
+                - (legendPosition == SWT.LEFT || legendPosition == SWT.RIGHT ? legendWidth
+                        + (legendWidth == 0 ? 0 : PADDING)
+                        : 0) - MARGIN * 2;
         int height = layoutData.titleLayoutdata.heightHint;
-        int x = leftAxisWidth + MARGIN;
-        int y = r.height - height - bottomAxisOffset - MARGIN;
+        int x = leftAxisWidth
+                + MARGIN
+                + (legendPosition == SWT.LEFT ? legendWidth
+                        + (legendWidth == 0 ? 0 : PADDING) : 0);
+        int y = r.height
+                - height
+                - bottomAxisOffset
+                - MARGIN
+                - (legendPosition == SWT.BOTTOM ? legendHeight
+                        + (legendHeight == 0 ? 0 : PADDING) : 0);
         bottomAxisOffset += height;
 
         if (y - layoutData.tickLabelsLayoutdata.heightHint
@@ -367,11 +419,19 @@ public class ChartLayout extends Layout {
      *            the layout data
      */
     private void layoutTopAxis(Rectangle r, AxisLayoutData layoutData) {
+        int legendPosition = legend.getPosition();
 
-        int width = r.width - leftAxisWidth - rightAxisWidth - legendWidth
-                - MARGIN * 2 - ((legendWidth == 0) ? 0 : PADDING);
+        int width = r.width
+                - leftAxisWidth
+                - rightAxisWidth
+                - (legendPosition == SWT.LEFT || legendPosition == SWT.RIGHT ? legendWidth
+                        + (legendWidth == 0 ? 0 : PADDING)
+                        : 0) - MARGIN * 2;
         int height = layoutData.titleLayoutdata.heightHint;
-        int x = leftAxisWidth + MARGIN;
+        int x = leftAxisWidth
+                + MARGIN
+                + (legendPosition == SWT.LEFT ? legendWidth
+                        + (legendWidth == 0 ? 0 : PADDING) : 0);
         int y = titleHeight + topAxisOffset + MARGIN
                 + ((titleHeight == 0) ? 0 : PADDING);
         topAxisOffset += height;
@@ -397,14 +457,31 @@ public class ChartLayout extends Layout {
      *            the layout data
      */
     private void layoutLeftAxis(Rectangle r, AxisLayoutData layoutData) {
+        int legendPosition = legend.getPosition();
+
         int yAxisMargin = Axis.MARGIN + AxisTickMarks.TICK_LENGTH;
 
         int width = layoutData.titleLayoutdata.widthHint;
-        int height = r.height - bottomAxisHeight - topAxisHeight - titleHeight
-                - MARGIN * 2 - ((titleHeight == 0) ? 0 : PADDING);
-        int x = MARGIN + leftAxisOffset;
-        int y = titleHeight + topAxisHeight + MARGIN
-                + ((titleHeight == 0) ? 0 : PADDING);
+        int height = r.height
+                - bottomAxisHeight
+                - topAxisHeight
+                - titleHeight
+                - MARGIN
+                * 2
+                - ((titleHeight == 0) ? 0 : PADDING)
+                - (legendPosition == SWT.TOP || legendPosition == SWT.BOTTOM ? legendHeight
+                        + (legendHeight == 0 ? 0 : PADDING)
+                        : 0);
+        int x = MARGIN
+                + leftAxisOffset
+                + (legendPosition == SWT.LEFT ? legendWidth
+                        + (legendWidth == 0 ? 0 : PADDING) : 0);
+        int y = titleHeight
+                + topAxisHeight
+                + MARGIN
+                + ((titleHeight == 0) ? 0 : PADDING)
+                + (legendPosition == SWT.TOP ? legendHeight
+                        + (legendHeight == 0 ? 0 : PADDING) : 0);
         leftAxisOffset += width;
         layoutData.axisTitle.setBounds(x, y, width, height);
 
@@ -429,15 +506,29 @@ public class ChartLayout extends Layout {
      *            the layout data
      */
     private void layoutRightAxis(Rectangle r, AxisLayoutData layoutData) {
+        int legendPosition = legend.getPosition();
+
         int yAxisMargin = Axis.MARGIN + AxisTickMarks.TICK_LENGTH;
 
         int width = layoutData.titleLayoutdata.widthHint;
-        int height = r.height - bottomAxisHeight - topAxisHeight - titleHeight
-                - MARGIN * 2 - ((titleHeight == 0) ? 0 : PADDING);
+        int height = r.height
+                - bottomAxisHeight
+                - topAxisHeight
+                - titleHeight
+                - MARGIN
+                * 2
+                - ((titleHeight == 0) ? 0 : PADDING)
+                - (legendPosition == SWT.TOP || legendPosition == SWT.BOTTOM ? legendHeight
+                        + (legendHeight == 0 ? 0 : PADDING)
+                        : 0);
         int x = r.width - width - rightAxisOffset - legendWidth - MARGIN
                 - ((legendWidth == 0) ? 0 : PADDING);
-        int y = titleHeight + topAxisHeight + MARGIN
-                + ((titleHeight == 0) ? 0 : PADDING);
+        int y = titleHeight
+                + topAxisHeight
+                + MARGIN
+                + ((titleHeight == 0) ? 0 : PADDING)
+                + (legendPosition == SWT.TOP ? legendHeight
+                        + (legendHeight == 0 ? 0 : PADDING) : 0);
         rightAxisOffset += width;
         layoutData.axisTitle.setBounds(x, y, width, height);
 

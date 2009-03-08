@@ -18,6 +18,7 @@ import org.swtchart.IAxis;
 import org.swtchart.IAxisSet;
 import org.swtchart.ISeries;
 import org.swtchart.IAxis.Direction;
+import org.swtchart.internal.ChartLayout;
 import org.swtchart.internal.ChartLayoutData;
 import org.swtchart.internal.Legend;
 import org.swtchart.internal.Title;
@@ -322,6 +323,7 @@ public class AxisSet implements IAxisSet {
      */
     private void updateHorizontalTick(IAxis[] horizontalAxes,
             IAxis[] verticalAxes) {
+        int legendPosition = ((Legend) chart.getLegend()).getPosition();
         int legendWidth = ((ChartLayoutData) ((Legend) chart.getLegend())
                 .getLayoutData()).widthHint;
         int axesWidth = 0;
@@ -333,8 +335,13 @@ public class AxisSet implements IAxisSet {
                     + ((ChartLayoutData) ((Axis) axis).getTick()
                             .getAxisTickMarks().getLayoutData()).widthHint;
         }
-        int axisWidth = chart.getSize().x - legendWidth - axesWidth - 10
-                - (legendWidth == 0 ? 0 : 5);
+        int axisWidth = chart.getSize().x
+                - axesWidth
+                - ChartLayout.MARGIN
+                * 2
+                - (legendPosition == SWT.LEFT || legendPosition == SWT.RIGHT ? legendWidth
+                        + (legendWidth == 0 ? 0 : ChartLayout.PADDING)
+                        : 0);
         for (IAxis axis : horizontalAxes) {
             ((Axis) axis).getTick().updateTick(axisWidth);
         }

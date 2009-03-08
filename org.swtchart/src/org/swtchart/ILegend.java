@@ -73,4 +73,23 @@ public interface ILegend {
      *            the font
      */
     void setFont(Font font);
+
+    /**
+     * Gets the position of legend.
+     * 
+     * @return the position of legend.
+     */
+    int getPosition();
+
+    /**
+     * Sets the position of legend. If the position is <tt>SWT.LEFT</tt> or
+     * <tt>SWT.RIGHT</tt>, the orientation of series on legend will be vertical.
+     * If the position is <tt>SWT.TOP</tt> or <tt>SWT.BOTTOM</tt>, the
+     * orientation will be horizontal.
+     * 
+     * @param position
+     *            the position of legend that can be <tt>SWT.LEFT</tt>,
+     *            <tt>SWT.RIGHT</tt>, <tt>SWT.TOP</tt> or <tt>SWT.BOTTOM</tt>.
+     */
+    void setPosition(int position);
 }

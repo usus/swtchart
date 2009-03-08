@@ -64,7 +64,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
     private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
 
     /** the default label format */
-    private static final String DEFAULT_DECIMAL_FORMAT = "############.###########";
+    private static final String DEFAULT_DECIMAL_FORMAT = "#.###########";
 
     /** the line width of axis */
     private static final int LINE_WIDTH = 1;
