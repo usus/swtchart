@@ -215,15 +215,16 @@ public class SeriesLabel implements ISeriesLabel {
      * @return true if decimal format is given
      */
     private boolean isDecimalFormat(String text) {
-        String nonEscapedPart = "";
+        StringBuilder nonEscapedPart = new StringBuilder();
         String[] elements = text.split("'");
         if (elements != null) {
             for (int i = 0; i < elements.length; i += 2) {
-                nonEscapedPart += elements[i];
+                nonEscapedPart.append(elements[i]);
             }
         }
 
-        if (!nonEscapedPart.contains("#") && !nonEscapedPart.contains("0")) {
+        if (nonEscapedPart.indexOf("#") == -1
+                && nonEscapedPart.indexOf("0") == -1) {
             return false;
         }
         return true;
