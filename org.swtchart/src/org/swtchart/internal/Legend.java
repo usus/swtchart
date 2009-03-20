@@ -30,7 +30,6 @@ import org.swtchart.IBarSeries;
 import org.swtchart.ILegend;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
-import org.swtchart.internal.series.BarSeries;
 import org.swtchart.internal.series.LineSeries;
 import org.swtchart.internal.series.Series;
 
@@ -51,7 +50,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     /** the margin */
     private static final int MARGIN = 5;
 
-    /** the symbol width */
+    /** the width of area to draw symbol */
     private static final int SYMBOL_WIDTH = 20;
 
     /** the line width */
@@ -251,7 +250,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         } else if (series instanceof IBarSeries) {
             // draw riser
             gc.setBackground(((IBarSeries) series).getBarColor());
-            int size = BarSeries.INITIAL_WIDTH_IN_PIXELS;
+            int size = SYMBOL_WIDTH / 2;
             int x = (int) (r.x + size / 2d);
             int y = (int) (r.y - size / 2d + r.height / 2d);
             gc.fillRectangle(x, y, size, size);
