@@ -194,9 +194,9 @@ public interface IAxis {
      * Gets the data coordinate corresponding to the given pixel coordinate on
      * plot area.
      * 
-     * @param pixelCoodrinate
+     * @param pixelCoordinate
      *            the pixel coordinate on plot area
      * @return the data coordinate
      */
-    double getDataCoordinate(int pixelCoodrinate);
+    double getDataCoordinate(int pixelCoordinate);
 }
