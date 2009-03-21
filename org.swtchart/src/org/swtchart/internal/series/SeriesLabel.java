@@ -95,7 +95,13 @@ public class SeriesLabel implements ISeriesLabel {
      * @see ISeriesLabel#setFormats(String[])
      */
     public void setFormats(String[] formats) {
-        this.formats = formats;
+        if (formats == null) {
+            this.formats = null;
+            return;
+        }
+        
+        this.formats = new String[formats.length];
+        System.arraycopy(formats, 0, this.formats, 0, formats.length);
     }
 
     /*
