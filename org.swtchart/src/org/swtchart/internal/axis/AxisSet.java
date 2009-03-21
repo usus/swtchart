@@ -327,6 +327,7 @@ public class AxisSet implements IAxisSet {
         int legendWidth = ((ChartLayoutData) ((Legend) chart.getLegend())
                 .getLayoutData()).widthHint;
         int axesWidth = 0;
+
         for (IAxis axis : verticalAxes) {
             axesWidth += ((ChartLayoutData) ((Title) ((Axis) axis).getTitle())
                     .getLayoutData()).widthHint
@@ -335,6 +336,7 @@ public class AxisSet implements IAxisSet {
                     + ((ChartLayoutData) ((Axis) axis).getTick()
                             .getAxisTickMarks().getLayoutData()).widthHint;
         }
+
         int axisWidth = chart.getSize().x
                 - axesWidth
                 - ChartLayout.MARGIN
@@ -342,6 +344,7 @@ public class AxisSet implements IAxisSet {
                 - (legendPosition == SWT.LEFT || legendPosition == SWT.RIGHT ? legendWidth
                         + (legendWidth == 0 ? 0 : ChartLayout.PADDING)
                         : 0);
+
         for (IAxis axis : horizontalAxes) {
             ((Axis) axis).getTick().updateTick(axisWidth);
         }
@@ -356,9 +359,13 @@ public class AxisSet implements IAxisSet {
      *            the vertical axes
      */
     private void updateVerticalTick(IAxis[] horizontalAxes, IAxis[] verticalAxes) {
+        int legendPosition = ((Legend) chart.getLegend()).getPosition();
+        int legendHeight = ((ChartLayoutData) ((Legend) chart.getLegend())
+                .getLayoutData()).heightHint;
         int titleHeight = ((ChartLayoutData) ((Title) chart.getTitle())
                 .getLayoutData()).heightHint;
         int axesHeight = 0;
+
         for (IAxis axis : horizontalAxes) {
             axesHeight += ((ChartLayoutData) ((Title) ((Axis) axis).getTitle())
                     .getLayoutData()).heightHint
@@ -367,8 +374,17 @@ public class AxisSet implements IAxisSet {
                     + ((ChartLayoutData) ((Axis) axis).getTick()
                             .getAxisTickMarks().getLayoutData()).heightHint;
         }
-        int axisHeight = chart.getSize().y - titleHeight - axesHeight - 10
-                - (titleHeight == 0 ? 0 : 5);
+
+        int axisHeight = chart.getSize().y
+                - titleHeight
+                - axesHeight
+                - ChartLayout.MARGIN
+                * 2
+                - (titleHeight == 0 ? 0 : ChartLayout.PADDING)
+                - ((legendPosition == SWT.TOP || legendPosition == SWT.BOTTOM) ? legendHeight
+                        + (legendHeight == 0 ? 0 : ChartLayout.PADDING)
+                        : 0);
+
         for (IAxis axis : verticalAxes) {
             ((Axis) axis).getTick().updateTick(axisHeight);
         }
