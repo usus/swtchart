@@ -280,12 +280,12 @@ public class AxisTickLabels extends Canvas implements PaintListener {
             return;
         }
 
-        double min = axis.getRange().lower;
-        double max = axis.getRange().upper;
+        int min = (int) axis.getRange().lower;
+        int max = (int) axis.getRange().upper;
 
-        int sizeOfTickLabels = (series.length < (int) max - (int) min + 1) ? series.length
-                : (int) max - (int) min + 1;
-        int initialIndex = (min < 0) ? 0 : (int) min;
+        int sizeOfTickLabels = (series.length < max - min + 1) ? series.length
+                : max - min + 1;
+        int initialIndex = (min < 0) ? 0 : min;
 
         for (int i = 0; i < sizeOfTickLabels; i++) {
             tickLabels.add(series[i + initialIndex]);
