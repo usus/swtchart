@@ -16,6 +16,7 @@ import org.swtchart.Constants;
 import org.swtchart.ILineSeries;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
+import org.swtchart.IAxis.Direction;
 import org.swtchart.internal.Util;
 import org.swtchart.internal.axis.Axis;
 import org.swtchart.internal.compress.CompressLineSeries;
@@ -306,62 +307,23 @@ public class LineSeries extends Series implements ILineSeries {
     }
 
     /*
-     * @see Series#getXRangeToDraw(boolean)
+     * @see Series#getAdjustedRange(Axis, int)
      */
     @Override
-    public Range getXRangeToDraw(boolean isLogScale) {
-        int length = chart.getPlotArea().getSize().x;
-        return getRangeToDraw(isLogScale, getXRange(), length);
-    }
+    public Range getAdjustedRange(Axis axis, int length) {
 
-    /*
-     * @see Series#getYRangeToDraw(boolean)
-     */
-    @Override
-    public Range getYRangeToDraw(boolean isLogScale) {
-        int length = chart.getPlotArea().getSize().y;
-        return getRangeToDraw(isLogScale, getYRange(), length);
-    }
-
-    /**
-     * Gets the range to draw.
-     * 
-     * @param isLogScale
-     *            the state indicating if axis is log scale
-     * @param range
-     *            the range
-     * @param length
-     *            the axis length in pixels
-     * @return the range to draw
-     */
-    private Range getRangeToDraw(boolean isLogScale, Range range, int length) {
-        if (length <= 0) {
-            return range;
-        }
-
-        double lowerPlotMargin = getSymbolSize() + MARGIN_AT_MIN_MAX_PLOT;
-        double upperPlotMargin = getSymbolSize() + MARGIN_AT_MIN_MAX_PLOT;
-
-        double upper;
-        double lower;
-        if (isLogScale) {
-            double digitMax = Math.log10(range.upper);
-            double digitMin = Math.log10(range.lower);
-
-            // log(upper) - log(max) = 10 * (log(max) - log(min)) / width
-            upper = Math.pow(10, digitMax + upperPlotMargin
-                    * ((digitMax - digitMin) / length));
-
-            // log(min) - log(lower) = 10 * (log(max) - log(min)) / width
-            lower = Math.pow(10, digitMin - lowerPlotMargin
-                    * ((digitMax - digitMin) / length));
+        Range range;
+        if (axis.getDirection() == Direction.X) {
+            range = getXRange();
         } else {
-            lower = range.lower - (range.upper - range.lower)
-                    * (lowerPlotMargin / length);
-            upper = range.upper + (range.upper - range.lower)
-                    * (upperPlotMargin / length);
+            range = getYRange();
         }
-        return new Range(lower, upper);
+
+        int lowerPlotMargin = getSymbolSize() + MARGIN_AT_MIN_MAX_PLOT;
+        int upperPlotMargin = getSymbolSize() + MARGIN_AT_MIN_MAX_PLOT;
+
+        return getRangeWithMargin(lowerPlotMargin, upperPlotMargin, length,
+                axis, range);
     }
 
     /*

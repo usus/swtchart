@@ -354,14 +354,16 @@ abstract public class Series implements ISeries {
     }
 
     /**
-     * Gets the X range of series to draw. This range includes the size of plot
-     * like symbol or bar.
+     * Gets the adjusted range to show all series in screen. This range includes
+     * the size of plot like symbol or bar.
      * 
-     * @param isLogScale
-     *            true if axis is log scale
-     * @return the X range of series to draw.
+     * @param axis
+     *            the axis
+     * @param length
+     *            the axis length in pixels
+     * @return the adjusted range
      */
-    abstract public Range getXRangeToDraw(boolean isLogScale);
+    abstract public Range getAdjustedRange(Axis axis, int length);
 
     /**
      * Gets the Y range of series.
@@ -389,16 +391,6 @@ abstract public class Series implements ISeries {
         }
         return new Range(min, max);
     }
-
-    /**
-     * Gets the Y range of series to draw. This range includes the size of plot
-     * like symbol or bar.
-     * 
-     * @param isLogScale
-     *            true if axis is log scale
-     * @return the Y range of series to draw.
-     */
-    abstract public Range getYRangeToDraw(boolean isLogScale);
 
     /**
      * Gets the compressor.
@@ -536,6 +528,42 @@ abstract public class Series implements ISeries {
 
         // get the pixel coordinate
         return axis.getPixelCoordinate(dataCoordinate);
+    }
+
+    /**
+     * Gets the range with given margin.
+     * 
+     * @param lowerPlotMargin
+     *            the lower margin in pixels
+     * @param upperPlotMargin
+     *            the upper margin in pixels
+     * @param length
+     *            the axis length in pixels
+     * @param axis
+     *            the axis
+     * @param range
+     *            the range
+     * @return the range with margin
+     */
+    protected Range getRangeWithMargin(int lowerPlotMargin,
+            int upperPlotMargin, int length, Axis axis, Range range) {
+        if (length == 0) {
+            return range;
+        }
+
+        int lowerPixelCoordinate = axis.getPixelCoordinate(range.lower,
+                range.lower, range.upper)
+                + lowerPlotMargin * (axis.isHorizontalAxis() ? -1 : 1);
+        int upperPixelCoordinate = axis.getPixelCoordinate(range.upper,
+                range.lower, range.upper)
+                + upperPlotMargin * (axis.isHorizontalAxis() ? 1 : -1);
+
+        double lower = axis.getDataCoordinate(lowerPixelCoordinate,
+                range.lower, range.upper);
+        double upper = axis.getDataCoordinate(upperPixelCoordinate,
+                range.lower, range.upper);
+
+        return new Range(lower, upper);
     }
 
     /**

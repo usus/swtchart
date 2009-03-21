@@ -323,14 +323,15 @@ public class Axis implements IAxis {
                     continue;
                 }
 
-                Range range;
-                if (direction == Direction.X) {
-                    range = ((Series) series)
-                            .getXRangeToDraw(isLogScaleEnabled());
+                // get axis length
+                int length;
+                if (isHorizontalAxis()) {
+                    length = chart.getPlotArea().getSize().x;
                 } else {
-                    range = ((Series) series)
-                            .getYRangeToDraw(isLogScaleEnabled());
+                    length = chart.getPlotArea().getSize().y;
                 }
+
+                Range range = ((Series) series).getAdjustedRange(this, length);
 
                 if (range.lower < minimum) {
                     minimum = range.lower;
@@ -484,7 +485,7 @@ public class Axis implements IAxis {
                         "Y axis cannot be category axis.");
             }
 
-            if (isValidCategoryAxis()) {
+            if (categorySeries != null && categorySeries.length != 0) {
                 min = (min < 0) ? 0 : (int) min;
                 max = (max >= categorySeries.length) ? max = categorySeries.length - 1
                         : (int) max;
@@ -548,32 +549,50 @@ public class Axis implements IAxis {
      * @see IAxis#getPixelCoordinate(double)
      */
     public int getPixelCoordinate(double dataCoordinate) {
+        return getPixelCoordinate(dataCoordinate, min, max);
+    }
+
+    /**
+     * Gets the pixel coordinate corresponding to the given data coordinate.
+     * 
+     * @param dataCoordinate
+     *            the data coordinate
+     * @param lower
+     *            the min value of range
+     * @param upper
+     *            the max value of range
+     * @return the pixel coordinate on plot area
+     */
+    public int getPixelCoordinate(double dataCoordinate, double lower,
+            double upper) {
         int pixelCoordinate;
         if (isHorizontalAxis()) {
             int width = chart.getPlotArea().getBounds().width;
 
             if (logScaleEnabled) {
                 pixelCoordinate = (int) ((Math.log10(dataCoordinate) - Math
-                        .log10(min))
-                        / (Math.log10(max) - Math.log10(min)) * width);
+                        .log10(lower))
+                        / (Math.log10(upper) - Math.log10(lower)) * width);
             } else if (categoryAxisEnabled) {
-                pixelCoordinate = (int) ((dataCoordinate + 0.5 - min)
-                        / (max + 1 - min) * width);
+                pixelCoordinate = (int) ((dataCoordinate + 0.5 - lower)
+                        / (upper + 1 - lower) * width);
             } else {
-                pixelCoordinate = (int) ((dataCoordinate - min) / (max - min) * width);
+                pixelCoordinate = (int) ((dataCoordinate - lower)
+                        / (upper - lower) * width);
             }
         } else {
             int height = chart.getPlotArea().getBounds().height;
 
             if (logScaleEnabled) {
-                pixelCoordinate = (int) ((Math.log10(max) - Math
+                pixelCoordinate = (int) ((Math.log10(upper) - Math
                         .log10(dataCoordinate))
-                        / (Math.log10(max) - Math.log10(min)) * height);
+                        / (Math.log10(upper) - Math.log10(lower)) * height);
             } else if (categoryAxisEnabled) {
-                pixelCoordinate = (int) ((max - dataCoordinate + 0.5)
-                        / (max + 1 - min) * height);
+                pixelCoordinate = (int) ((upper - dataCoordinate + 0.5)
+                        / (upper + 1 - lower) * height);
             } else {
-                pixelCoordinate = (int) ((max - dataCoordinate) / (max - min) * height);
+                pixelCoordinate = (int) ((upper - dataCoordinate)
+                        / (upper - lower) * height);
             }
         }
         return pixelCoordinate;
@@ -583,36 +602,51 @@ public class Axis implements IAxis {
      * @see IAxis#getDataCoordinate(int)
      */
     public double getDataCoordinate(int pixelCoordinate) {
+        return getDataCoordinate(pixelCoordinate, min, max);
+    }
+
+    /**
+     * Gets the data coordinate corresponding to the given pixel coordinate on
+     * plot area.
+     * 
+     * @param pixelCoordinate
+     *            the pixel coordinate on plot area
+     * @param lower
+     *            the min value of range
+     * @param upper
+     *            the max value of range
+     * @return the data coordinate
+     */
+    public double getDataCoordinate(int pixelCoordinate, double lower,
+            double upper) {
         double dataCoordinate;
         if (isHorizontalAxis()) {
             int width = chart.getPlotArea().getBounds().width;
 
             if (logScaleEnabled) {
-                dataCoordinate = Math
-                        .pow(10, pixelCoordinate / (double) width
-                                * (Math.log10(max) - Math.log10(min))
-                                + Math.log10(min));
+                dataCoordinate = Math.pow(10, pixelCoordinate / (double) width
+                        * (Math.log10(upper) - Math.log10(lower))
+                        + Math.log10(lower));
             } else if (categoryAxisEnabled) {
-                dataCoordinate = pixelCoordinate / (double) width
-                        * (max + 1 - min) + min - 0.5;
+                dataCoordinate = Math.floor(pixelCoordinate / (double) width
+                        * (upper + 1 - lower) + lower);
             } else {
-                dataCoordinate = pixelCoordinate / (double) width * (max - min)
-                        + min;
+                dataCoordinate = pixelCoordinate / (double) width
+                        * (upper - lower) + lower;
             }
         } else {
             int height = chart.getPlotArea().getBounds().height;
 
             if (logScaleEnabled) {
-                dataCoordinate = Math
-                        .pow(10, Math.log10(max) - pixelCoordinate
-                                / (double) height
-                                * (Math.log10(max) - Math.log10(min)));
+                dataCoordinate = Math.pow(10, Math.log10(upper)
+                        - pixelCoordinate / (double) height
+                        * (Math.log10(upper) - Math.log10(lower)));
             } else if (categoryAxisEnabled) {
-                dataCoordinate = max + 0.5 - pixelCoordinate / (double) height
-                        * (max + 1 - min);
+                dataCoordinate = Math.floor(upper + 1 - pixelCoordinate
+                        / (double) height * (upper + 1 - lower));
             } else {
                 dataCoordinate = (height - pixelCoordinate) / (double) height
-                        * (max - min) + min;
+                        * (upper - lower) + lower;
             }
         }
         return dataCoordinate;

@@ -15,6 +15,7 @@ import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.IBarSeries;
 import org.swtchart.Range;
+import org.swtchart.IAxis.Direction;
 import org.swtchart.internal.axis.Axis;
 import org.swtchart.internal.compress.CompressBarSeries;
 import org.swtchart.internal.compress.CompressScatterSeries;
@@ -38,9 +39,6 @@ public class BarSeries extends Series implements IBarSeries {
 
     /** the alpha value */
     private static final int ALPHA = 0xD0;
-
-    /** the initial bar width in pixels */
-    public static final int INITIAL_WIDTH_IN_PIXELS = 10;
 
     /** the margin in pixels attached at the minimum/maximum plot */
     private static final int MARGIN_AT_MIN_MAX_PLOT = 6;
@@ -128,99 +126,30 @@ public class BarSeries extends Series implements IBarSeries {
     }
 
     /*
-     * @see Series#getXRangeToDraw(boolean)
+     * @see Series#getAdjustedRange(Axis, int)
      */
     @Override
-    public Range getXRangeToDraw(boolean isLogScale) {
-
-        Range range = getXRange();
-
-        // get axis width in pixel
-        int width = chart.getPlotArea().getSize().x;
-        if (width <= 0) {
-            return range;
-        }
-
-        double lowerRiserWidth;
-        double upperRiserWidth;
-        if (isLogScale) {
-            lowerRiserWidth = getRaiserWidth(xSeries, 0, range, width, true);
-            upperRiserWidth = getRaiserWidth(xSeries, xSeries.length - 1,
-                    range, width, true);
-        } else {
-            lowerRiserWidth = getRaiserWidth(xSeries, 0, range, width, false);
-            upperRiserWidth = getRaiserWidth(xSeries, xSeries.length - 1,
-                    range, width, false);
-        }
+    public Range getAdjustedRange(Axis axis, int length) {
 
         // calculate a range which has margin
-        double lowerPlotMargin = lowerRiserWidth / 2d + MARGIN_AT_MIN_MAX_PLOT;
-        double upperPlotMargin = upperRiserWidth / 2d + MARGIN_AT_MIN_MAX_PLOT;
-        if (isLogScale) {
-            double digitMax = Math.log10(range.upper);
-            double digitMin = Math.log10(range.lower);
-
-            // log(upper) - log(max) = 10 * (log(max) - log(min)) / width
-            double upper = Math.pow(10, digitMax + upperPlotMargin
-                    * ((digitMax - digitMin) / width));
-
-            // log(min) - log(lower) = 10 * (log(max) - log(min)) / width
-            double lower = Math.pow(10, digitMin - lowerPlotMargin
-                    * ((digitMax - digitMin) / width));
-
-            range = new Range(lower, upper);
+        Range range;
+        int lowerPlotMargin;
+        int upperPlotMargin;
+        if (axis.getDirection() == Direction.X) {
+            double lowerRiserWidth = getRiserWidth(xSeries, 0, axis, minX, maxX);
+            double upperRiserWidth = getRiserWidth(xSeries, xSeries.length - 1,
+                    axis, minX, maxX);
+            lowerPlotMargin = (int) (lowerRiserWidth / 2d + MARGIN_AT_MIN_MAX_PLOT);
+            upperPlotMargin = (int) (upperRiserWidth / 2d + MARGIN_AT_MIN_MAX_PLOT);
+            range = getXRange();
         } else {
-            double lower = range.lower - (range.upper - range.lower)
-                    * (lowerPlotMargin / width);
-            double upper = range.upper + (range.upper - range.lower)
-                    * (upperPlotMargin / width);
-
-            range = new Range(lower, upper);
-        }
-        return range;
-    }
-
-    /*
-     * @see Series#getYRangeToDraw(boolean)
-     */
-    @Override
-    public Range getYRangeToDraw(boolean isLogScale) {
-
-        Range range = getYRange();
-
-        // get axis width in pixel
-        int height = chart.getPlotArea().getSize().y;
-        if (height <= 0) {
-            return range;
+            range = getYRange();
+            lowerPlotMargin = (range.lower == 0) ? 0 : MARGIN_AT_MIN_MAX_PLOT;
+            upperPlotMargin = (range.upper == 0) ? 0 : MARGIN_AT_MIN_MAX_PLOT;
         }
 
-        // calculate a range which has margin
-        double lowerPlotMargin = (range.lower == 0) ? 0
-                : MARGIN_AT_MIN_MAX_PLOT;
-        double upperPlotMargin = (range.upper == 0) ? 0
-                : MARGIN_AT_MIN_MAX_PLOT;
-        if (isLogScale) {
-            double digitMax = Math.log10(range.upper);
-            double digitMin = Math.log10(range.lower);
-
-            // log(upper) - log(max) = 10 * (log(max) - log(min)) / width
-            double upper = Math.pow(10, digitMax + upperPlotMargin
-                    * ((digitMax - digitMin) / height));
-
-            // log(min) - log(lower) = 10 * (log(max) - log(min)) / width
-            double lower = Math.pow(10, digitMin - lowerPlotMargin
-                    * ((digitMax - digitMin) / height));
-
-            range = new Range(lower, upper);
-        } else {
-            double lower = range.lower - (range.upper - range.lower)
-                    * (lowerPlotMargin / height);
-            double upper = range.upper + (range.upper - range.lower)
-                    * (upperPlotMargin / height);
-
-            range = new Range(lower, upper);
-        }
-        return range;
+        return getRangeWithMargin(lowerPlotMargin, upperPlotMargin, length,
+                axis, range);
     }
 
     /*
@@ -228,93 +157,58 @@ public class BarSeries extends Series implements IBarSeries {
      */
     @Override
     protected void draw(GC gc, int width, int height, Axis xAxis, Axis yAxis) {
-        if (xAxis.isValidCategoryAxis()) {
-            drawBarSeriesOnCagetoryAxis(gc, width, height, xAxis, yAxis);
-        } else {
-            drawBarSeries(gc, width, height, xAxis, yAxis);
-        }
-    }
 
-    /**
-     * Draws bar series on category axis.
-     * 
-     * @param gc
-     *            the graphics context
-     * @param width
-     *            the width to draw series
-     * @param height
-     *            the height to draw series
-     * @param xAxis
-     *            the xAxis
-     * @param yAxis
-     *            the xAxis
-     */
-    private void drawBarSeriesOnCagetoryAxis(GC gc, int width, int height,
-            Axis xAxis, Axis yAxis) {
-        int xWidth;
-        int yWidth;
-        boolean isHorizontal = xAxis.isHorizontalAxis();
-        if (isHorizontal) {
-            xWidth = width;
-            yWidth = height;
-        } else {
-            xWidth = height;
-            yWidth = width;
-        }
+        // get x and y series
+        double[] xseries = compressor.getCompressedXSeries();
+        double[] yseries = compressor.getCompressedYSeries();
         Range xRange = xAxis.getRange();
         Range yRange = yAxis.getRange();
-        double[] series;
-        if (stackEnabled) {
-            series = stackSeries;
-        } else {
-            series = getYSeries();
+        if (xAxis.isValidCategoryAxis()) {
+            if (stackEnabled) {
+                yseries = stackSeries;
+            }
         }
 
-        for (int i = (int) xRange.lower; i < xRange.upper + 1; i++) {
-            if (i >= series.length) {
-                break;
-            }
-            double x = (i - xRange.lower + 0.5)
-                    / (xRange.upper - xRange.lower + 1) * xWidth;
-            double riserwidth = xWidth / (xRange.upper - xRange.lower + 1);
+        // draw risers
+        for (int i = 0; i < xseries.length; i++) {
+            int x = xAxis.getPixelCoordinate(xseries[i]);
+            int y = yAxis.getPixelCoordinate(yseries[i]);
+            double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
+                    xRange.upper);
+            double riserHeight = getRiserHeight(i, yAxis, yRange.lower,
+                    yRange.upper);
 
-            double riserHeight;
-            int y;
-            if (yAxis.isLogScaleEnabled()) {
-                double digitMax = Math.log10(yRange.upper);
-                double digitMin = Math.log10(yRange.lower);
-                y = (int) ((Math.log10(series[i]) - digitMin)
-                        / (digitMax - digitMin) * yWidth);
-                riserHeight = getRiserHeight(i, yRange, yWidth, true);
-            } else {
-                y = (int) ((series[i] - yRange.lower)
-                        / (yRange.upper - yRange.lower) * yWidth);
-                riserHeight = getRiserHeight(i, yRange, yWidth, false);
-            }
-            if (y > yWidth) {
-                riserHeight -= y - yWidth;
-                y = yWidth;
-            }
-
-            riserwidth *= (100 - padding) / 100d;
-
+            // adjust riser x coordinate and riser width for multiple series
             int riserCnt = xAxis.getNumRisers();
             if (riserCnt > 1) {
-                x = x - riserwidth / 2d + riserwidth / riserCnt
-                        * (riserIndex + 0.5);
+                x = (int) (x - riserwidth / 2d + riserwidth / riserCnt
+                        * (riserIndex + 0.5));
                 riserwidth /= riserCnt;
             }
 
-            if (isHorizontal) {
-                drawRiser(gc, x, height - y, riserwidth, riserHeight);
-                ((SeriesLabel) seriesLabel).draw(gc, (int) x,
-                        (int) (height - y + riserHeight / 2d), series[i], i,
-                        SWT.CENTER);
+            // draw riser
+            if (xAxis.isHorizontalAxis()) {
+
+                // adjust coordinate for negative series
+                if (y > yAxis.getPixelCoordinate(0)) {
+                    y = yAxis.getPixelCoordinate(0);
+                }
+
+                drawRiser(gc, x, y, riserwidth, riserHeight);
+                ((SeriesLabel) seriesLabel)
+                        .draw(gc, x, (int) (y + riserHeight / 2d), yseries[i],
+                                i, SWT.CENTER);
             } else {
-                drawRiser(gc, y, height - x, riserwidth, riserHeight);
+
+                // adjust coordinate for negative series
+                if (y < yAxis.getPixelCoordinate(0)) {
+                    y = yAxis.getPixelCoordinate(0);
+                }
+
+                drawRiser(gc, y, x, riserwidth, riserHeight);
                 ((SeriesLabel) seriesLabel).draw(gc,
-                        (int) (y - riserHeight / 2d), (int) (height - x),
-                        series[i], i, SWT.CENTER);
+                        (int) (y - riserHeight / 2d), x, yseries[i], i,
+                        SWT.CENTER);
             }
         }
     }
@@ -324,116 +218,18 @@ public class BarSeries extends Series implements IBarSeries {
      * 
      * @param index
      *            the series index
-     * @param yRange
-     *            the y axis range
-     * @param yAxisWidth
-     *            the y axis width
-     * @param isLogScale
-     *            true if the axis is log scale
-     * @return the symbol size in pixels
-     */
-    private double getRiserHeight(int index, Range yRange, int yAxisWidth,
-            boolean isLogScale) {
-        double height;
-
-        if (isLogScale) {
-            double digitMax = Math.log10(yRange.upper);
-            double digitMin = Math.log10(yRange.lower);
-            height = (Math.log10(ySeries[index]) - digitMin)
-                    / (digitMax - digitMin) * yAxisWidth;
-        } else {
-            height = ySeries[index] / (yRange.upper - yRange.lower)
-                    * yAxisWidth;
-        }
-        return height;
-    }
-
-    /**
-     * Draws bar series.
-     * 
-     * @param gc
-     *            the graphics context
-     * @param width
-     *            the width to draw series
-     * @param height
-     *            the height to draw series
-     * @param xAxis
-     *            the xAxis
      * @param yAxis
-     *            the xAxis
+     *            the Y axis
+     * @param min
+     *            the min value of range
+     * @param max
+     *            the max value of range
+     * @return the raiser height in pixels
      */
-    private void drawBarSeries(GC gc, int width, int height, Axis xAxis,
-            Axis yAxis) {
-
-        int xWidth;
-        int yWidth;
-        boolean isHorizontal = xAxis.isHorizontalAxis();
-        if (isHorizontal) {
-            xWidth = width;
-            yWidth = height;
-        } else {
-            xWidth = height;
-            yWidth = width;
-        }
-        Range xRange = xAxis.getRange();
-        Range yRange = yAxis.getRange();
-        double[] xCompressedSeries = compressor.getCompressedXSeries();
-        double[] yCompressedSeries = compressor.getCompressedYSeries();
-
-        for (int i = 0; i < xCompressedSeries.length; i++) {
-            int x;
-            double riserwidth;
-            if (xAxis.isLogScaleEnabled()) {
-                double digitMax = Math.log10(xRange.upper);
-                double digitMin = Math.log10(xRange.lower);
-                x = (int) ((Math.log10(xCompressedSeries[i]) - digitMin)
-                        / (digitMax - digitMin) * xWidth);
-            } else {
-                x = (int) ((xCompressedSeries[i] - xRange.lower)
-                        / (xRange.upper - xRange.lower) * xWidth);
-            }
-            riserwidth = getRaiserWidth(xCompressedSeries, i, xRange, xWidth,
-                    false);
-
-            int y;
-            double riserHeight;
-            if (yAxis.isLogScaleEnabled()) {
-                double digitMax = Math.log10(yRange.upper);
-                double digitMin = Math.log10(yRange.lower);
-                y = (int) ((Math.log10(yCompressedSeries[i]) - digitMin)
-                        / (digitMax - digitMin) * yWidth);
-                riserHeight = y;
-            } else {
-                y = (int) ((yCompressedSeries[i] - yRange.lower)
-                        / (yRange.upper - yRange.lower) * yWidth);
-                riserHeight = y + yRange.lower / (yRange.upper - yRange.lower)
-                        * yWidth;
-            }
-            if (y > yWidth) {
-                riserHeight -= y - yWidth;
-                y = yWidth;
-            }
-            riserwidth *= (100 - padding) / 100d;
-
-            int riserCnt = xAxis.getNumRisers();
-            if (riserCnt > 1) {
-                x = (int) (x - riserwidth / 2d + riserwidth / riserCnt
-                        * (riserIndex + 0.5));
-                riserwidth /= riserCnt;
-            }
-
-            if (isHorizontal) {
-                drawRiser(gc, x, height - y, riserwidth, riserHeight);
-                ((SeriesLabel) seriesLabel).draw(gc, x,
-                        (int) (height - y + riserHeight / 2d),
-                        yCompressedSeries[i], i, SWT.CENTER);
-            } else {
-                drawRiser(gc, y, height - x, riserwidth, riserHeight);
-                ((SeriesLabel) seriesLabel).draw(gc,
-                        (int) (y - riserHeight / 2d), height - x,
-                        yCompressedSeries[i], i, SWT.CENTER);
-            }
-        }
+    private double getRiserHeight(int index, Axis yAxis, double min, double max) {
+        double[] series = compressor.getCompressedYSeries();
+        return Math.abs(yAxis.getPixelCoordinate(series[index], min, max)
+                - yAxis.getPixelCoordinate(0, min, max));
     }
 
     /**
@@ -443,53 +239,39 @@ public class BarSeries extends Series implements IBarSeries {
      *            the X series
      * @param index
      *            the series index
-     * @param xRange
-     *            the x axis range
-     * @param xAxisWidth
-     *            the x axis width
-     * @param isLogScale
-     *            true if the axis is log scale
-     * @return the symbol size in pixels
+     * @param xAxis
+     *            the X axis
+     * @param min
+     *            the min value of range
+     * @param max
+     *            the max value of range
+     * @return the raiser width in pixels
      */
-    private double getRaiserWidth(double[] series, int index, Range xRange,
-            int xAxisWidth, boolean isLogScale) {
-        double width;
-        if (series.length == 1) {
-            width = INITIAL_WIDTH_IN_PIXELS;
-        } else if (index == 0) {
-            if (isLogScale) {
-                width = Math.log10(series[1]) - Math.log10(series[0])
-                        / (Math.log10(xRange.upper) - Math.log10(xRange.lower))
-                        * xAxisWidth;
-            } else {
-                width = (series[1] - series[0]) / (xRange.upper - xRange.lower)
-                        * xAxisWidth;
-            }
-        } else if (index == series.length - 1) {
-            if (isLogScale) {
-                width = Math.log10(series[series.length - 1]
-                        - Math.log10(series[series.length - 2]))
-                        / (Math.log10(xRange.upper) - Math.log10(xRange.lower))
-                        * xAxisWidth;
-            } else {
-                width = (series[series.length - 1] - series[series.length - 2])
-                        / (xRange.upper - xRange.lower) * xAxisWidth;
-            }
-        } else {
-            if (isLogScale) {
-                double plotStep = Math.min(Math.log10(series[index + 1])
-                        - Math.log10(series[index]), Math.log10(series[index])
-                        - Math.log10(series[index - 1]));
-                width = plotStep
-                        / (Math.log10(xRange.upper) - Math.log10(xRange.lower))
-                        * xAxisWidth;
-            } else {
-                double plotStep = Math.min(series[index + 1] - series[index],
-                        series[index] - series[index - 1]);
-                width = plotStep / (xRange.upper - xRange.lower) * xAxisWidth;
+    private int getRiserWidth(double[] series, int index, Axis xAxis,
+            double min, double max) {
 
-            }
+        // get two x coordinates
+        double upper;
+        double lower;
+        if (series.length == 1) {
+            upper = series[0] + 0.5;
+            lower = series[0] - 0.5;
+        } else if (index != series.length - 1
+                && (index == 0 || series[index + 1] - series[index] < series[index]
+                        - series[index - 1])) {
+            upper = series[index + 1];
+            lower = series[index];
+        } else {
+            upper = series[index];
+            lower = series[index - 1];
         }
+
+        // get riser width without padding
+        int width = Math.abs(xAxis.getPixelCoordinate(upper, min, max)
+                - xAxis.getPixelCoordinate(lower, min, max));
+
+        // adjust for padding
+        width *= (100 - padding) / 100d;
 
         // symbol size should be at least more than 1
         if (width == 0) {
