@@ -54,8 +54,8 @@ public class CoordinateConversionExample2 {
         chart.getPlotArea().addMouseMoveListener(new MouseMoveListener() {
             @Override
             public void mouseMove(MouseEvent e) {
-                double x = xAxis.getDataCoordinate(e.y);
-                double y = yAxis.getDataCoordinate(e.x);
+                double x = xAxis.getDataCoordinate(e.x);
+                double y = yAxis.getDataCoordinate(e.y);
                 chart.getPlotArea().setToolTipText("x:" + x + ", y:" + y);
             }
         });
