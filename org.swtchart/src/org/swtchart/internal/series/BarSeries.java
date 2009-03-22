@@ -181,7 +181,7 @@ public class BarSeries extends Series implements IBarSeries {
             int y = yAxis.getPixelCoordinate(yseries[i]);
             double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
                     xRange.upper);
-            double riserHeight = Math.abs(yAxis.getPixelCoordinate(yseries[i],
+            double riserHeight = Math.abs(yAxis.getPixelCoordinate(ySeries[i],
                     yRange.lower, yRange.upper)
                     - yAxis.getPixelCoordinate(0, yRange.lower, yRange.upper));
 
