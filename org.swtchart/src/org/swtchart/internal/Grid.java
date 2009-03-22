@@ -130,6 +130,8 @@ public class Grid implements IGrid {
             if (tickLabelPosition.size() > 1) {
                 step = tickLabelPosition.get(1).intValue()
                         - tickLabelPosition.get(0).intValue();
+            } else {
+                step = xWidth;
             }
             int x = (int) (tickLabelPosition.get(0).intValue() - step / 2d);
 
