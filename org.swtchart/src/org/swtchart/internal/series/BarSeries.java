@@ -161,22 +161,29 @@ public class BarSeries extends Series implements IBarSeries {
         // get x and y series
         double[] xseries = compressor.getCompressedXSeries();
         double[] yseries = compressor.getCompressedYSeries();
-        Range xRange = xAxis.getRange();
-        Range yRange = yAxis.getRange();
         if (xAxis.isValidCategoryAxis()) {
+            xseries = new double[xSeries.length];
+            for (int i = 0; i < xseries.length; i++) {
+                xseries[i] = i;
+            }
             if (stackEnabled) {
                 yseries = stackSeries;
+            } else {
+                yseries = ySeries;
             }
         }
 
         // draw risers
+        Range xRange = xAxis.getRange();
+        Range yRange = yAxis.getRange();
         for (int i = 0; i < xseries.length; i++) {
             int x = xAxis.getPixelCoordinate(xseries[i]);
             int y = yAxis.getPixelCoordinate(yseries[i]);
             double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
                     xRange.upper);
-            double riserHeight = getRiserHeight(i, yAxis, yRange.lower,
-                    yRange.upper);
+            double riserHeight = Math.abs(yAxis.getPixelCoordinate(yseries[i],
+                    yRange.lower, yRange.upper)
+                    - yAxis.getPixelCoordinate(0, yRange.lower, yRange.upper));
 
             // adjust riser x coordinate and riser width for multiple series
             int riserCnt = xAxis.getNumRisers();
@@ -211,25 +218,6 @@ public class BarSeries extends Series implements IBarSeries {
                         SWT.CENTER);
             }
         }
-    }
-
-    /**
-     * Gets the riser height.
-     * 
-     * @param index
-     *            the series index
-     * @param yAxis
-     *            the Y axis
-     * @param min
-     *            the min value of range
-     * @param max
-     *            the max value of range
-     * @return the raiser height in pixels
-     */
-    private double getRiserHeight(int index, Axis yAxis, double min, double max) {
-        double[] series = compressor.getCompressedYSeries();
-        return Math.abs(yAxis.getPixelCoordinate(series[index], min, max)
-                - yAxis.getPixelCoordinate(0, min, max));
     }
 
     /**
