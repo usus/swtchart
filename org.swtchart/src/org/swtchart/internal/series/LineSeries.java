@@ -327,6 +327,73 @@ public class LineSeries extends Series implements ILineSeries {
     }
 
     /*
+     * @see ILineSeries#getAntialias()
+     */
+    public int getAntialias() {
+        return antialias;
+    }
+
+    /*
+     * @see ILineSeries#setAntialias(int)
+     */
+    public void setAntialias(int antialias) {
+        if (antialias != SWT.DEFAULT && antialias != SWT.ON
+                && antialias != SWT.OFF) {
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+        }
+        this.antialias = antialias;
+    }
+
+    /**
+     * Gets the line points to draw line and area.
+     * 
+     * @param xseries
+     *            the horizontal series
+     * @param yseries
+     *            the vertical series
+     * @param index
+     *            the index of series
+     * @param xAxis
+     *            the X axis
+     * @param yAxis
+     *            the Y axis
+     * @return the line points
+     */
+    private int[] getLinePoints(double[] xseries, double[] yseries, int index,
+            Axis xAxis, Axis yAxis) {
+
+        int x1 = xAxis.getPixelCoordinate(xseries[index]);
+        int x2 = xAxis.getPixelCoordinate(xseries[index + 1]);
+        int x3 = x2;
+        int x4 = x1;
+        int y1 = yAxis.getPixelCoordinate(yseries[index]);
+        int y2 = yAxis.getPixelCoordinate(yseries[index + 1]);
+        int y3, y4;
+
+        if (yAxis.isLogScaleEnabled()) {
+            y3 = yAxis.getPixelCoordinate(yAxis.getRange().lower);
+            y4 = y3;
+        } else if (isStackEnabled()) {
+            y3 = yAxis.getPixelCoordinate(yseries[index + 1])
+                    + Math.abs(yAxis.getPixelCoordinate(ySeries[index + 1])
+                            - yAxis.getPixelCoordinate(0))
+                    * (xAxis.isHorizontalAxis() ? 1 : -1);
+            y4 = yAxis.getPixelCoordinate(yseries[index])
+                    + Math.abs(yAxis.getPixelCoordinate(ySeries[index])
+                            - yAxis.getPixelCoordinate(0))
+                    * (xAxis.isHorizontalAxis() ? 1 : -1);
+        } else {
+            y3 = yAxis.getPixelCoordinate(0);
+            y4 = y3;
+        }
+
+        if (xAxis.isHorizontalAxis()) {
+            return new int[] { x1, y1, x2, y2, x3, y3, x4, y4 };
+        }
+        return new int[] { y1, x1, y2, x2, y3, x3, y4, x4 };
+    }
+
+    /*
      * @see Series#draw(GC, int, int, Axis, Axis)
      */
     @Override
@@ -335,20 +402,11 @@ public class LineSeries extends Series implements ILineSeries {
         int oldLineWidth = gc.getLineWidth();
         gc.setAntialias(antialias);
         gc.setLineWidth(lineWidth);
-        if (xAxis.isValidCategoryAxis()) {
-            if (lineStyle != LineStyle.NONE) {
-                drawLineAndAreaOnCategoryAxis(gc, width, height, xAxis, yAxis);
-            }
-            if (getSymbolType() != PlotSymbolType.NONE) {
-                drawSymbolsOnCategoryAxis(gc, width, height, xAxis, yAxis);
-            }
-        } else {
-            if (lineStyle != LineStyle.NONE) {
-                drawLineAndArea(gc, width, height, xAxis, yAxis);
-            }
-            if (getSymbolType() != PlotSymbolType.NONE) {
-                drawSymbols(gc, width, height, xAxis, yAxis);
-            }
+        if (lineStyle != LineStyle.NONE) {
+            drawLineAndArea(gc, width, height, xAxis, yAxis);
+        }
+        if (getSymbolType() != PlotSymbolType.NONE) {
+            drawSymbols(gc, width, height, xAxis, yAxis);
         }
         gc.setAntialias(oldAntialias);
         gc.setLineWidth(oldLineWidth);
@@ -370,313 +428,46 @@ public class LineSeries extends Series implements ILineSeries {
      */
     private void drawLineAndArea(GC gc, int width, int height, Axis xAxis,
             Axis yAxis) {
-        boolean isHorizontal = xAxis.isHorizontalAxis();
-        Range hRange = isHorizontal ? xAxis.getRange() : yAxis.getRange();
-        Range vRange = isHorizontal ? yAxis.getRange() : xAxis.getRange();
 
-        double[] hSeries = getHorizontalSeries(isHorizontal);
-        double[] vSeries = getVerticalSeries(isHorizontal);
-
-        boolean isHAxisLogScale = isHorizontal ? xAxis.isLogScaleEnabled()
-                : yAxis.isLogScaleEnabled();
-        boolean isVAxisLogScale = isHorizontal ? yAxis.isLogScaleEnabled()
-                : xAxis.isLogScaleEnabled();
+        // get x and y series
+        double[] xseries = compressor.getCompressedXSeries();
+        double[] yseries = compressor.getCompressedYSeries();
+        if (xAxis.isValidCategoryAxis()) {
+            xseries = new double[xSeries.length];
+            for (int i = 0; i < xseries.length; i++) {
+                xseries[i] = i;
+            }
+            if (stackEnabled) {
+                yseries = stackSeries;
+            } else {
+                yseries = ySeries;
+            }
+        }
 
         gc.setLineStyle(Util.getIndexDefinedInSWT(lineStyle));
         gc.setForeground(lineColor);
-        for (int i = 0; i < hSeries.length - 1; i++) {
-            if (isVAxisLogScale && i + (int) hRange.lower + 1 > ySeries.length) {
-                break;
-            }
+        boolean isHorizontal = xAxis.isHorizontalAxis();
+        for (int i = 0; i < xseries.length - 1; i++) {
 
-            LinePoints p = getLinePoints(isHAxisLogScale, isVAxisLogScale,
-                    isHorizontal, hRange, vRange, hSeries, vSeries, width,
-                    height, i);
+            int[] p = getLinePoints(xseries, yseries, i, xAxis, yAxis);
 
             // draw line
             if (stepEnabled) {
                 if (isHorizontal) {
-                    gc.drawLine(p.x1, p.y1, p.x2, p.y1);
-                    gc.drawLine(p.x2, p.y1, p.x2, p.y2);
+                    gc.drawLine(p[0], p[1], p[2], p[1]);
+                    gc.drawLine(p[2], p[1], p[2], p[3]);
                 } else {
-                    gc.drawLine(p.x1, p.y1, p.x1, p.y2);
-                    gc.drawLine(p.x1, p.y2, p.x2, p.y2);
+                    gc.drawLine(p[0], p[1], p[0], p[3]);
+                    gc.drawLine(p[0], p[3], p[2], p[3]);
                 }
             } else {
-                gc.drawLine(p.x1, p.y1, p.x2, p.y2);
+                gc.drawLine(p[0], p[1], p[2], p[3]);
             }
 
             // draw area
             if (areaEnabled) {
                 drawArea(gc, p, isHorizontal);
             }
-        }
-    }
-
-    /**
-     * Gets the horizontal series.
-     * 
-     * @param isHorizontal
-     *            the state indicating if the chart is horizontal orientation
-     * @return the horizontal series
-     */
-    private double[] getHorizontalSeries(boolean isHorizontal) {
-        if (isHorizontal) {
-            return compressor.getCompressedXSeries();
-        }
-        return compressor.getCompressedYSeries();
-    }
-
-    /**
-     * Gets the vertical series.
-     * 
-     * @param isHorizontal
-     *            the state indicating if the chart is horizontal orientation
-     * @return the horizontal series
-     */
-    private double[] getVerticalSeries(boolean isHorizontal) {
-        if (isHorizontal) {
-            return compressor.getCompressedYSeries();
-        }
-        return compressor.getCompressedXSeries();
-    }
-
-    /**
-     * Gets the line points to draw line and area.
-     * 
-     * @param isHAxisLogScale
-     *            true if horizontal axis is log scale
-     * @param isVAxisLogScale
-     *            true if vertical axis is log scale
-     * @param isHorizontal
-     *            true if orientation is horizontal
-     * @param hRange
-     *            the horizontal axis range
-     * @param vRange
-     *            the vertical axis range
-     * @param hSeries
-     *            the horizontal series
-     * @param vSeries
-     *            the vertical series
-     * @param width
-     *            the width in pixels
-     * @param height
-     *            the height in pixels
-     * @param i
-     *            the index of series
-     * @return the line points
-     */
-    private LinePoints getLinePoints(boolean isHAxisLogScale,
-            boolean isVAxisLogScale, boolean isHorizontal, Range hRange,
-            Range vRange, double[] hSeries, double[] vSeries, int width,
-            int height, int i) {
-
-        int h1;
-        int h2;
-        if (isHAxisLogScale) {
-            double digitMax = Math.log10(hRange.upper);
-            double digitMin = Math.log10(hRange.lower);
-            h1 = (int) ((Math.log10(hSeries[i]) - digitMin)
-                    / (digitMax - digitMin) * width);
-            h2 = (int) ((Math.log10(hSeries[i + 1]) - digitMin)
-                    / (digitMax - digitMin) * width);
-        } else {
-            h1 = (int) ((hSeries[i] - hRange.lower)
-                    / (hRange.upper - hRange.lower) * width);
-            h2 = (int) ((hSeries[i + 1] - hRange.lower)
-                    / (hRange.upper - hRange.lower) * width);
-        }
-
-        int v1;
-        int v2;
-        if (isVAxisLogScale) {
-            double digitMax = Math.log10(vRange.upper);
-            double digitMin = Math.log10(vRange.lower);
-            v1 = (int) ((Math.log10(vSeries[i]) - digitMin)
-                    / (digitMax - digitMin) * height);
-            v2 = (int) ((Math.log10(vSeries[i + 1]) - digitMin)
-                    / (digitMax - digitMin) * height);
-        } else {
-            v1 = (int) ((vSeries[i] - vRange.lower)
-                    / (vRange.upper - vRange.lower) * height);
-            v2 = (int) ((vSeries[i + 1] - vRange.lower)
-                    / (vRange.upper - vRange.lower) * height);
-        }
-
-        int v0;
-        if (isHorizontal) {
-            if (isVAxisLogScale) {
-                v0 = 0;
-            } else {
-                v0 = (int) ((0 - vRange.lower) / (vRange.upper - vRange.lower) * height);
-            }
-            return new LinePoints(h1, height - v1, h2, height - v2, h2, height
-                    - v0, h1, height - v0);
-        }
-
-        if (isHAxisLogScale) {
-            v0 = 0;
-        } else {
-            v0 = (int) ((0 - hRange.lower) / (hRange.upper - hRange.lower) * width);
-        }
-        return new LinePoints(h1, height - v1, h2, height - v2, v0,
-                height - v2, v0, height - v1);
-    }
-
-    /*
-     * @see ILineSeries#getAntialias()
-     */
-    public int getAntialias() {
-        return antialias;
-    }
-
-    /*
-     * @see ILineSeries#setAntialias(int)
-     */
-    public void setAntialias(int antialias) {
-        if (antialias != SWT.DEFAULT && antialias != SWT.ON
-                && antialias != SWT.OFF) {
-            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-        }
-        this.antialias = antialias;
-    }
-
-    /**
-     * Draws line series on category axis.
-     * 
-     * @param gc
-     *            the graphics context
-     * @param width
-     *            the width to draw series
-     * @param height
-     *            the height to draw series
-     * @param xAxis
-     *            the x axis
-     * @param yAxis
-     *            the y axis
-     */
-    private void drawLineAndAreaOnCategoryAxis(GC gc, int width, int height,
-            Axis xAxis, Axis yAxis) {
-        boolean isHorizontal = xAxis.isHorizontalAxis();
-        boolean isLogScale = yAxis.isLogScaleEnabled();
-
-        Range xRange = xAxis.getRange();
-        Range yRange = yAxis.getRange();
-
-        int xWidth = isHorizontal ? width : height;
-        int yWidth = isHorizontal ? height : width;
-
-        gc.setLineStyle(Util.getIndexDefinedInSWT(lineStyle));
-        gc.setForeground(lineColor);
-        for (int i = (int) xRange.lower - 1; i < (int) xRange.upper + 1; i++) {
-            if (i < 0) {
-                continue;
-            }
-            if (i >= ySeries.length - 1) {
-                break;
-            }
-            if (isLogScale && i + (int) xRange.lower + 1 > ySeries.length) {
-                break;
-            }
-
-            LinePoints p = getLinePointsOnCategoryAxis(isLogScale,
-                    isHorizontal, xRange, yRange, xWidth, yWidth, i);
-
-            // draw line
-            if (stepEnabled) {
-                if (isHorizontal) {
-                    gc.drawLine(p.x1, p.y1, p.x2, p.y1);
-                    gc.drawLine(p.x2, p.y1, p.x2, p.y2);
-                } else {
-                    gc.drawLine(p.x1, p.y1, p.x1, p.y2);
-                    gc.drawLine(p.x1, p.y2, p.x2, p.y2);
-                }
-            } else {
-                gc.drawLine(p.x1, p.y1, p.x2, p.y2);
-            }
-
-            // fill area
-            if (areaEnabled) {
-                drawArea(gc, p, isHorizontal);
-            }
-        }
-    }
-
-    /**
-     * Gets the line points to draw line and area on category axis.
-     * 
-     * @param isLogScale
-     *            true if log scale is enabled
-     * @param isHorizontal
-     *            true if orientation is horizontal
-     * @param xRange
-     *            the x axis range
-     * @param yRange
-     *            the y axis range
-     * @param xWidth
-     *            the x axis width
-     * @param yWidth
-     *            the y axis width
-     * @param i
-     *            the index of category
-     * @return the line points
-     */
-    private LinePoints getLinePointsOnCategoryAxis(boolean isLogScale,
-            boolean isHorizontal, Range xRange, Range yRange, int xWidth,
-            int yWidth, int i) {
-
-        int x1 = (int) ((i + 0.5 - (int) xRange.lower)
-                / ((int) xRange.upper - (int) xRange.lower + 1) * xWidth);
-        int x2 = (int) ((i + 1.5 - (int) xRange.lower)
-                / ((int) xRange.upper - (int) xRange.lower + 1) * xWidth);
-
-        int y1;
-        int y2;
-        if (isLogScale) {
-            double digitMax = Math.log10(yRange.upper);
-            double digitMin = Math.log10(yRange.lower);
-            y1 = (int) ((Math.log10(ySeries[i]) - digitMin)
-                    / (digitMax - digitMin) * yWidth);
-            y2 = (int) ((Math.log10(ySeries[i + 1]) - digitMin)
-                    / (digitMax - digitMin) * yWidth);
-        } else if (stackEnabled) {
-            y1 = (int) ((stackSeries[i] - yRange.lower)
-                    / (yRange.upper - yRange.lower) * yWidth);
-            y2 = (int) ((stackSeries[i + 1] - yRange.lower)
-                    / (yRange.upper - yRange.lower) * yWidth);
-        } else {
-            y1 = (int) ((ySeries[i] - yRange.lower)
-                    / (yRange.upper - yRange.lower) * yWidth);
-            y2 = (int) ((ySeries[i + 1] - yRange.lower)
-                    / (yRange.upper - yRange.lower) * yWidth);
-        }
-
-        if (isLogScale) {
-            if (isHorizontal) {
-                return new LinePoints(x1, yWidth - y1, x2, yWidth - y2, x2,
-                        yWidth - 0, x1, yWidth - 0);
-            }
-            return new LinePoints(y1, xWidth - x1, y2, xWidth - x2, 0, xWidth
-                    - x2, 0, xWidth - x1);
-        } else if (stackEnabled) {
-            int v3 = (int) ((stackSeries[i + 1] - ySeries[i + 1] - yRange.lower)
-                    / (yRange.upper - yRange.lower) * yWidth);
-            int v4 = (int) ((stackSeries[i] - ySeries[i] - yRange.lower)
-                    / (yRange.upper - yRange.lower) * yWidth);
-            if (isHorizontal) {
-                return new LinePoints(x1, yWidth - y1, x2, yWidth - y2, x2,
-                        yWidth - v3, x1, yWidth - v4);
-            }
-            return new LinePoints(y1, xWidth - x1, y2, xWidth - x2, v3, xWidth
-                    - x2, v4, xWidth - x1);
-        } else {
-            int v0 = (int) ((0 - yRange.lower) / (yRange.upper - yRange.lower) * yWidth);
-            if (isHorizontal) {
-                return new LinePoints(x1, yWidth - y1, x2, yWidth - y2, x2,
-                        yWidth - v0, x1, yWidth - v0);
-            }
-            return new LinePoints(y1, xWidth - x1, y2, xWidth - x2, v0, xWidth
-                    - x2, v0, xWidth - x1);
         }
     }
 
@@ -690,7 +481,7 @@ public class LineSeries extends Series implements ILineSeries {
      * @param isHorizontal
      *            true if orientation is horizontal
      */
-    private void drawArea(GC gc, LinePoints p, boolean isHorizontal) {
+    private void drawArea(GC gc, int[] p, boolean isHorizontal) {
         int alpha = gc.getAlpha();
         gc.setAlpha(ALPHA);
         gc.setBackground(lineColor);
@@ -698,15 +489,15 @@ public class LineSeries extends Series implements ILineSeries {
         int[] pointArray;
         if (stepEnabled) {
             if (isHorizontal) {
-                pointArray = new int[] { p.x1, p.y1, p.x2, p.y1, p.x3, p.y4,
-                        p.x4, p.y4, p.x1, p.y1 };
+                pointArray = new int[] { p[0], p[1], p[2], p[1], p[4], p[7],
+                        p[6], p[7], p[0], p[1] };
             } else {
-                pointArray = new int[] { p.x1, p.y1, p.x1, p.y2, p.x4, p.y3,
-                        p.x4, p.y4, p.x1, p.y1 };
+                pointArray = new int[] { p[0], p[1], p[0], p[3], p[6], p[5],
+                        p[6], p[7], p[0], p[1] };
             }
         } else {
-            pointArray = new int[] { p.x1, p.y1, p.x2, p.y2, p.x3, p.y3, p.x4,
-                    p.y4, p.x1, p.y1 };
+            pointArray = new int[] { p[0], p[1], p[2], p[3], p[4], p[5], p[6],
+                    p[7], p[0], p[1] };
         }
 
         gc.fillPolygon(pointArray);
@@ -730,47 +521,36 @@ public class LineSeries extends Series implements ILineSeries {
     private void drawSymbols(GC gc, int width, int height, Axis xAxis,
             Axis yAxis) {
 
-        boolean isHorizontal = xAxis.isHorizontalAxis();
-        Range hRange = isHorizontal ? xAxis.getRange() : yAxis.getRange();
-        Range vRange = isHorizontal ? yAxis.getRange() : xAxis.getRange();
-
-        double[] hSeries = getHorizontalSeries(isHorizontal);
-        double[] vSeries = getVerticalSeries(isHorizontal);
-
-        boolean isHLogScale = isHorizontal ? xAxis.isLogScaleEnabled() : yAxis
-                .isLogScaleEnabled();
-        boolean isVLogScale = isHorizontal ? yAxis.isLogScaleEnabled() : xAxis
-                .isLogScaleEnabled();
-
-        for (int i = 0; i < hSeries.length; i++) {
-            int h;
-            if (isHLogScale) {
-                double digitMax = Math.log10(hRange.upper);
-                double digitMin = Math.log10(hRange.lower);
-                h = (int) ((Math.log10(hSeries[i]) - digitMin)
-                        / (digitMax - digitMin) * width);
-            } else {
-                h = (int) ((hSeries[i] - hRange.lower)
-                        / (hRange.upper - hRange.lower) * width);
+        // get x and y series
+        double[] xseries = compressor.getCompressedXSeries();
+        double[] yseries = compressor.getCompressedYSeries();
+        if (xAxis.isValidCategoryAxis()) {
+            xseries = new double[xSeries.length];
+            for (int i = 0; i < xseries.length; i++) {
+                xseries[i] = i;
             }
-
-            int v;
-            if (isVLogScale) {
-                double digitMax = Math.log10(vRange.upper);
-                double digitMin = Math.log10(vRange.lower);
-                v = (int) ((Math.log10(vSeries[i]) - digitMin)
-                        / (digitMax - digitMin) * height);
+            if (stackEnabled) {
+                yseries = stackSeries;
             } else {
-                v = (int) ((vSeries[i] - vRange.lower)
-                        / (vRange.upper - vRange.lower) * height);
+                yseries = ySeries;
             }
+        }
 
+        for (int i = 0; i < xseries.length; i++) {
             Color color = symbolColor;
             if (symbolColors != null && symbolColors.length > i) {
                 color = symbolColors[i];
             }
-            drawSeriesSymbol(gc, h, height - v, color);
-            ((SeriesLabel) seriesLabel).draw(gc, h, height - v, vSeries[i], i,
+            int h, v;
+            if (xAxis.isHorizontalAxis()) {
+                h = xAxis.getPixelCoordinate(xseries[i]);
+                v = yAxis.getPixelCoordinate(yseries[i]);
+            } else {
+                v = xAxis.getPixelCoordinate(xseries[i]);
+                h = yAxis.getPixelCoordinate(yseries[i]);
+            }
+            drawSeriesSymbol(gc, h, v, color);
+            ((SeriesLabel) seriesLabel).draw(gc, h, v, yseries[i], i,
                     SWT.BOTTOM);
         }
     }
@@ -834,146 +614,5 @@ public class LineSeries extends Series implements ILineSeries {
             break;
         }
         gc.setAntialias(oldAntialias);
-    }
-
-    /**
-     * Draws series symbol on category axis.
-     * 
-     * @param gc
-     *            the graphics context
-     * @param width
-     *            the width to draw series
-     * @param height
-     *            the height to draw series
-     * @param xAxis
-     *            the x axis
-     * @param yAxis
-     *            the y axis
-     */
-    private void drawSymbolsOnCategoryAxis(GC gc, int width, int height,
-            Axis xAxis, Axis yAxis) {
-        boolean isHorizontal = xAxis.isHorizontalAxis();
-        boolean isLogScale = yAxis.isLogScaleEnabled();
-
-        Range xRange = xAxis.getRange();
-        Range yRange = yAxis.getRange();
-
-        int xWidth = isHorizontal ? width : height;
-        int yWidth = isHorizontal ? height : width;
-
-        for (int i = (int) xRange.lower; i < (int) xRange.upper + 1; i++) {
-            if (i >= ySeries.length) {
-                break;
-            }
-            int x = (int) ((i - (int) xRange.lower + 0.5)
-                    / ((int) xRange.upper - (int) xRange.lower + 1) * xWidth);
-
-            int y;
-            if (isLogScale) {
-                double digitMax = Math.log10(yRange.upper);
-                double digitMin = Math.log10(yRange.lower);
-                y = (int) ((Math.log10(ySeries[i]) - digitMin)
-                        / (digitMax - digitMin) * yWidth);
-            } else if (stackEnabled) {
-                y = (int) ((stackSeries[i] - yRange.lower)
-                        / (yRange.upper - yRange.lower) * yWidth);
-            } else {
-                y = (int) ((ySeries[i] - yRange.lower)
-                        / (yRange.upper - yRange.lower) * yWidth);
-            }
-
-            Color color = symbolColor;
-            if (symbolColors != null && symbolColors.length > i) {
-                color = symbolColors[i];
-            }
-
-            if (isHorizontal) {
-                drawSeriesSymbol(gc, x, height - y, color);
-                ((SeriesLabel) seriesLabel).draw(gc, x, height - y, ySeries[i],
-                        i, SWT.BOTTOM);
-            } else {
-                drawSeriesSymbol(gc, y, height - x, color);
-                ((SeriesLabel) seriesLabel).draw(gc, y, height - x, ySeries[i],
-                        i, SWT.BOTTOM);
-            }
-        }
-    }
-
-    /**
-     * The line points to draw either a line between plots or an area.
-     */
-    private static class LinePoints {
-
-        /** the x coordinate of first point of line */
-        public int x1;
-
-        /** the y coordinate of first point of line */
-        public int y1;
-
-        /** the x coordinate of second point of line */
-        public int x2;
-
-        /** the y coordinate of second point of line */
-        public int y2;
-
-        /** the x coordinate of third point of line to draw area */
-        public int x3;
-
-        /** the y coordinate of third point of line to draw area */
-        public int y3;
-
-        /** the x coordinate of fourth point of line to draw area */
-        public int x4;
-
-        /** the y coordinate of fourth point of line to draw area */
-        public int y4;
-
-        /**
-         * The constructor.
-         * 
-         * @param x1
-         *            the x coordinate of first point of line
-         * @param y1
-         *            the y coordinate of first point of line
-         * @param x2
-         *            the x coordinate of second point of line
-         * @param y2
-         *            the y coordinate of second point of line
-         * @param x3
-         *            the x coordinate of third point of line to draw area
-         * @param y3
-         *            the y coordinate of third point of line to draw area
-         * @param x4
-         *            the x coordinate of fourth point of line to draw area
-         * @param y4
-         *            the y coordinate of fourth point of line to draw area
-         */
-        public LinePoints(int x1, int y1, int x2, int y2, int x3, int y3,
-                int x4, int y4) {
-            this(x1, y1, x2, y2);
-            this.x3 = x3;
-            this.y3 = y3;
-            this.x4 = x4;
-            this.y4 = y4;
-        }
-
-        /**
-         * The constructor.
-         * 
-         * @param x1
-         *            the x coordinate of first point of line
-         * @param y1
-         *            the y coordinate of first point of line
-         * @param x2
-         *            the x coordinate of second point of line
-         * @param y2
-         *            the y coordinate of second point of line
-         */
-        public LinePoints(int x1, int y1, int x2, int y2) {
-            this.x1 = x1;
-            this.y1 = y1;
-            this.x2 = x2;
-            this.y2 = y2;
-        }
     }
 }
