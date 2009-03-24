@@ -144,6 +144,13 @@ public class BarSeries extends Series implements IBarSeries {
             range = getXRange();
         } else {
             range = getYRange();
+            if (range.upper < 0) {
+                range.upper = 0;
+            }
+            if (range.lower > 0) {
+                range.lower = axis.isLogScaleEnabled() ? axis.getRange().lower
+                        : 0;
+            }
             lowerPlotMargin = (range.lower == 0) ? 0 : MARGIN_AT_MIN_MAX_PLOT;
             upperPlotMargin = (range.upper == 0) ? 0 : MARGIN_AT_MIN_MAX_PLOT;
         }
@@ -159,31 +166,32 @@ public class BarSeries extends Series implements IBarSeries {
     protected void draw(GC gc, int width, int height, Axis xAxis, Axis yAxis) {
 
         // get x and y series
-        double[] xseries = compressor.getCompressedXSeries();
-        double[] yseries = compressor.getCompressedYSeries();
+        double[] xseries, yseries;
         if (xAxis.isValidCategoryAxis()) {
             xseries = new double[xSeries.length];
-            for (int i = 0; i < xseries.length; i++) {
+            for (int i = 0; i < xSeries.length; i++) {
                 xseries[i] = i;
             }
-            if (stackEnabled) {
-                yseries = stackSeries;
-            } else {
-                yseries = ySeries;
-            }
+            yseries = ySeries;
+        } else {
+            xseries = compressor.getCompressedXSeries();
+            yseries = compressor.getCompressedYSeries();
         }
 
         // draw risers
         Range xRange = xAxis.getRange();
         Range yRange = yAxis.getRange();
         for (int i = 0; i < xseries.length; i++) {
+            double yData = isValidStackSeries() ? stackSeries[i] : yseries[i];
             int x = xAxis.getPixelCoordinate(xseries[i]);
-            int y = yAxis.getPixelCoordinate(yseries[i]);
+            int y = yAxis.getPixelCoordinate(yData);
             double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
                     xRange.upper);
-            double riserHeight = Math.abs(yAxis.getPixelCoordinate(ySeries[i],
+            double riserHeight = Math.abs(yAxis.getPixelCoordinate(yseries[i],
                     yRange.lower, yRange.upper)
-                    - yAxis.getPixelCoordinate(0, yRange.lower, yRange.upper));
+                    - yAxis.getPixelCoordinate(
+                            yAxis.isLogScaleEnabled() ? yRange.lower : 0,
+                            yRange.lower, yRange.upper));
 
             // adjust riser x coordinate and riser width for multiple series
             int riserCnt = xAxis.getNumRisers();
@@ -202,9 +210,8 @@ public class BarSeries extends Series implements IBarSeries {
                 }
 
                 drawRiser(gc, x, y, riserwidth, riserHeight);
-                ((SeriesLabel) seriesLabel)
-                        .draw(gc, x, (int) (y + riserHeight / 2d), yseries[i],
-                                i, SWT.CENTER);
+                ((SeriesLabel) seriesLabel).draw(gc, x,
+                        (int) (y + riserHeight / 2d), yData, i, SWT.CENTER);
             } else {
 
                 // adjust coordinate for negative series
@@ -214,8 +221,7 @@ public class BarSeries extends Series implements IBarSeries {
 
                 drawRiser(gc, y, x, riserwidth, riserHeight);
                 ((SeriesLabel) seriesLabel).draw(gc,
-                        (int) (y - riserHeight / 2d), x, yseries[i], i,
-                        SWT.CENTER);
+                        (int) (y - riserHeight / 2d), x, yData, i, SWT.CENTER);
             }
         }
     }

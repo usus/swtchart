@@ -385,7 +385,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         // gather the stacked series reversing the order of stack series
         int insertIndex = -1;
         for (int i = 0; i < seriesList.size(); i++) {
-            if (isCategoryEnabled && seriesList.get(i).isStackEnabled()) {
+            if (isCategoryEnabled && ((Series) seriesList.get(i)).isValidStackSeries()) {
                 if (insertIndex == -1) {
                     insertIndex = i;
                 } else {

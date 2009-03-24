@@ -219,52 +219,6 @@ public class SeriesSet implements ISeriesSet {
     }
 
     /**
-     * Gets the X range of series.
-     * 
-     * @return the X range of series
-     */
-    protected Range getXRange() {
-        double minX = Double.NaN;
-        double maxX = Double.NaN;
-
-        for (ISeries series : getSeries()) {
-            if (((Series) series).getXRange().lower < minX
-                    || Double.isNaN(minX)) {
-                minX = ((Series) series).getXRange().lower;
-            }
-            if (((Series) series).getXRange().upper < maxX
-                    || Double.isNaN(maxX)) {
-                maxX = ((Series) series).getXRange().upper;
-            }
-        }
-
-        return new Range(minX, maxX);
-    }
-
-    /**
-     * Gets the Y range of series.
-     * 
-     * @return the Y range of series
-     */
-    protected Range getYRange() {
-        double minY = Double.NaN;
-        double maxY = Double.NaN;
-
-        for (ISeries series : getSeries()) {
-            if (((Series) series).getYRange().lower < minY
-                    || Double.isNaN(minY)) {
-                minY = ((Series) series).getYRange().lower;
-            }
-            if (((Series) series).getYRange().upper > maxY
-                    || Double.isNaN(maxY)) {
-                maxY = ((Series) series).getYRange().upper;
-            }
-        }
-
-        return new Range(minY, maxY);
-    }
-
-    /**
      * Compresses all series data.
      */
     public void compressAllSeries() {
@@ -357,7 +311,10 @@ public class SeriesSet implements ISeriesSet {
                 continue;
             }
 
-            if (series.isStackEnabled() && ((Axis) xAxis).isValidCategoryAxis()) {
+            if (series.isStackEnabled()
+                    && !chart.getAxisSet().getYAxis(series.getYAxisId())
+                            .isLogScaleEnabled()
+                    && ((Axis) xAxis).isValidCategoryAxis()) {
                 if (series.getType() == SeriesType.BAR) {
                     if (stackRiserPosition == -1) {
                         stackRiserPosition = riserCnt;

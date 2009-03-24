@@ -339,6 +339,16 @@ abstract public class Series implements ISeries {
     }
 
     /**
+     * Gets the state indicating if the series is valid stack series.
+     * 
+     * @return true if the series is valid stack series
+     */
+    public boolean isValidStackSeries() {
+        return stackEnabled && stackSeries != null && stackSeries.length > 0
+                && !chart.getAxisSet().getYAxis(yAxisId).isLogScaleEnabled();
+    }
+
+    /**
      * Gets the X range of series.
      * 
      * @return the X range of series
@@ -374,20 +384,12 @@ abstract public class Series implements ISeries {
         double min = minY;
         double max = maxY;
         Axis xAxis = (Axis) chart.getAxisSet().getXAxis(xAxisId);
-        Axis yAxis = (Axis) chart.getAxisSet().getYAxis(yAxisId);
-        if (stackEnabled && xAxis.isValidCategoryAxis() && stackSeries != null) {
+        if (isValidStackSeries() && xAxis.isValidCategoryAxis()) {
             for (int i = 0; i < stackSeries.length; i++) {
                 if (max < stackSeries[i]) {
                     max = stackSeries[i];
                 }
             }
-        }
-        if (type == SeriesType.BAR && min > 0 && !yAxis.isLogScaleEnabled()) {
-            min = 0;
-        }
-        if (min == max) {
-            min = min - 0.5;
-            max = max + 0.5;
         }
         return new Range(min, max);
     }
@@ -509,7 +511,7 @@ abstract public class Series implements ISeries {
                 dataCoordinate = xSeries[index];
             }
         } else if (axis.getDirection() == Direction.Y) {
-            if (isStackEnabled()) {
+            if (isValidStackSeries()) {
                 if (index < 0 || stackSeries.length <= index) {
                     throw new IllegalArgumentException(
                             "Series index is out of range."); //$NON-NLS-1$

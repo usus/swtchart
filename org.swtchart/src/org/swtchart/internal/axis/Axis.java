@@ -274,7 +274,7 @@ public class Axis implements IAxis {
      * @return the minimum value of series belonging to this axis
      */
     private double getMinSeriesValue() {
-        double minimum = Double.MAX_VALUE;
+        double minimum = Double.NaN;
         for (ISeries series : chart.getSeriesSet().getSeries()) {
             double lower;
             if (direction == Direction.X && series.getXAxisId() == getId()) {
@@ -286,7 +286,7 @@ public class Axis implements IAxis {
                 continue;
             }
 
-            if (lower < minimum) {
+            if (Double.isNaN(minimum) || lower < minimum) {
                 minimum = lower;
             }
         }
@@ -313,36 +313,44 @@ public class Axis implements IAxis {
     public void adjustRange() {
         if (isValidCategoryAxis()) {
             setRange(new Range(0, categorySeries.length - 1));
-        } else {
-            double minimum = Double.MAX_VALUE;
-            double maximum = Double.MIN_VALUE;
-            for (ISeries series : chart.getSeriesSet().getSeries()) {
-                int axisId = direction == Direction.X ? series.getXAxisId()
-                        : series.getYAxisId();
-                if (!series.isVisible() || getId() != axisId) {
-                    continue;
-                }
+            return;
+        }
 
-                // get axis length
-                int length;
-                if (isHorizontalAxis()) {
-                    length = chart.getPlotArea().getSize().x;
-                } else {
-                    length = chart.getPlotArea().getSize().y;
-                }
-
-                Range range = ((Series) series).getAdjustedRange(this, length);
-
-                if (range.lower < minimum) {
-                    minimum = range.lower;
-                }
-                if (range.upper > maximum) {
-                    maximum = range.upper;
-                }
+        double minimum = Double.NaN;
+        double maximum = Double.NaN;
+        for (ISeries series : chart.getSeriesSet().getSeries()) {
+            int axisId = direction == Direction.X ? series.getXAxisId()
+                    : series.getYAxisId();
+            if (!series.isVisible() || getId() != axisId) {
+                continue;
             }
-            if (minimum < Double.MAX_VALUE && maximum > Double.MIN_VALUE) {
-                setRange(new Range(minimum, maximum));
+
+            // get axis length
+            int length;
+            if (isHorizontalAxis()) {
+                length = chart.getPlotArea().getSize().x;
+            } else {
+                length = chart.getPlotArea().getSize().y;
             }
+
+            // get min and max value of series
+            Range range = ((Series) series).getAdjustedRange(this, length);
+            if (Double.isNaN(minimum) || range.lower < minimum) {
+                minimum = range.lower;
+            }
+            if (Double.isNaN(maximum) || range.upper > maximum) {
+                maximum = range.upper;
+            }
+        }
+
+        // set adjusted range
+        if (!Double.isNaN(minimum) && !Double.isNaN(maximum)) {
+            if (minimum == maximum) {
+                double margin = Math.abs(minimum / 2d);
+                minimum -= margin;
+                maximum += margin;
+            }
+            setRange(new Range(minimum, maximum));
         }
     }
 
@@ -454,6 +462,13 @@ public class Axis implements IAxis {
         setRange(new Range(lower, upper));
     }
 
+    /*
+     * @see IAxis#isCategoryEnabled()
+     */
+    public boolean isCategoryEnabled() {
+        return categoryAxisEnabled;
+    }
+
     /**
      * Gets the state indicating if the axis is valid category axis.
      * 
@@ -462,13 +477,6 @@ public class Axis implements IAxis {
     public boolean isValidCategoryAxis() {
         return categoryAxisEnabled && categorySeries != null
                 && categorySeries.length != 0;
-    }
-
-    /*
-     * @see IAxis#isCategoryEnabled()
-     */
-    public boolean isCategoryEnabled() {
-        return categoryAxisEnabled;
     }
 
     /*

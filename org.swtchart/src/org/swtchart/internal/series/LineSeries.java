@@ -373,7 +373,7 @@ public class LineSeries extends Series implements ILineSeries {
         if (yAxis.isLogScaleEnabled()) {
             y3 = yAxis.getPixelCoordinate(yAxis.getRange().lower);
             y4 = y3;
-        } else if (isStackEnabled()) {
+        } else if (isValidStackSeries()) {
             y3 = yAxis.getPixelCoordinate(yseries[index + 1])
                     + Math.abs(yAxis.getPixelCoordinate(ySeries[index + 1])
                             - yAxis.getPixelCoordinate(0))
@@ -437,7 +437,7 @@ public class LineSeries extends Series implements ILineSeries {
             for (int i = 0; i < xseries.length; i++) {
                 xseries[i] = i;
             }
-            if (stackEnabled) {
+            if (isValidStackSeries()) {
                 yseries = stackSeries;
             } else {
                 yseries = ySeries;
@@ -529,7 +529,7 @@ public class LineSeries extends Series implements ILineSeries {
             for (int i = 0; i < xseries.length; i++) {
                 xseries[i] = i;
             }
-            if (stackEnabled) {
+            if (isValidStackSeries()) {
                 yseries = stackSeries;
             } else {
                 yseries = ySeries;
