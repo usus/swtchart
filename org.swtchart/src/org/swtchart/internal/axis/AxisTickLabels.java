@@ -66,9 +66,6 @@ public class AxisTickLabels extends Canvas implements PaintListener {
     /** the default label format */
     private static final String DEFAULT_DECIMAL_FORMAT = "#.###########";
 
-    /** the line width of axis */
-    private static final int LINE_WIDTH = 1;
-
     /** the possible tick steps */
     private Map<Integer, Integer[]> possibleTickSteps;
 
@@ -251,8 +248,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
             tickLabelValues.add(Double.valueOf(cal.getTimeInMillis()));
             tickLabels.add(format(cal.getTimeInMillis()));
             int tickLabelPosition = (int) ((cal.getTimeInMillis() - min)
-                    / (max - min) * length)
-                    - LINE_WIDTH;
+                    / (max - min) * length);
             tickLabelPositions.add(tickLabelPosition);
             if (tickStepUnit == Calendar.MONTH) {
                 month += step;
@@ -290,8 +286,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         for (int i = 0; i < sizeOfTickLabels; i++) {
             tickLabels.add(series[i + initialIndex]);
 
-            int tickLabelPosition = (int) (length * (i + 0.5) / sizeOfTickLabels)
-                    - LINE_WIDTH;
+            int tickLabelPosition = (int) (length * (i + 0.5) / sizeOfTickLabels);
             tickLabelPositions.add(tickLabelPosition);
         }
     }
@@ -336,8 +331,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
                 int tickLabelPosition = (int) ((Math.log10(j.doubleValue()) - Math
                         .log10(min))
-                        / (Math.log10(max) - Math.log10(min)) * length)
-                        - LINE_WIDTH;
+                        / (Math.log10(max) - Math.log10(min)) * length);
                 tickLabelPositions.add(tickLabelPosition);
             }
             tickStep = tickStep.multiply(pow(10, 1));
@@ -401,8 +395,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
             tickLabelValues.add(b.doubleValue());
 
             int tickLabelPosition = (int) ((b.doubleValue() - min)
-                    / (max - min) * length)
-                    - LINE_WIDTH;
+                    / (max - min) * length);
             tickLabelPositions.add(tickLabelPosition);
         }
     }
