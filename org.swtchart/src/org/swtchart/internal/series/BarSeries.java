@@ -196,8 +196,13 @@ public class BarSeries extends Series implements IBarSeries {
             // adjust riser x coordinate and riser width for multiple series
             int riserCnt = xAxis.getNumRisers();
             if (riserCnt > 1) {
-                x = (int) (x - riserwidth / 2d + riserwidth / riserCnt
-                        * (riserIndex + 0.5));
+                if (xAxis.isHorizontalAxis()) {
+                    x = (int) (x - riserwidth / 2d + riserwidth / riserCnt
+                            * (riserIndex + 0.5));
+                } else {
+                    x = (int) (x - riserwidth / 2d + riserwidth / riserCnt
+                            * (riserCnt - riserIndex - 0.5));
+                }
                 riserwidth /= riserCnt;
             }
 
