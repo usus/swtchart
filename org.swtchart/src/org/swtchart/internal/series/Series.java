@@ -149,7 +149,7 @@ abstract public class Series implements ISeries {
      */
     public void enableStack(boolean enabled) {
         if (enabled && minY < 0) {
-            throw new IllegalArgumentException(
+            throw new IllegalStateException(
                     "Stacked series cannot contain minus values.");
         }
 
@@ -280,6 +280,7 @@ abstract public class Series implements ISeries {
             if (axis != null) {
                 axis.enableLogScale(false);
             }
+            stackEnabled = false;
         }
     }
 

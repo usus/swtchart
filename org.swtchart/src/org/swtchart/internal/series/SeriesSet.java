@@ -345,6 +345,10 @@ public class SeriesSet implements ISeriesSet {
      */
     private void setStackSeries(double[] stackSeries, ISeries series) {
         double[] ySeries = series.getYSeries();
+        if (ySeries == null) {
+            return;
+        }
+        
         for (int i = 0; i < stackSeries.length; i++) {
             if (i > ySeries.length) {
                 break;

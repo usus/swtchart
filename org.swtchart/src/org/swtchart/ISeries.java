@@ -74,7 +74,7 @@ public interface ISeries {
      * 
      * @param enabled
      *            true if enabling stack series
-     * @throws IllegalArgumentException
+     * @throws IllegalStateException
      *             if series contains negative values.
      */
     void enableStack(boolean enabled);
