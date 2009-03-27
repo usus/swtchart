@@ -37,12 +37,8 @@ public class CoordinateConversionExample1 {
         // create a chart
         Chart chart = new Chart(shell, SWT.NONE);
 
-        // set titles
-        chart.getTitle().setText("Show Threshold Example");
-        final IAxis xAxis = chart.getAxisSet().getXAxis(0);
+        // get Y axis
         final IAxis yAxis = chart.getAxisSet().getYAxis(0);
-        xAxis.getTitle().setText("Data Points");
-        yAxis.getTitle().setText("Amplitude");
 
         // create line series
         ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(

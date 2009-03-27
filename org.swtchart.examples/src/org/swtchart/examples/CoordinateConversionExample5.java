@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
@@ -17,10 +18,11 @@ import org.swtchart.ISeries.SeriesType;
 /**
  * An example to convert series data coordinate into pixel coordinate.
  */
-public class CoordinateConversionExample4 {
+public class CoordinateConversionExample5 {
 
-    private static final double[] ySeries1 = { 3.0, 2.1, 1.9, 2.3, 3.2 };
-    private static final double[] ySeries2 = { 2.0, 3.1, 0.9, 1.3, 2.2 };
+    private static final double[] ySeries1 = { 0.1, 0.1, 0.2, 0.2, 0.3 };
+    private static final double[] ySeries2 = { 0.5, 0.5, 0.4, 0.3, 0.2 };
+    private static final double[] ySeries3 = { 0.3, 0.2, 0.3, 0.4, 0.4 };
 
     /**
      * The main method.
@@ -31,51 +33,44 @@ public class CoordinateConversionExample4 {
     public static void main(String[] args) {
         Display display = new Display();
         Shell shell = new Shell(display);
-        shell.setText("Bar Bounds Example");
+        shell.setText("Legend Bounds Example");
         shell.setSize(500, 400);
         shell.setLayout(new FillLayout());
 
         // create a chart
         final Chart chart = new Chart(shell, SWT.NONE);
 
-        // create line series
+        // create bar series
         IBarSeries series1 = (IBarSeries) chart.getSeriesSet().createSeries(
                 SeriesType.BAR, "series 1");
         series1.setYSeries(ySeries1);
-
+        series1.setBarColor(new Color(Display.getDefault(), new RGB(80, 240,
+                180)));
         IBarSeries series2 = (IBarSeries) chart.getSeriesSet().createSeries(
                 SeriesType.BAR, "series 2");
         series2.setYSeries(ySeries2);
-        series2.setBarColor(new Color(Display.getDefault(), new RGB(80, 240,
-                180)));
+        series2.setBarColor(new Color(Display.getDefault(), new RGB(255, 200,
+                150)));
+        IBarSeries series3 = (IBarSeries) chart.getSeriesSet().createSeries(
+                SeriesType.BAR, "series 3");
+        series3.setYSeries(ySeries3);
 
         // adjust the axis range
         chart.getAxisSet().adjustRange();
 
-        // add mouse move listener to open tooltip on data point
-        chart.getPlotArea().addMouseMoveListener(new MouseMoveListener() {
+        // add mouse move listener to legend
+        final Control legend = (Control) chart.getLegend();
+        legend.addMouseMoveListener(new MouseMoveListener() {
             @Override
             public void mouseMove(MouseEvent e) {
                 for (ISeries series : chart.getSeriesSet().getSeries()) {
-                    Rectangle[] rs = ((IBarSeries) series).getBounds();
-                    for (int i = 0; i < rs.length; i++) {
-                        if (rs[i] != null) {
-                            if (rs[i].x < e.x && e.x < rs[i].x + rs[i].width
-                                    && rs[i].y < e.y
-                                    && e.y < rs[i].y + rs[i].height) {
-                                setToolTipText(series, i);
-                                return;
-                            }
-                        }
+                    Rectangle r = chart.getLegend().getBounds(series.getId());
+                    if (r.x < e.x && e.x < r.x + r.width && r.y < e.y
+                            && e.y < r.y + r.height) {
+                        legend.setToolTipText(series.getId());
+                        return;
                     }
                 }
-                chart.getPlotArea().setToolTipText(null);
-            }
-
-            private void setToolTipText(ISeries series, int index) {
-                chart.getPlotArea().setToolTipText(
-                        "Series: " + series.getId() + "\nValue: "
-                                + series.getYSeries()[index]);
             }
         });
 

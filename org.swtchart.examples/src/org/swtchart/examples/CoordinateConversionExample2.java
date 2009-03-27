@@ -35,12 +35,9 @@ public class CoordinateConversionExample2 {
         // create a chart
         final Chart chart = new Chart(shell, SWT.NONE);
 
-        // set titles
-        chart.getTitle().setText("Show Mouse Position Example");
+        // get axes
         final IAxis xAxis = chart.getAxisSet().getXAxis(0);
         final IAxis yAxis = chart.getAxisSet().getYAxis(0);
-        xAxis.getTitle().setText("Data Points");
-        yAxis.getTitle().setText("Amplitude");
 
         // create line series
         ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(

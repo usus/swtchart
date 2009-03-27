@@ -10,7 +10,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
-import org.swtchart.IAxis;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
@@ -20,8 +19,8 @@ import org.swtchart.ISeries.SeriesType;
  */
 public class CoordinateConversionExample3 {
 
-    private static final double[] ySeries1 = { 3.0, 2.1, 1.9, 2.3, 3.2 };
-    private static final double[] ySeries2 = { 2.0, 3.1, 0.9, 1.3, 2.2 };
+    private static final double[] ySeries1 = { 0.26, 0.25, 0.29, 0.31, 0.32 };
+    private static final double[] ySeries2 = { 0.32, 0.31, 0.27, 0.28, 0.26 };
 
     /**
      * The main method.
@@ -32,19 +31,12 @@ public class CoordinateConversionExample3 {
     public static void main(String[] args) {
         Display display = new Display();
         Shell shell = new Shell(display);
-        shell.setText("Tooltip Example");
+        shell.setText("Series Coordinate Example");
         shell.setSize(500, 400);
         shell.setLayout(new FillLayout());
 
         // create a chart
         final Chart chart = new Chart(shell, SWT.NONE);
-
-        // set titles
-        chart.getTitle().setText("Tooltip Example");
-        final IAxis xAxis = chart.getAxisSet().getXAxis(0);
-        final IAxis yAxis = chart.getAxisSet().getYAxis(0);
-        xAxis.getTitle().setText("Data Points");
-        yAxis.getTitle().setText("Amplitude");
 
         // create line series
         ILineSeries series1 = (ILineSeries) chart.getSeriesSet()
