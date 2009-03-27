@@ -19,10 +19,10 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
@@ -68,6 +68,9 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     /** the default position */
     private static final int DEFAULT_POSITION = SWT.RIGHT;
 
+    /** the map between series id and cell bounds */
+    private Map<String, Rectangle> cellBounds;
+
     /**
      * Constructor.
      * 
@@ -82,6 +85,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 
         visible = true;
         position = DEFAULT_POSITION;
+        cellBounds = new HashMap<String, Rectangle>();
         setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
                 SWT.NORMAL));
         setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
@@ -94,7 +98,6 @@ public class Legend extends Canvas implements ILegend, PaintListener {
      */
     @Override
     public void setVisible(boolean visible) {
-
         if (this.visible == visible) {
             return;
         }
@@ -171,6 +174,13 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         position = value;
     }
 
+    /*
+     * @see ILegend#getBounds(String)
+     */
+    public Rectangle getBounds(String seriesId) {
+        return cellBounds.get(seriesId);
+    }
+
     /**
      * Update the layout data.
      */
@@ -179,32 +189,52 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         int height = 0;
 
         ISeries[] seriesArray = chart.getSeriesSet().getSeries();
+        Rectangle r = chart.getClientArea();
+        int titleHeight = ((Composite) chart.getTitle()).getSize().y;
+
         if (position == SWT.RIGHT || position == SWT.LEFT) {
+            int columns = 1;
+            int yPosition = MARGIN;
+            int cellHeight = Util.getExtentInGC(getFont(), "dummy").y + MARGIN;
+            int maxCellWidth = 0;
 
-            // find max width of plot id text
-            int max = 0;
             for (ISeries series : seriesArray) {
-                String id = series.getId();
-                int textWidth = Util.getExtentInGC(getFont(), id).x;
-                if (textWidth > max) {
-                    max = textWidth;
+                int textWidth = Util.getExtentInGC(getFont(), series.getId()).x;
+                int cellWidth = textWidth + SYMBOL_WIDTH + MARGIN * 3;
+                maxCellWidth = Math.max(maxCellWidth, cellWidth);
+                if (yPosition + cellHeight < r.height - titleHeight
+                        || yPosition == 0) {
+                    yPosition += cellHeight;
+                } else {
+                    columns++;
+                    yPosition = cellHeight + MARGIN;
                 }
+                cellBounds.put(series.getId(), new Rectangle(maxCellWidth
+                        * (columns - 1), yPosition - cellHeight, cellWidth,
+                        cellHeight));
+                height = Math.max(yPosition, height);
             }
-
-            // set the width and height of legend area
-            if (visible && seriesArray.length != 0) {
-                width = max + SYMBOL_WIDTH + MARGIN * 3;
-            }
-            int step = Util.getExtentInGC(getFont(), "dummy").y + MARGIN;
-            height = MARGIN + seriesArray.length * step;
+            width = maxCellWidth * columns;
         } else if (position == SWT.TOP || position == SWT.BOTTOM) {
+            int rows = 1;
+            int xPosition = 0;
+            int cellHeight = Util.getExtentInGC(getFont(), "dummy").y;
 
             for (ISeries series : seriesArray) {
-                String id = series.getId();
-                int textWidth = Util.getExtentInGC(getFont(), id).x;
-                width += textWidth + SYMBOL_WIDTH + MARGIN * 3;
+                int textWidth = Util.getExtentInGC(getFont(), series.getId()).x;
+                int cellWidth = textWidth + SYMBOL_WIDTH + MARGIN * 3;
+                if (xPosition + cellWidth < r.width || xPosition == 0) {
+                    xPosition += cellWidth;
+                } else {
+                    rows++;
+                    xPosition = cellWidth;
+                }
+                cellBounds.put(series.getId(), new Rectangle(xPosition
+                        - cellWidth, (cellHeight + MARGIN) * (rows - 1)
+                        + MARGIN, cellWidth, cellHeight));
+                width = Math.max(xPosition, width);
             }
-            height = Util.getExtentInGC(getFont(), "dummy").y + MARGIN * 2;
+            height = (cellHeight + MARGIN) * rows + MARGIN;
         }
 
         setLayoutData(new ChartLayoutData(width, height));
@@ -233,7 +263,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
             int lineStyle = Util.getIndexDefinedInSWT(((ILineSeries) series)
                     .getLineStyle());
             int x = r.x;
-            int y = (int) (r.y + r.height / 2d);
+            int y = r.y + r.height / 2;
             if (lineStyle != SWT.NONE) {
                 gc.setLineStyle(lineStyle);
                 gc.drawLine(x, y, x + SYMBOL_WIDTH, y);
@@ -251,7 +281,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
             // draw riser
             gc.setBackground(((IBarSeries) series).getBarColor());
             int size = SYMBOL_WIDTH / 2;
-            int x = (int) (r.x + size / 2d);
+            int x = r.x + size / 2;
             int y = (int) (r.y - size / 2d + r.height / 2d);
             gc.fillRectangle(x, y, size, size);
         }
@@ -261,15 +291,12 @@ public class Legend extends Canvas implements ILegend, PaintListener {
      * @see PaintListener#paintControl(PaintEvent)
      */
     public void paintControl(PaintEvent e) {
-
         if (!visible) {
             return;
         }
 
         GC gc = e.gc;
         gc.setFont(getFont());
-        int width = getSize().x;
-        int height = getSize().y;
         ISeries[] seriesArray = chart.getSeriesSet().getSeries();
         if (seriesArray.length == 0) {
             return;
@@ -279,7 +306,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.setLineWidth(1);
         gc.setForeground(new Color(Display.getDefault(), Constants.GRAY));
-        gc.drawRectangle(0, 0, width - 1, height - 1);
+        gc.drawRectangle(0, 0, getSize().x - 1, getSize().y - 1);
 
         // sort the series array
         ISeries[] sortedSeriesArray = sort(seriesArray);
@@ -288,37 +315,16 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         for (int i = 0; i < sortedSeriesArray.length; i++) {
 
             // draw plot line, symbol etc
-            int xPosition;
-            int yPosition;
             String id = sortedSeriesArray[i].getId();
-            Point extent = Util.getExtentInGC(getFont(), id);
-            if (position == SWT.RIGHT || position == SWT.LEFT) {
-                xPosition = MARGIN;
-                yPosition = MARGIN + i * (extent.y + MARGIN);
-            } else if (position == SWT.TOP || position == SWT.BOTTOM) {
-                xPosition = MARGIN + i * (extent.x + SYMBOL_WIDTH + MARGIN * 3);
-                yPosition = MARGIN;
-            } else {
-                throw new IllegalStateException();
-            }
-            drawSymbol(gc, (Series) sortedSeriesArray[i], new Rectangle(
-                    xPosition, yPosition, SYMBOL_WIDTH,
-                    gc.textExtent("dummy").y));
+            Rectangle r = cellBounds.get(id);
+            drawSymbol(gc, (Series) sortedSeriesArray[i],
+                    new Rectangle(r.x + MARGIN, r.y + MARGIN, SYMBOL_WIDTH,
+                            r.height - MARGIN * 2));
 
             // draw plot id
             gc.setBackground(getBackground());
             gc.setForeground(getForeground());
-            if (position == SWT.RIGHT || position == SWT.LEFT) {
-                xPosition = SYMBOL_WIDTH + MARGIN * 2;
-                yPosition = MARGIN + i * (extent.y + MARGIN);
-            } else if (position == SWT.TOP || position == SWT.BOTTOM) {
-                xPosition = SYMBOL_WIDTH + MARGIN * 2 + i
-                        * (extent.x + SYMBOL_WIDTH + MARGIN * 3);
-                yPosition = MARGIN;
-            } else {
-                throw new IllegalStateException();
-            }
-            gc.drawText(id, xPosition, yPosition);
+            gc.drawText(id, r.x + SYMBOL_WIDTH + MARGIN * 2, r.y);
         }
     }
 
@@ -385,7 +391,8 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         // gather the stacked series reversing the order of stack series
         int insertIndex = -1;
         for (int i = 0; i < seriesList.size(); i++) {
-            if (isCategoryEnabled && ((Series) seriesList.get(i)).isValidStackSeries()) {
+            if (isCategoryEnabled
+                    && ((Series) seriesList.get(i)).isValidStackSeries()) {
                 if (insertIndex == -1) {
                     insertIndex = i;
                 } else {

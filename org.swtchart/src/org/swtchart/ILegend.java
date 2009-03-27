@@ -8,6 +8,7 @@ package org.swtchart;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * A legend for chart.
@@ -92,4 +93,23 @@ public interface ILegend {
      *            <tt>SWT.RIGHT</tt>, <tt>SWT.TOP</tt> or <tt>SWT.BOTTOM</tt>.
      */
     void setPosition(int position);
+
+    /**
+     * Gets the rectangle associated with the given series id on legend. This
+     * method is typically used for mouse listener to check whether mouse cursor
+     * is on legend for a certain series.
+     * <p>
+     * Mouse listener can be added by casting <tt>ILegend</tt> to
+     * <tt>Control</tt>.
+     * 
+     * <pre>
+     * Control legend = (Control) chart.getLegend();
+     * legend.addMouseListener(...);
+     * </pre>
+     * 
+     * @param seriesId
+     *            the series id
+     * @return the rectangle associated with the given series id in pixels.
+     */
+    Rectangle getBounds(String seriesId);
 }
