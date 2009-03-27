@@ -10,6 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
@@ -103,6 +104,109 @@ public class BarSeries extends Series implements IBarSeries {
         }
     }
 
+    /*
+     * @see IBarSeries#getBounds()
+     */
+    public Rectangle[] getBounds() {
+        Rectangle[] compressedBounds = getBoundsForCompressedSeries();
+        if (((Axis) chart.getAxisSet().getXAxis(
+                xAxisId)).isValidCategoryAxis()) {
+            return compressedBounds;
+        }
+
+        Rectangle[] rs = new Rectangle[xSeries.length];
+        double[] comporessedXSeries = compressor.getCompressedXSeries();
+        int cnt = 0;
+        for (int i = 0; i < xSeries.length; i++) {
+            if (comporessedXSeries[cnt] == xSeries[i]) {
+                rs[i] = compressedBounds[cnt++];
+            }
+        }
+        return rs;
+    }
+
+    /**
+     * Gets the array of bar rectangles for compressed series.
+     * 
+     * @return the array of bar rectangles for compressed series
+     */
+    private Rectangle[] getBoundsForCompressedSeries() {
+        Axis xAxis = (Axis) chart.getAxisSet().getXAxis(xAxisId);
+        Axis yAxis = (Axis) chart.getAxisSet().getYAxis(yAxisId);
+
+        // get x and y series
+        double[] xseries, yseries;
+        if (xAxis.isValidCategoryAxis()) {
+            xseries = new double[xSeries.length];
+            for (int i = 0; i < xSeries.length; i++) {
+                xseries[i] = i;
+            }
+            yseries = ySeries;
+        } else {
+            xseries = compressor.getCompressedXSeries();
+            yseries = compressor.getCompressedYSeries();
+        }
+
+        Rectangle[] rectangles = new Rectangle[xseries.length];
+        Range xRange = xAxis.getRange();
+        Range yRange = yAxis.getRange();
+        for (int i = 0; i < xseries.length; i++) {
+            int x = xAxis.getPixelCoordinate(xseries[i]);
+            int y = yAxis
+                    .getPixelCoordinate(isValidStackSeries() ? stackSeries[i]
+                            : yseries[i]);
+            double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
+                    xRange.upper);
+            double riserHeight = Math.abs(yAxis.getPixelCoordinate(yseries[i],
+                    yRange.lower, yRange.upper)
+                    - yAxis.getPixelCoordinate(
+                            yAxis.isLogScaleEnabled() ? yRange.lower : 0,
+                            yRange.lower, yRange.upper));
+
+            // adjust riser x coordinate and riser width for multiple series
+            int riserCnt = xAxis.getNumRisers();
+            if (riserCnt > 1) {
+                if (xAxis.isHorizontalAxis()) {
+                    x = (int) (x - riserwidth / 2d + riserwidth / riserCnt
+                            * (riserIndex + 0.5));
+                } else {
+                    x = (int) (x - riserwidth / 2d + riserwidth / riserCnt
+                            * (riserCnt - riserIndex - 0.5));
+                }
+                riserwidth /= riserCnt;
+            }
+
+            if (xAxis.isHorizontalAxis()) {
+
+                // adjust coordinate for negative series
+                if (y > yAxis.getPixelCoordinate(0)) {
+                    y = yAxis.getPixelCoordinate(0);
+                }
+
+                int width = (int) Math.ceil(riserwidth);
+                width = (width == 0) ? 1 : width;
+
+                rectangles[i] = new Rectangle((int) Math.floor(x - riserwidth
+                        / 2d), y, width, (int) riserHeight);
+            } else {
+
+                // adjust coordinate for negative series
+                if (y < yAxis.getPixelCoordinate(0)) {
+                    y = yAxis.getPixelCoordinate(0);
+                }
+
+                int height = (int) Math.ceil(riserwidth);
+                height = (height == 0) ? 1 : height;
+
+                rectangles[i] = new Rectangle((int) (y - riserHeight),
+                        (int) Math.floor(x - riserwidth / 2d),
+                        (int) riserHeight, height);
+            }
+        }
+
+        return rectangles;
+    }
+
     /**
      * Sets the index of riser in a category.
      * 
@@ -159,78 +263,6 @@ public class BarSeries extends Series implements IBarSeries {
                 axis, range);
     }
 
-    /*
-     * @see Series#draw(GC, int, int, Axis, Axis)
-     */
-    @Override
-    protected void draw(GC gc, int width, int height, Axis xAxis, Axis yAxis) {
-
-        // get x and y series
-        double[] xseries, yseries;
-        if (xAxis.isValidCategoryAxis()) {
-            xseries = new double[xSeries.length];
-            for (int i = 0; i < xSeries.length; i++) {
-                xseries[i] = i;
-            }
-            yseries = ySeries;
-        } else {
-            xseries = compressor.getCompressedXSeries();
-            yseries = compressor.getCompressedYSeries();
-        }
-
-        // draw risers
-        Range xRange = xAxis.getRange();
-        Range yRange = yAxis.getRange();
-        for (int i = 0; i < xseries.length; i++) {
-            double yData = isValidStackSeries() ? stackSeries[i] : yseries[i];
-            int x = xAxis.getPixelCoordinate(xseries[i]);
-            int y = yAxis.getPixelCoordinate(yData);
-            double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
-                    xRange.upper);
-            double riserHeight = Math.abs(yAxis.getPixelCoordinate(yseries[i],
-                    yRange.lower, yRange.upper)
-                    - yAxis.getPixelCoordinate(
-                            yAxis.isLogScaleEnabled() ? yRange.lower : 0,
-                            yRange.lower, yRange.upper));
-
-            // adjust riser x coordinate and riser width for multiple series
-            int riserCnt = xAxis.getNumRisers();
-            if (riserCnt > 1) {
-                if (xAxis.isHorizontalAxis()) {
-                    x = (int) (x - riserwidth / 2d + riserwidth / riserCnt
-                            * (riserIndex + 0.5));
-                } else {
-                    x = (int) (x - riserwidth / 2d + riserwidth / riserCnt
-                            * (riserCnt - riserIndex - 0.5));
-                }
-                riserwidth /= riserCnt;
-            }
-
-            // draw riser
-            if (xAxis.isHorizontalAxis()) {
-
-                // adjust coordinate for negative series
-                if (y > yAxis.getPixelCoordinate(0)) {
-                    y = yAxis.getPixelCoordinate(0);
-                }
-
-                drawRiser(gc, x, y, riserwidth, riserHeight);
-                ((SeriesLabel) seriesLabel).draw(gc, x,
-                        (int) (y + riserHeight / 2d), yData, i, SWT.CENTER);
-            } else {
-
-                // adjust coordinate for negative series
-                if (y < yAxis.getPixelCoordinate(0)) {
-                    y = yAxis.getPixelCoordinate(0);
-                }
-
-                drawRiser(gc, y, x, riserwidth, riserHeight);
-                ((SeriesLabel) seriesLabel).draw(gc,
-                        (int) (y - riserHeight / 2d), x, yData, i, SWT.CENTER);
-            }
-        }
-    }
-
     /**
      * Gets the riser width.
      * 
@@ -281,50 +313,6 @@ public class BarSeries extends Series implements IBarSeries {
     }
 
     /**
-     * Draws symbol.
-     * 
-     * @param gc
-     *            the graphics context
-     * @param h
-     *            the horizontal coordinate
-     * @param v
-     *            the vertical coordinate
-     * @param riserWidth
-     *            the riser width
-     * @param riserHeight
-     *            the riser height
-     */
-    private void drawRiser(GC gc, double h, double v, double riserWidth,
-            double riserHeight) {
-        gc.setBackground(barColor);
-
-        int alpha = gc.getAlpha();
-        gc.setAlpha(ALPHA);
-
-        int x, y, width, height;
-        if (chart.getOrientation() == SWT.HORIZONTAL) {
-            x = (int) Math.floor(h - riserWidth / 2d);
-            y = (int) v;
-            width = (int) Math.ceil(riserWidth);
-            width = (width == 0) ? 1 : width;
-            height = (int) riserHeight;
-        } else {
-            x = (int) (h - riserHeight);
-            y = (int) Math.floor(v - riserWidth / 2d);
-            width = (int) riserHeight;
-            height = (int) Math.ceil(riserWidth);
-            height = (height == 0) ? 1 : height;
-        }
-        gc.fillRectangle(x, y, width, height);
-
-        gc.setLineStyle(SWT.LINE_SOLID);
-        gc.setForeground(getFrameColor(barColor));
-        gc.drawRectangle(x, y, width, height);
-
-        gc.setAlpha(alpha);
-    }
-
-    /**
      * Gets the color for riser frame. The color will be darker or lighter than
      * the given color.
      * 
@@ -342,5 +330,64 @@ public class BarSeries extends Series implements IBarSeries {
         blue *= (blue > 128) ? 0.8 : 1.2;
 
         return new Color(color.getDevice(), red, green, blue);
+    }
+
+    /*
+     * @see Series#draw(GC, int, int, Axis, Axis)
+     */
+    @Override
+    protected void draw(GC gc, int width, int height, Axis xAxis, Axis yAxis) {
+
+        // draw riser
+        Rectangle[] rs = getBoundsForCompressedSeries();
+        for (int i = 0; i < rs.length; i++) {
+            drawRiser(gc, rs[i].x, rs[i].y, rs[i].width, rs[i].height);
+        }
+
+        // draw label
+        if (seriesLabel.isVisible()) {
+            double[] yseries = xAxis.isValidCategoryAxis() ? ySeries
+                    : compressor.getCompressedYSeries();
+            if (seriesLabel.getFormats() != null) {
+                rs = getBounds();
+                yseries = ySeries;
+            }
+
+            for (int i = 0; i < rs.length; i++) {
+                if (rs[i] != null) {
+                    ((SeriesLabel) seriesLabel).draw(gc, rs[i].x + rs[i].width
+                            / 2, rs[i].y + rs[i].height / 2, yseries[i], i,
+                            SWT.CENTER);
+                }
+            }
+        }
+    }
+
+    /**
+     * Draws riser.
+     * 
+     * @param gc
+     *            the graphics context
+     * @param h
+     *            the horizontal coordinate
+     * @param v
+     *            the vertical coordinate
+     * @param width
+     *            the riser width
+     * @param height
+     *            the riser height
+     */
+    private void drawRiser(GC gc, int h, int v, int width, int height) {
+        int alpha = gc.getAlpha();
+        gc.setAlpha(ALPHA);
+
+        gc.setBackground(barColor);
+        gc.fillRectangle(h, v, width, height);
+
+        gc.setLineStyle(SWT.LINE_SOLID);
+        gc.setForeground(getFrameColor(barColor));
+        gc.drawRectangle(h, v, width, height);
+
+        gc.setAlpha(alpha);
     }
 }

@@ -7,6 +7,7 @@
 package org.swtchart;
 
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Bar series.
@@ -42,4 +43,16 @@ public interface IBarSeries extends ISeries {
      *            the bar color
      */
     void setBarColor(Color color);
+
+    /**
+     * Gets the array of bar rectangles. This method is typically used for mouse
+     * listener to check whether mouse cursor is on bar.
+     * <p>
+     * The returned array has the same size as data points. Depending on X axis
+     * range, some bars can be out of screen. In this case, the rectangles for
+     * invisible bars will be <tt>null<tt> in the returned array.
+     * 
+     * @return the array of bar rectangles in pixels.
+     */
+    Rectangle[] getBounds();
 }
