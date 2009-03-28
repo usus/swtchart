@@ -417,7 +417,6 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
         // set the tick label visibility
         int previousPosition = 0;
-        String previousLabel = null;
         for (int i = 0; i < tickLabelPositions.size(); i++) {
 
             // check if there is enough space to draw tick label
@@ -427,21 +426,27 @@ public class AxisTickLabels extends Canvas implements PaintListener {
                         tickLabelPositions.get(i), tickLabels.get(i));
             }
 
-            // check if the same tick label is repeated
-            String currentLabel = tickLabels.get(i);
-            boolean isRepeatSameTick = currentLabel.equals(previousLabel);
-            previousLabel = currentLabel;
-
             // check if the tick label value is major
             boolean isMajorTick = true;
             if (!axis.isValidCategoryAxis() && axis.isLogScaleEnabled()) {
                 isMajorTick = isMajorTick(tickLabelValues.get(i));
             }
 
-            if (!hasSpaceToDraw || isRepeatSameTick || !isMajorTick) {
-                tickVisibilities.set(i, Boolean.FALSE);
-            } else {
+            // check if the same tick label is repeated
+            String currentLabel = tickLabels.get(i);
+            try {
+                double value = Double.parseDouble(currentLabel);
+                if (value != tickLabelValues.get(i)) {
+                    isMajorTick = false;
+                }
+            } catch (NumberFormatException e) {
+                // label is not decimal value but string
+            }
+
+            if (hasSpaceToDraw && isMajorTick) {
                 previousPosition = tickLabelPositions.get(i);
+            } else {
+                tickVisibilities.set(i, Boolean.FALSE);
             }
         }
     }
