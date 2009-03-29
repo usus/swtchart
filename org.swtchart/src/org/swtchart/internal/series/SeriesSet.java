@@ -151,6 +151,9 @@ public class SeriesSet implements ISeriesSet {
             newSeriesMap.put(seriesId, seriesMap.get(seriesId));
         }
         seriesMap = newSeriesMap;
+
+        updateStackAndRiserData();
+        chart.updateLayout();
     }
 
     /*
@@ -162,6 +165,9 @@ public class SeriesSet implements ISeriesSet {
         ISeries series = seriesMap.get(id);
         seriesMap.remove(id);
         seriesMap.put(series.getId(), series);
+
+        updateStackAndRiserData();
+        chart.updateLayout();
     }
 
     /*
@@ -185,6 +191,9 @@ public class SeriesSet implements ISeriesSet {
             newSeriesMap.put(seriesId, seriesMap.get(seriesId));
         }
         seriesMap = newSeriesMap;
+
+        updateStackAndRiserData();
+        chart.updateLayout();
     }
 
     /*
@@ -201,6 +210,9 @@ public class SeriesSet implements ISeriesSet {
             }
         }
         seriesMap = newSeriesMap;
+
+        updateStackAndRiserData();
+        chart.updateLayout();
     }
 
     /**
@@ -348,7 +360,7 @@ public class SeriesSet implements ISeriesSet {
         if (ySeries == null) {
             return;
         }
-        
+
         for (int i = 0; i < stackSeries.length; i++) {
             if (i > ySeries.length) {
                 break;
