@@ -345,8 +345,12 @@ abstract public class Series implements ISeries {
      * @return true if the series is valid stack series
      */
     public boolean isValidStackSeries() {
-        return stackEnabled && stackSeries != null && stackSeries.length > 0
-                && !chart.getAxisSet().getYAxis(yAxisId).isLogScaleEnabled();
+        return stackEnabled
+                && stackSeries != null
+                && stackSeries.length > 0
+                && !chart.getAxisSet().getYAxis(yAxisId).isLogScaleEnabled()
+                && ((Axis) chart.getAxisSet().getXAxis(xAxisId))
+                        .isValidCategoryAxis();
     }
 
     /**

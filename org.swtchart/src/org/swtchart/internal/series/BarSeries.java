@@ -109,8 +109,7 @@ public class BarSeries extends Series implements IBarSeries {
      */
     public Rectangle[] getBounds() {
         Rectangle[] compressedBounds = getBoundsForCompressedSeries();
-        if (((Axis) chart.getAxisSet().getXAxis(
-                xAxisId)).isValidCategoryAxis()) {
+        if (((Axis) chart.getAxisSet().getXAxis(xAxisId)).isValidCategoryAxis()) {
             return compressedBounds;
         }
 
@@ -118,7 +117,8 @@ public class BarSeries extends Series implements IBarSeries {
         double[] comporessedXSeries = compressor.getCompressedXSeries();
         int cnt = 0;
         for (int i = 0; i < xSeries.length; i++) {
-            if (comporessedXSeries[cnt] == xSeries[i]) {
+            if (cnt < comporessedXSeries.length
+                    && comporessedXSeries[cnt] == xSeries[i]) {
                 rs[i] = compressedBounds[cnt++];
             }
         }
