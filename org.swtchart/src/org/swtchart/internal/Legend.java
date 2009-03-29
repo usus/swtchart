@@ -165,13 +165,13 @@ public class Legend extends Canvas implements ILegend, PaintListener {
      * @see ILegend#setPosition(int)
      */
     public void setPosition(int value) {
-        if (position != SWT.LEFT && position != SWT.RIGHT
-                && position != SWT.TOP && position != SWT.BOTTOM) {
+        if (value == SWT.LEFT || value == SWT.RIGHT || value == SWT.TOP
+                || value == SWT.BOTTOM) {
+            position = value;
+        } else {
             position = DEFAULT_POSITION;
-            return;
         }
-
-        position = value;
+        chart.updateLayout();
     }
 
     /*
@@ -195,7 +195,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
      * @return the sorted series array
      */
     private ISeries[] sort(ISeries[] seriesArray) {
-    
+
         // create a map between axis id and series list
         Map<Integer, List<ISeries>> map = new HashMap<Integer, List<ISeries>>();
         for (ISeries series : seriesArray) {
@@ -207,7 +207,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
             list.add(series);
             map.put(axisId, list);
         }
-    
+
         // sort an each series list
         List<ISeries> sortedArray = new ArrayList<ISeries>();
         boolean isVertical = chart.getOrientation() == SWT.VERTICAL;
@@ -217,7 +217,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
             sortedArray.addAll(sort(entry.getValue(), isCategoryEnabled,
                     isVertical));
         }
-    
+
         return sortedArray.toArray(new ISeries[0]);
     }
 
@@ -240,7 +240,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     private List<ISeries> sort(List<ISeries> seriesList,
             boolean isCategoryEnabled, boolean isVertical) {
         List<ISeries> sortedArray = new ArrayList<ISeries>();
-    
+
         // gather the stacked series reversing the order of stack series
         int insertIndex = -1;
         for (int i = 0; i < seriesList.size(); i++) {
@@ -255,12 +255,12 @@ public class Legend extends Canvas implements ILegend, PaintListener {
             }
             sortedArray.add(seriesList.get(i));
         }
-    
+
         // reverse the order of whole series in the case of vertical orientation
         if (isVertical) {
             Collections.reverse(sortedArray);
         }
-    
+
         return sortedArray;
     }
 
@@ -268,6 +268,11 @@ public class Legend extends Canvas implements ILegend, PaintListener {
      * Update the layout data.
      */
     public void updateLayoutData() {
+        if (!visible) {
+            setLayoutData(new ChartLayoutData(0, 0));
+            return;
+        }
+
         int width = 0;
         int height = 0;
 
@@ -275,11 +280,11 @@ public class Legend extends Canvas implements ILegend, PaintListener {
 
         Rectangle r = chart.getClientArea();
         int titleHeight = ((Composite) chart.getTitle()).getSize().y;
+        int cellHeight = Util.getExtentInGC(getFont(), "dummy").y;
 
         if (position == SWT.RIGHT || position == SWT.LEFT) {
             int columns = 1;
             int yPosition = MARGIN;
-            int cellHeight = Util.getExtentInGC(getFont(), "dummy").y + MARGIN;
             int maxCellWidth = 0;
 
             for (ISeries series : seriesArray) {
@@ -287,22 +292,21 @@ public class Legend extends Canvas implements ILegend, PaintListener {
                 int cellWidth = textWidth + SYMBOL_WIDTH + MARGIN * 3;
                 maxCellWidth = Math.max(maxCellWidth, cellWidth);
                 if (yPosition + cellHeight < r.height - titleHeight
-                        || yPosition == 0) {
-                    yPosition += cellHeight;
+                        || yPosition == MARGIN) {
+                    yPosition += cellHeight + MARGIN;
                 } else {
                     columns++;
-                    yPosition = cellHeight + MARGIN;
+                    yPosition = cellHeight + MARGIN * 2;
                 }
                 cellBounds.put(series.getId(), new Rectangle(maxCellWidth
-                        * (columns - 1), yPosition - cellHeight, cellWidth,
-                        cellHeight));
+                        * (columns - 1), yPosition - cellHeight - MARGIN,
+                        cellWidth, cellHeight));
                 height = Math.max(yPosition, height);
             }
             width = maxCellWidth * columns;
         } else if (position == SWT.TOP || position == SWT.BOTTOM) {
             int rows = 1;
             int xPosition = 0;
-            int cellHeight = Util.getExtentInGC(getFont(), "dummy").y;
 
             for (ISeries series : seriesArray) {
                 int textWidth = Util.getExtentInGC(getFont(), series.getId()).x;
