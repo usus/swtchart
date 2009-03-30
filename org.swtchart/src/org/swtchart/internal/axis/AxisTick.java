@@ -42,16 +42,14 @@ public class AxisTick implements IAxisTick {
      * 
      * @param chart
      *            the chart
-     * @param style
-     *            the style
      * @param axis
      *            the axis
      */
-    protected AxisTick(Chart chart, int style, Axis axis) {
+    protected AxisTick(Chart chart, Axis axis) {
         this.chart = chart;
 
-        axisTickLabels = new AxisTickLabels(chart, style, axis);
-        axisTickMarks = new AxisTickMarks(chart, style, axis);
+        axisTickLabels = new AxisTickLabels(chart, axis);
+        axisTickMarks = new AxisTickMarks(chart, axis);
         isVisible = true;
         tickMarkStepHint = DEFAULT_TICK_MARK_STEP_HINT;
     }
@@ -78,6 +76,9 @@ public class AxisTick implements IAxisTick {
      * @see IAxisTick#setForeground(Color)
      */
     public void setForeground(Color color) {
+        if (color != null && color.isDisposed()) {
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+        }
         axisTickMarks.setForeground(color);
         axisTickLabels.setForeground(color);
     }

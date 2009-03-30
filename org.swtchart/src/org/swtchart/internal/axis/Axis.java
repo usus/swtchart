@@ -102,7 +102,7 @@ public class Axis implements IAxis {
 
         grid = new Grid(this);
         title = new AxisTitle(chart, SWT.NONE, this, direction);
-        tick = new AxisTick(chart, SWT.NONE, this);
+        tick = new AxisTick(chart, this);
 
         // sets initial default values
         position = Position.Primary;

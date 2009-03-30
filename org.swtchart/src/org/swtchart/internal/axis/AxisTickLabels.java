@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
@@ -34,10 +34,25 @@ import org.swtchart.internal.Util;
 /**
  * Axis tick labels.
  */
-public class AxisTickLabels extends Canvas implements PaintListener {
+public class AxisTickLabels implements PaintListener {
+
+    /** the chart */
+    private Chart chart;
 
     /** the axis */
     private Axis axis;
+
+    /** the foreground color */
+    private Color foreground;
+
+    /** the width hint of tick labels area */
+    private int widthHint;
+
+    /** the height hint of tick labels area */
+    private int heightHint;
+
+    /** the bounds of tick labels area */
+    private Rectangle bounds;
 
     /** the array of tick label vales */
     private ArrayList<Double> tickLabelValues;
@@ -60,9 +75,6 @@ public class AxisTickLabels extends Canvas implements PaintListener {
     /** the default foreground */
     private static final RGB DEFAULT_FOREGROUND = Constants.BLUE;
 
-    /** the default font */
-    private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
-
     /** the default label format */
     private static final String DEFAULT_DECIMAL_FORMAT = "#.###########";
 
@@ -72,18 +84,19 @@ public class AxisTickLabels extends Canvas implements PaintListener {
     /** the time unit for tick step */
     private int timeUnit;
 
+    /** the font */
+    private Font font;
+
     /**
      * Constructor.
      * 
      * @param chart
      *            the chart
-     * @param style
-     *            the style
      * @param axis
      *            the axis
      */
-    protected AxisTickLabels(Chart chart, int style, Axis axis) {
-        super(chart, style);
+    protected AxisTickLabels(Chart chart, Axis axis) {
+        this.chart = chart;
         this.axis = axis;
 
         tickLabelValues = new ArrayList<Double>();
@@ -93,10 +106,9 @@ public class AxisTickLabels extends Canvas implements PaintListener {
 
         initializePossibleTickSteps();
 
-        setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
-                SWT.NORMAL));
+        font = Display.getDefault().getSystemFont();
         setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
-        addPaintListener(this);
+        chart.addPaintListener(this);
     }
 
     /**
@@ -122,17 +134,27 @@ public class AxisTickLabels extends Canvas implements PaintListener {
         possibleTickSteps.put(Calendar.YEAR, years);
     }
 
-    /*
-     * @see Control#setForeground(Color)
+    /**
+     * Sets the foreground color.
+     * 
+     * @param color
+     *            the foreground color
      */
-    @Override
     public void setForeground(Color color) {
         if (color == null) {
-            super.setForeground(new Color(Display.getDefault(),
-                    DEFAULT_FOREGROUND));
+            foreground = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
         } else {
-            super.setForeground(color);
+            foreground = color;
         }
+    }
+
+    /**
+     * Gets the foreground color.
+     * 
+     * @return the foreground color
+     */
+    protected Color getForeground() {
+        return foreground;
     }
 
     /**
@@ -670,30 +692,93 @@ public class AxisTickLabels extends Canvas implements PaintListener {
     }
 
     /**
+     * Sets the font.
+     * 
+     * @param font
+     *            the font
+     */
+    protected void setFont(Font font) {
+        if (font == null) {
+            this.font = Display.getDefault().getSystemFont();
+        } else {
+            this.font = font;
+        }
+    }
+
+    /**
+     * Gets the font.
+     * 
+     * @return the font
+     */
+    protected Font getFont() {
+        return font;
+    }
+
+    /**
+     * Gets the layout data.
+     * 
+     * @return the layout data
+     */
+    public ChartLayoutData getLayoutData() {
+        return new ChartLayoutData(widthHint, heightHint);
+    }
+
+    /**
+     * Sets the bounds on chart panel.
+     * 
+     * @param x
+     *            the x coordinate
+     * @param y
+     *            the y coordinate
+     * @param width
+     *            the width
+     * @param height
+     *            the height
+     */
+    public void setBounds(int x, int y, int width, int height) {
+        bounds = new Rectangle(x, y, width, height);
+    }
+
+    /**
+     * Gets the bounds on chart panel.
+     * 
+     * @return the bounds on chart panel
+     */
+    protected Rectangle getBounds() {
+        return bounds;
+    }
+
+    /**
+     * Disposes the resources.
+     */
+    protected void dispose() {
+        chart.removePaintListener(this);
+    }
+
+    /**
      * Updates title layout.
      */
     protected void updateLayoutData() {
-        int width = SWT.DEFAULT;
-        int height = SWT.DEFAULT;
+        widthHint = SWT.DEFAULT;
+        heightHint = SWT.DEFAULT;
         if (!axis.getTick().isVisible()) {
-            width = 0;
-            height = 0;
+            widthHint = 0;
+            heightHint = 0;
         } else {
             if (axis.isHorizontalAxis()) {
-                height = Axis.MARGIN
-                        + Util.getExtentInGC(axis.getTick().getAxisTickLabels()
-                                .getFont(), "dummy").y;
+                heightHint = Axis.MARGIN + Util.getExtentInGC(font, "dummy").y;
             } else {
-                width = tickLabelMaxLength + Axis.MARGIN;
+                widthHint = tickLabelMaxLength + Axis.MARGIN;
             }
         }
-        setLayoutData(new ChartLayoutData(width, height));
     }
 
     /*
      * @see PaintListener#paintControl(PaintEvent)
      */
     public void paintControl(PaintEvent e) {
+        e.gc.setBackground(chart.getBackground());
+        e.gc.setForeground(foreground);
         if (axis.isHorizontalAxis()) {
             drawXTick(e.gc);
         } else {
@@ -717,7 +802,7 @@ public class AxisTickLabels extends Canvas implements PaintListener {
                 String text = tickLabels.get(i);
                 int fontWidth = gc.textExtent(text).x;
                 int x = (int) (tickLabelPositions.get(i) - fontWidth / 2.0 + offset);
-                gc.drawText(text, x, 0);
+                gc.drawText(text, bounds.x + x, bounds.y);
             }
         }
     }
@@ -729,7 +814,6 @@ public class AxisTickLabels extends Canvas implements PaintListener {
      *            the graphics context
      */
     private void drawYTick(GC gc) {
-        int height = getSize().y;
         int margin = Axis.MARGIN + AxisTickMarks.TICK_LENGTH;
 
         // draw tick labels
@@ -746,9 +830,9 @@ public class AxisTickLabels extends Canvas implements PaintListener {
                 if (tickLabels.get(0).startsWith("-") && !text.startsWith("-")) {
                     x += gc.textExtent("-").x;
                 }
-                int y = (int) (height - 1 - tickLabelPositions.get(i)
+                int y = (int) (bounds.height - 1 - tickLabelPositions.get(i)
                         - figureHeight / 2.0 - margin);
-                gc.drawText(text, x, y);
+                gc.drawText(text, bounds.x + x, bounds.y + y);
             }
         }
     }

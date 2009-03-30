@@ -14,7 +14,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
@@ -24,10 +24,25 @@ import org.swtchart.internal.ChartLayoutData;
 /**
  * Axis tick marks.
  */
-public class AxisTickMarks extends Canvas implements PaintListener {
+public class AxisTickMarks implements PaintListener {
+
+    /** the chart */
+    private Chart chart;
 
     /** the axis */
     private Axis axis;
+
+    /** the foreground color */
+    private Color foreground;
+
+    /** the width hint of tick marks area */
+    private int widthHint;
+
+    /** the height hint of tick marks area */
+    private int heightHint;
+
+    /** the bounds of tick marks area */
+    private Rectangle bounds;
 
     /** the line width */
     protected static final int LINE_WIDTH = 1;
@@ -48,25 +63,35 @@ public class AxisTickMarks extends Canvas implements PaintListener {
      * @param axis
      *            the axis
      */
-    public AxisTickMarks(Chart chart, int style, Axis axis) {
-        super(chart, style);
+    public AxisTickMarks(Chart chart, Axis axis) {
+        this.chart = chart;
         this.axis = axis;
 
-        setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
-        addPaintListener(this);
+        foreground = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
+        chart.addPaintListener(this);
     }
 
-    /*
-     * @see Control#setForeground(Color)
+    /**
+     * Sets the foreground color.
+     * 
+     * @param color
+     *            the foreground color
      */
-    @Override
     public void setForeground(Color color) {
         if (color == null) {
-            super.setForeground(new Color(Display.getDefault(),
-                    DEFAULT_FOREGROUND));
+            foreground = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
         } else {
-            super.setForeground(color);
+            foreground = color;
         }
+    }
+
+    /**
+     * Gets the foreground color.
+     * 
+     * @return the foreground color
+     */
+    protected Color getForeground() {
+        return foreground;
     }
 
     /**
@@ -82,19 +107,59 @@ public class AxisTickMarks extends Canvas implements PaintListener {
      * Updates title layout.
      */
     protected void updateLayoutData() {
-        int width = SWT.DEFAULT;
-        int height = SWT.DEFAULT;
+        widthHint = SWT.DEFAULT;
+        heightHint = SWT.DEFAULT;
         if (!axis.getTick().isVisible()) {
-            width = 0;
-            height = 0;
+            widthHint = 0;
+            heightHint = 0;
         } else {
             if (axis.isHorizontalAxis()) {
-                height = Axis.MARGIN + TICK_LENGTH;
+                heightHint = Axis.MARGIN + TICK_LENGTH;
             } else {
-                width = TICK_LENGTH + Axis.MARGIN;
+                widthHint = TICK_LENGTH + Axis.MARGIN;
             }
         }
-        setLayoutData(new ChartLayoutData(width, height));
+    }
+
+    /**
+     * Gets the layout data.
+     * 
+     * @return the layout data
+     */
+    public ChartLayoutData getLayoutData() {
+        return new ChartLayoutData(widthHint, heightHint);
+    }
+
+    /**
+     * Sets the bounds on chart panel.
+     * 
+     * @param x
+     *            the x coordinate
+     * @param y
+     *            the y coordinate
+     * @param width
+     *            the width
+     * @param height
+     *            the height
+     */
+    public void setBounds(int x, int y, int width, int height) {
+        bounds = new Rectangle(x, y, width, height);
+    }
+
+    /**
+     * Gets the bounds on chart panel.
+     * 
+     * @return the bounds on chart panel
+     */
+    protected Rectangle getBounds() {
+        return bounds;
+    }
+
+    /**
+     * Disposes the resources.
+     */
+    protected void dispose() {
+        chart.removePaintListener(this);
     }
 
     /*
@@ -103,17 +168,16 @@ public class AxisTickMarks extends Canvas implements PaintListener {
     public void paintControl(PaintEvent e) {
         ArrayList<Integer> tickLabelPositions = axis.getTick()
                 .getAxisTickLabels().getTickLabelPositions();
-
-        int width = getSize().x;
-        int height = getSize().y;
-
+        e.gc.setBackground(chart.getBackground());
+        e.gc.setForeground(foreground);
+        Rectangle oldClipping = e.gc.getClipping();
+        e.gc.setClipping(bounds);
         if (axis.isHorizontalAxis()) {
-            drawXTickMarks(e.gc, tickLabelPositions, axis.getPosition(), width,
-                    height);
+            drawXTickMarks(e.gc, tickLabelPositions, axis.getPosition());
         } else {
-            drawYTickMarks(e.gc, tickLabelPositions, axis.getPosition(), width,
-                    height);
+            drawYTickMarks(e.gc, tickLabelPositions, axis.getPosition());
         }
+        e.gc.setClipping(oldClipping);
     }
 
     /**
@@ -123,15 +187,11 @@ public class AxisTickMarks extends Canvas implements PaintListener {
      *            the tick label positions
      * @param position
      *            the axis position
-     * @param width
-     *            the width to draw tick marks
-     * @param height
-     *            the height to draw tick marks
      * @param gc
      *            the graphics context
      */
     private void drawXTickMarks(GC gc, ArrayList<Integer> tickLabelPositions,
-            Position position, int width, int height) {
+            Position position) {
 
         // draw tick marks
         gc.setLineStyle(SWT.LINE_SOLID);
@@ -141,12 +201,13 @@ public class AxisTickMarks extends Canvas implements PaintListener {
                         - tickLabelPositions.get(0).intValue();
                 int x = (int) (tickLabelPositions.get(0).intValue() - step / 2d);
                 for (int i = 0; i < tickLabelPositions.size() + 1; i++) {
-                    x += step;
                     int y = 0;
                     if (position == Position.Secondary) {
-                        y = height - 1 - LINE_WIDTH - TICK_LENGTH;
+                        y = bounds.height - 1 - LINE_WIDTH - TICK_LENGTH;
                     }
-                    gc.drawLine(x, y, x, y + TICK_LENGTH);
+                    gc.drawLine(bounds.x + x, bounds.y + y, bounds.x + x,
+                            bounds.y + y + TICK_LENGTH);
+                    x += step;
                 }
             }
         } else {
@@ -154,17 +215,20 @@ public class AxisTickMarks extends Canvas implements PaintListener {
                 int x = tickLabelPositions.get(i);
                 int y = 0;
                 if (position == Position.Secondary) {
-                    y = height - 1 - LINE_WIDTH - TICK_LENGTH;
+                    y = bounds.height - 1 - LINE_WIDTH - TICK_LENGTH;
                 }
-                gc.drawLine(x, y, x, y + TICK_LENGTH);
+                gc.drawLine(bounds.x + x, bounds.y + y, bounds.x + x, bounds.y
+                        + y + TICK_LENGTH);
             }
         }
 
         // draw axis line
         if (position == Position.Primary) {
-            gc.drawLine(0, 0, width - 1, 0);
+            gc.drawLine(bounds.x, bounds.y, bounds.x + bounds.width - 1,
+                    bounds.y);
         } else {
-            gc.drawLine(0, height - 1, width - 1, height - 1);
+            gc.drawLine(bounds.x, bounds.y + bounds.height - 1, bounds.x
+                    + bounds.width - 1, bounds.y + bounds.height - 1);
         }
     }
 
@@ -175,15 +239,11 @@ public class AxisTickMarks extends Canvas implements PaintListener {
      *            the tick label positions
      * @param position
      *            the axis position
-     * @param width
-     *            the width to draw tick marks
-     * @param height
-     *            the height to draw tick marks
      * @param gc
      *            the graphics context
      */
     private void drawYTickMarks(GC gc, ArrayList<Integer> tickLabelPositions,
-            Position position, int width, int height) {
+            Position position) {
 
         // draw tick marks
         gc.setLineStyle(SWT.LINE_SOLID);
@@ -193,14 +253,15 @@ public class AxisTickMarks extends Canvas implements PaintListener {
                         - tickLabelPositions.get(0).intValue();
                 int y = (int) (tickLabelPositions.get(0).intValue() - step / 2d);
                 for (int i = 0; i < tickLabelPositions.size() + 1; i++) {
-                    y += step;
                     int x = 0;
                     if (position == Position.Primary) {
-                        x = width - 1 - LINE_WIDTH - TICK_LENGTH;
+                        x = bounds.width - 1 - LINE_WIDTH - TICK_LENGTH;
                     } else {
                         x = LINE_WIDTH;
                     }
-                    gc.drawLine(x, y, x + TICK_LENGTH, y);
+                    gc.drawLine(bounds.x + x, bounds.y + y, bounds.x + x
+                            + TICK_LENGTH, bounds.y + y);
+                    y += step;
                 }
             }
         } else {
@@ -208,20 +269,23 @@ public class AxisTickMarks extends Canvas implements PaintListener {
             for (int i = 0; i < tickLabelPositions.size(); i++) {
                 int x = 0;
                 if (position == Position.Primary) {
-                    x = width - 1 - LINE_WIDTH - TICK_LENGTH;
+                    x = bounds.width - 1 - LINE_WIDTH - TICK_LENGTH;
                 } else {
                     x = LINE_WIDTH;
                 }
-                y = height - 1 - tickLabelPositions.get(i);
-                gc.drawLine(x, y, x + TICK_LENGTH, y);
+                y = bounds.height - 1 - tickLabelPositions.get(i);
+                gc.drawLine(bounds.x + x, bounds.y + y, bounds.x + x
+                        + TICK_LENGTH, bounds.y + y);
             }
         }
 
         // draw axis line
         if (position == Position.Primary) {
-            gc.drawLine(width - 1, 0, width - 1, height - 1);
+            gc.drawLine(bounds.x + bounds.width - 1, bounds.y, bounds.x
+                    + bounds.width - 1, bounds.y + bounds.height - 1);
         } else {
-            gc.drawLine(0, 0, 0, height - 1);
+            gc.drawLine(bounds.x, bounds.y, bounds.x, bounds.y + bounds.height
+                    - 1);
         }
     }
 }

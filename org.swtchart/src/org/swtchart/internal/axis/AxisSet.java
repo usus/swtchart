@@ -331,10 +331,10 @@ public class AxisSet implements IAxisSet {
         for (IAxis axis : verticalAxes) {
             axesWidth += ((ChartLayoutData) ((Title) ((Axis) axis).getTitle())
                     .getLayoutData()).widthHint
-                    + ((ChartLayoutData) ((Axis) axis).getTick()
-                            .getAxisTickLabels().getLayoutData()).widthHint
-                    + ((ChartLayoutData) ((Axis) axis).getTick()
-                            .getAxisTickMarks().getLayoutData()).widthHint;
+                    + ((Axis) axis).getTick().getAxisTickLabels()
+                            .getLayoutData().widthHint
+                    + ((Axis) axis).getTick().getAxisTickMarks()
+                            .getLayoutData().widthHint;
         }
 
         int axisWidth = chart.getSize().x
@@ -369,10 +369,10 @@ public class AxisSet implements IAxisSet {
         for (IAxis axis : horizontalAxes) {
             axesHeight += ((ChartLayoutData) ((Title) ((Axis) axis).getTitle())
                     .getLayoutData()).heightHint
-                    + ((ChartLayoutData) ((Axis) axis).getTick()
-                            .getAxisTickLabels().getLayoutData()).heightHint
-                    + ((ChartLayoutData) ((Axis) axis).getTick()
-                            .getAxisTickMarks().getLayoutData()).heightHint;
+                    + ((Axis) axis).getTick()
+                            .getAxisTickLabels().getLayoutData().heightHint
+                    + ((Axis) axis).getTick().getAxisTickMarks()
+                            .getLayoutData().heightHint;
         }
 
         int axisHeight = chart.getSize().y
