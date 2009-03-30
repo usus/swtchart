@@ -16,7 +16,7 @@ import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
 /**
- * An example to convert series data coordinate into pixel coordinate.
+ * An example to get bounds of items on legend.
  */
 public class CoordinateConversionExample5 {
 
