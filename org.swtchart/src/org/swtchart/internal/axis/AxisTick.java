@@ -11,8 +11,10 @@ import java.text.Format;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Rectangle;
 import org.swtchart.Chart;
 import org.swtchart.IAxisTick;
+import org.swtchart.IAxis.Position;
 
 /**
  * An axis tick.
@@ -21,6 +23,9 @@ public class AxisTick implements IAxisTick {
 
     /** the chart */
     private Chart chart;
+
+    /** the axis */
+    private Axis axis;
 
     /** the axis tick labels */
     private AxisTickLabels axisTickLabels;
@@ -47,6 +52,7 @@ public class AxisTick implements IAxisTick {
      */
     protected AxisTick(Chart chart, Axis axis) {
         this.chart = chart;
+        this.axis = axis;
 
         axisTickLabels = new AxisTickLabels(chart, axis);
         axisTickMarks = new AxisTickMarks(chart, axis);
@@ -155,6 +161,27 @@ public class AxisTick implements IAxisTick {
      */
     public Format getFormat() {
         return axisTickLabels.getFormat();
+    }
+
+    /*
+     * @see IAxisTick#getBounds()
+     */
+    public Rectangle getBounds() {
+        Rectangle r1 = axisTickMarks.getBounds();
+        Rectangle r2 = axisTickLabels.getBounds();
+        Position position = axis.getPosition();
+
+        if (position == Position.Primary && axis.isHorizontalAxis()) {
+            return new Rectangle(r1.x, r1.y, r1.width, r1.height + r2.height);
+        } else if (position == Position.Secondary && axis.isHorizontalAxis()) {
+            return new Rectangle(r1.x, r2.y, r1.width, r1.height + r2.height);
+        } else if (position == Position.Primary && !axis.isHorizontalAxis()) {
+            return new Rectangle(r2.x, r1.y, r1.width + r2.width, r1.height);
+        } else if (position == Position.Secondary && !axis.isHorizontalAxis()) {
+            return new Rectangle(r1.x, r1.y, r1.width + r2.width, r1.height);
+        } else {
+            throw new IllegalStateException("unknown axis position");
+        }
     }
 
     /**

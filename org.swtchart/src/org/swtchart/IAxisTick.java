@@ -10,6 +10,7 @@ import java.text.Format;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * An axis tick.
@@ -96,4 +97,14 @@ public interface IAxisTick {
      * @return the format
      */
     Format getFormat();
+
+    /**
+     * Gets the bounds of axis tick.
+     * <p>
+     * This method is typically used for mouse listener to check whether mouse
+     * cursor is on axis tick. Mouse listener can be added to <tt>Chart</tt>.
+     * 
+     * @return the bounds of axis tick.
+     */
+    Rectangle getBounds();
 }
