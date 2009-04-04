@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
+import org.swtchart.IErrorBar;
 import org.swtchart.ISeries;
 import org.swtchart.ISeriesLabel;
 import org.swtchart.Range;
@@ -65,7 +66,13 @@ abstract public class Series implements ISeries {
     protected SeriesType type;
 
     /** the series label */
-    protected ISeriesLabel seriesLabel;
+    protected SeriesLabel seriesLabel;
+
+    /** the x error bar */
+    protected ErrorBar xErrorBar;
+
+    /** the y error bar */
+    protected ErrorBar yErrorBar;
 
     /** the chart */
     protected Chart chart;
@@ -100,7 +107,10 @@ abstract public class Series implements ISeries {
         visible = true;
         type = DEFAULT_SERIES_TYPE;
         stackEnabled = false;
+        isXMonotoneIncreasing = true;
         seriesLabel = new SeriesLabel();
+        xErrorBar = new ErrorBar();
+        yErrorBar = new ErrorBar();
     }
 
     /*
@@ -458,6 +468,20 @@ abstract public class Series implements ISeries {
      */
     public ISeriesLabel getLabel() {
         return seriesLabel;
+    }
+
+    /*
+     * @see ISeries#getXErrorBar()
+     */
+    public IErrorBar getXErrorBar() {
+        return xErrorBar;
+    }
+
+    /*
+     * @see ISeries#getYErrorBar()
+     */
+    public IErrorBar getYErrorBar() {
+        return yErrorBar;
     }
 
     /**

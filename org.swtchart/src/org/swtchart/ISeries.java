@@ -167,9 +167,23 @@ public interface ISeries {
     void setYAxisId(int id);
 
     /**
-     * Gets the label.
+     * Gets the X error bar. This is typically used for scatter chart.
      * 
-     * @return the label
+     * @return the X error bar
+     */
+    IErrorBar getXErrorBar();
+
+    /**
+     * Gets the Y error bar.
+     * 
+     * @return the Y error bar
+     */
+    IErrorBar getYErrorBar();
+
+    /**
+     * Gets the series label.
+     * 
+     * @return the series label
      */
     ISeriesLabel getLabel();
 

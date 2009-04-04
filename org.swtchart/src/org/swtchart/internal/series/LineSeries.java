@@ -123,12 +123,13 @@ public class LineSeries extends Series implements ILineSeries {
     public void setLineStyle(LineStyle style) {
         if (style == null) {
             this.lineStyle = DEFAULT_LINE_STYLE;
-        } else {
-            this.lineStyle = style;
-            if (compressor instanceof CompressScatterSeries) {
-                ((CompressScatterSeries) compressor)
-                        .setLineVisible(style != LineStyle.NONE);
-            }
+            return;
+        }
+
+        this.lineStyle = style;
+        if (compressor instanceof CompressScatterSeries) {
+            ((CompressScatterSeries) compressor)
+                    .setLineVisible(style != LineStyle.NONE);
         }
     }
 
@@ -351,6 +352,8 @@ public class LineSeries extends Series implements ILineSeries {
      *            the horizontal series
      * @param yseries
      *            the vertical series
+     * @param indexes
+     *            the series indexes
      * @param index
      *            the index of series
      * @param xAxis
@@ -359,8 +362,8 @@ public class LineSeries extends Series implements ILineSeries {
      *            the Y axis
      * @return the line points
      */
-    private int[] getLinePoints(double[] xseries, double[] yseries, int index,
-            Axis xAxis, Axis yAxis) {
+    private int[] getLinePoints(double[] xseries, double[] yseries,
+            int[] indexes, int index, Axis xAxis, Axis yAxis) {
 
         int x1 = xAxis.getPixelCoordinate(xseries[index]);
         int x2 = xAxis.getPixelCoordinate(xseries[index + 1]);
@@ -374,12 +377,14 @@ public class LineSeries extends Series implements ILineSeries {
             y3 = yAxis.getPixelCoordinate(yAxis.getRange().lower);
             y4 = y3;
         } else if (isValidStackSeries()) {
-            y3 = yAxis.getPixelCoordinate(yseries[index + 1])
-                    + Math.abs(yAxis.getPixelCoordinate(ySeries[index + 1])
+            y1 = yAxis.getPixelCoordinate(stackSeries[indexes[index]]);
+            y2 = yAxis.getPixelCoordinate(stackSeries[indexes[index + 1]]);
+            y3 = yAxis.getPixelCoordinate(stackSeries[indexes[index + 1]])
+                    + Math.abs(yAxis.getPixelCoordinate(yseries[index + 1])
                             - yAxis.getPixelCoordinate(0))
                     * (xAxis.isHorizontalAxis() ? 1 : -1);
-            y4 = yAxis.getPixelCoordinate(yseries[index])
-                    + Math.abs(yAxis.getPixelCoordinate(ySeries[index])
+            y4 = yAxis.getPixelCoordinate(stackSeries[indexes[index]])
+                    + Math.abs(yAxis.getPixelCoordinate(yseries[index])
                             - yAxis.getPixelCoordinate(0))
                     * (xAxis.isHorizontalAxis() ? 1 : -1);
         } else {
@@ -402,12 +407,11 @@ public class LineSeries extends Series implements ILineSeries {
         int oldLineWidth = gc.getLineWidth();
         gc.setAntialias(antialias);
         gc.setLineWidth(lineWidth);
-        if (lineStyle != LineStyle.NONE) {
-            drawLineAndArea(gc, width, height, xAxis, yAxis);
-        }
-        if (getSymbolType() != PlotSymbolType.NONE) {
-            drawSymbols(gc, width, height, xAxis, yAxis);
-        }
+
+        drawLineAndArea(gc, width, height, xAxis, yAxis);
+
+        drawSymbols(gc, width, height, xAxis, yAxis);
+
         gc.setAntialias(oldAntialias);
         gc.setLineWidth(oldLineWidth);
     }
@@ -432,36 +436,35 @@ public class LineSeries extends Series implements ILineSeries {
         // get x and y series
         double[] xseries = compressor.getCompressedXSeries();
         double[] yseries = compressor.getCompressedYSeries();
+        int[] indexes = compressor.getCompressedIndexes();
         if (xAxis.isValidCategoryAxis()) {
-            xseries = new double[xSeries.length];
             for (int i = 0; i < xseries.length; i++) {
-                xseries[i] = i;
-            }
-            if (isValidStackSeries()) {
-                yseries = stackSeries;
-            } else {
-                yseries = ySeries;
+                xseries[i] = indexes[i];
             }
         }
 
-        gc.setLineStyle(Util.getIndexDefinedInSWT(lineStyle));
+        if (lineStyle != LineStyle.NONE) {
+            gc.setLineStyle(Util.getIndexDefinedInSWT(lineStyle));
+        }
         gc.setForeground(lineColor);
         boolean isHorizontal = xAxis.isHorizontalAxis();
         for (int i = 0; i < xseries.length - 1; i++) {
 
-            int[] p = getLinePoints(xseries, yseries, i, xAxis, yAxis);
+            int[] p = getLinePoints(xseries, yseries, indexes, i, xAxis, yAxis);
 
             // draw line
-            if (stepEnabled) {
-                if (isHorizontal) {
-                    gc.drawLine(p[0], p[1], p[2], p[1]);
-                    gc.drawLine(p[2], p[1], p[2], p[3]);
+            if (lineStyle != LineStyle.NONE) {
+                if (stepEnabled) {
+                    if (isHorizontal) {
+                        gc.drawLine(p[0], p[1], p[2], p[1]);
+                        gc.drawLine(p[2], p[1], p[2], p[3]);
+                    } else {
+                        gc.drawLine(p[0], p[1], p[0], p[3]);
+                        gc.drawLine(p[0], p[3], p[2], p[3]);
+                    }
                 } else {
-                    gc.drawLine(p[0], p[1], p[0], p[3]);
-                    gc.drawLine(p[0], p[3], p[2], p[3]);
+                    gc.drawLine(p[0], p[1], p[2], p[3]);
                 }
-            } else {
-                gc.drawLine(p[0], p[1], p[2], p[3]);
             }
 
             // draw area
@@ -524,18 +527,18 @@ public class LineSeries extends Series implements ILineSeries {
         // get x and y series
         double[] xseries = compressor.getCompressedXSeries();
         double[] yseries = compressor.getCompressedYSeries();
+        int[] indexes = compressor.getCompressedIndexes();
         if (xAxis.isValidCategoryAxis()) {
-            xseries = new double[xSeries.length];
+            boolean isValidStackSeries = isValidStackSeries();
             for (int i = 0; i < xseries.length; i++) {
-                xseries[i] = i;
-            }
-            if (isValidStackSeries()) {
-                yseries = stackSeries;
-            } else {
-                yseries = ySeries;
+                xseries[i] = indexes[i];
+                if (isValidStackSeries) {
+                    yseries[i] = stackSeries[indexes[i]];
+                }
             }
         }
 
+        // draw symbol
         for (int i = 0; i < xseries.length; i++) {
             Color color = symbolColor;
             if (symbolColors != null && symbolColors.length > i) {
@@ -549,9 +552,12 @@ public class LineSeries extends Series implements ILineSeries {
                 v = xAxis.getPixelCoordinate(xseries[i]);
                 h = yAxis.getPixelCoordinate(yseries[i]);
             }
-            drawSeriesSymbol(gc, h, v, color);
-            ((SeriesLabel) seriesLabel).draw(gc, h, v, yseries[i], i,
-                    SWT.BOTTOM);
+            if (getSymbolType() != PlotSymbolType.NONE) {
+                drawSeriesSymbol(gc, h, v, color);
+            }
+            seriesLabel.draw(gc, h, v, yseries[i], indexes[i], SWT.BOTTOM);
+            xErrorBar.draw(gc, h, v, xAxis, i);
+            yErrorBar.draw(gc, h, v, yAxis, i);
         }
     }
 

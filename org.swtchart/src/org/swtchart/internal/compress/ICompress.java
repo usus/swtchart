@@ -26,6 +26,13 @@ public interface ICompress {
     public abstract double[] getCompressedYSeries();
 
     /**
+     * Gets the compressed series indexes
+     * 
+     * @return the compressed series indexes
+     */
+    public abstract int[] getCompressedIndexes();
+
+    /**
      * Sets X series which have to be sorted.
      * 
      * @param xSeries

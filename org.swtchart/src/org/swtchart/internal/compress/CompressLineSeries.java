@@ -46,11 +46,11 @@ public class CompressLineSeries extends Compress {
     private boolean isPrevOutOfRange;
 
     /*
-     * @see Compress#addNecessaryPlots(ArrayList, ArrayList)
+     * @see Compress#addNecessaryPlots(ArrayList, ArrayList, ArrayList)
      */
     @Override
     protected void addNecessaryPlots(ArrayList<Double> xList,
-            ArrayList<Double> yList) {
+            ArrayList<Double> yList, ArrayList<Integer> indexList) {
 
         isPrevOutOfRange = true;
 
@@ -59,27 +59,30 @@ public class CompressLineSeries extends Compress {
 
             switch (state) {
             case SteppingOutOfYRange:
-                addToList(xList, yList, xSeries[i], ySeries[i]);
+                addToList(xList, yList, indexList, xSeries[i], ySeries[i], i);
                 break;
             case SteppingOverYRange:
             case SteppingInRange:
             case SteppingInXRange:
-                addToList(xList, yList, xSeries[i - 1], ySeries[i - 1]);
-                addToList(xList, yList, xSeries[i], ySeries[i]);
+                addToList(xList, yList, indexList, xSeries[i - 1],
+                        ySeries[i - 1], i - 1);
+                addToList(xList, yList, indexList, xSeries[i], ySeries[i], i);
                 break;
             case SteppingOverXRange:
             case SteppingOutOfXRange:
-                addToList(xList, yList, xSeries[i - 1], ySeries[i - 1]);
-                addToList(xList, yList, xSeries[i], ySeries[i]);
+                addToList(xList, yList, indexList, xSeries[i - 1],
+                        ySeries[i - 1], i - 1);
+                addToList(xList, yList, indexList, xSeries[i], ySeries[i], i);
                 i = xSeries.length;
                 break;
             case SteppingOutOfRange:
-                addToList(xList, yList, xSeries[i], ySeries[i]);
+                addToList(xList, yList, indexList, xSeries[i], ySeries[i], i);
                 i = xSeries.length;
                 break;
             case InRangeAgain:
                 if (!isInSameGridAsPrevious(xSeries[i], ySeries[i])) {
-                    addToList(xList, yList, xSeries[i], ySeries[i]);
+                    addToList(xList, yList, indexList, xSeries[i], ySeries[i],
+                            i);
                 }
                 break;
             case OutOfRangeAgain:

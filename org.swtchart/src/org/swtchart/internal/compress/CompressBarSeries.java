@@ -14,14 +14,15 @@ import java.util.ArrayList;
 public class CompressBarSeries extends Compress {
 
     /*
-     * @see Compress#addNecessaryPlots(ArrayList, ArrayList)
+     * @see Compress#addNecessaryPlots(ArrayList, ArrayList, ArrayList)
      */
     @Override
     protected void addNecessaryPlots(ArrayList<Double> xList,
-            ArrayList<Double> yList) {
+            ArrayList<Double> yList, ArrayList<Integer> indexList) {
 
         double prevX = xSeries[0];
         double maxY = Double.NaN;
+        int prevIndex = 0;
 
         for (int i = 0; i < xSeries.length; i++) {
             if (xSeries[i] >= config.getXLowerValue()) {
@@ -31,10 +32,11 @@ public class CompressBarSeries extends Compress {
                     }
                 } else {
                     if (!Double.isNaN(maxY)) {
-                        addToList(xList, yList, prevX, maxY);
+                        addToList(xList, yList, indexList, prevX, maxY, prevIndex);
                     }
                     prevX = xSeries[i];
                     maxY = ySeries[i];
+                    prevIndex = i;
                 }
             }
 
@@ -42,7 +44,7 @@ public class CompressBarSeries extends Compress {
                 break;
             }
         }
-        addToList(xList, yList, prevX, maxY);
+        addToList(xList, yList, indexList, prevX, maxY, prevIndex);
     }
 
     /**

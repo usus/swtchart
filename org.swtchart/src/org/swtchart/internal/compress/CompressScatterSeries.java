@@ -20,16 +20,17 @@ public class CompressScatterSeries extends Compress {
     private boolean occupied[][];
 
     /*
-     * @see Compress#addNecessaryPlots(ArrayList, ArrayList)
+     * @see Compress#addNecessaryPlots(ArrayList, ArrayList, ArrayList)
      */
     @Override
     protected void addNecessaryPlots(ArrayList<Double> xList,
-            ArrayList<Double> yList) {
+            ArrayList<Double> yList, ArrayList<Integer> indexList) {
 
         if (isLineVisible) {
             for (int i = 0; i < xSeries.length; i++) {
                 if (!isInSameGridAsPrevious(xSeries[i], ySeries[i])) {
-                    addToList(xList, yList, xSeries[i], ySeries[i]);
+                    addToList(xList, yList, indexList, xSeries[i], ySeries[i],
+                            i);
                 }
             }
         } else {
@@ -46,7 +47,8 @@ public class CompressScatterSeries extends Compress {
             for (int i = 0; i < xSeries.length; i++) {
                 if (isInXRange(xSeries[i]) && isInYRange(ySeries[i])
                         && !isOccupied(xSeries[i], ySeries[i])) {
-                    addToList(xList, yList, xSeries[i], ySeries[i]);
+                    addToList(xList, yList, indexList, xSeries[i], ySeries[i],
+                            i);
                 }
             }
         }

@@ -135,16 +135,13 @@ public class BarSeries extends Series implements IBarSeries {
         Axis yAxis = (Axis) chart.getAxisSet().getYAxis(yAxisId);
 
         // get x and y series
-        double[] xseries, yseries;
+        double[] xseries = compressor.getCompressedXSeries();
+        double[] yseries = compressor.getCompressedYSeries();
+        int[] indexes = compressor.getCompressedIndexes();
         if (xAxis.isValidCategoryAxis()) {
-            xseries = new double[xSeries.length];
-            for (int i = 0; i < xSeries.length; i++) {
-                xseries[i] = i;
+            for (int i = 0; i < xseries.length; i++) {
+                xseries[i] = indexes[i];
             }
-            yseries = ySeries;
-        } else {
-            xseries = compressor.getCompressedXSeries();
-            yseries = compressor.getCompressedYSeries();
         }
 
         Rectangle[] rectangles = new Rectangle[xseries.length];
@@ -153,7 +150,7 @@ public class BarSeries extends Series implements IBarSeries {
         for (int i = 0; i < xseries.length; i++) {
             int x = xAxis.getPixelCoordinate(xseries[i]);
             int y = yAxis
-                    .getPixelCoordinate(isValidStackSeries() ? stackSeries[i]
+                    .getPixelCoordinate(isValidStackSeries() ? stackSeries[indexes[i]]
                             : yseries[i]);
             double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
                     xRange.upper);
@@ -344,21 +341,26 @@ public class BarSeries extends Series implements IBarSeries {
             drawRiser(gc, rs[i].x, rs[i].y, rs[i].width, rs[i].height);
         }
 
-        // draw label
-        if (seriesLabel.isVisible()) {
-            double[] yseries = xAxis.isValidCategoryAxis() ? ySeries
-                    : compressor.getCompressedYSeries();
-            if (seriesLabel.getFormats() != null) {
-                rs = getBounds();
-                yseries = ySeries;
-            }
+        // draw label and error bars
+        if (seriesLabel.isVisible() || xErrorBar.isVisible()
+                || yErrorBar.isVisible()) {
+            double[] yseries = compressor.getCompressedYSeries();
+            int[] indexes = compressor.getCompressedIndexes();
 
             for (int i = 0; i < rs.length; i++) {
-                if (rs[i] != null) {
-                    ((SeriesLabel) seriesLabel).draw(gc, rs[i].x + rs[i].width
-                            / 2, rs[i].y + rs[i].height / 2, yseries[i], i,
-                            SWT.CENTER);
+                seriesLabel.draw(gc, rs[i].x + rs[i].width / 2, rs[i].y
+                        + rs[i].height / 2, yseries[i], indexes[i], SWT.CENTER);
+
+                int h, v;
+                if (xAxis.isHorizontalAxis()) {
+                    h = xAxis.getPixelCoordinate(xSeries[indexes[i]]);
+                    v = yAxis.getPixelCoordinate(ySeries[indexes[i]]);
+                } else {
+                    v = xAxis.getPixelCoordinate(xSeries[indexes[i]]);
+                    h = yAxis.getPixelCoordinate(ySeries[indexes[i]]);
                 }
+                xErrorBar.draw(gc, h, v, xAxis, indexes[i]);
+                yErrorBar.draw(gc, h, v, yAxis, indexes[i]);
             }
         }
     }
