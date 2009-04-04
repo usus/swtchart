@@ -5,7 +5,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
-import org.swtchart.ILineSeries;
+import org.swtchart.IErrorBar;
+import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
 /**
@@ -32,14 +33,15 @@ public class ErrorBarsExample {
 		// create a chart
 		Chart chart = new Chart(shell, SWT.NONE);
 		
-		// create line series
-		ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet()
+		// create series
+		ISeries series = chart.getSeriesSet()
 				.createSeries(SeriesType.LINE, "line series");
-		lineSeries.setYSeries(ySeries);
+		series.setYSeries(ySeries);
 		
 		// set error bars
-		lineSeries.getYErrorBar().setVisible(true);
-		lineSeries.getYErrorBar().setError(0.1);
+		IErrorBar errorBar = series.getYErrorBar();
+		errorBar.setVisible(true);
+		errorBar.setError(0.1);
 
 		// adjust the axis range
 		chart.getAxisSet().adjustRange();
