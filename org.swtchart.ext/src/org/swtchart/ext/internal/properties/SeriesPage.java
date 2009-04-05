@@ -269,7 +269,7 @@ public class SeriesPage extends AbstractSelectorPage {
             }
         });
 
-        stackedButton = createCheckBoxControl(group, "Stacked series:");
+        stackedButton = createCheckBoxControl(group, "Stacked series");
         stackedButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
