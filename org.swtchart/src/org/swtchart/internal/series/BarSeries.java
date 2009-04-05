@@ -249,8 +249,7 @@ public class BarSeries extends Series implements IBarSeries {
                 range.upper = 0;
             }
             if (range.lower > 0) {
-                range.lower = axis.isLogScaleEnabled() ? axis.getRange().lower
-                        : 0;
+                range.lower = axis.isLogScaleEnabled() ? minY : 0;
             }
             lowerPlotMargin = (range.lower == 0) ? 0 : MARGIN_AT_MIN_MAX_PLOT;
             upperPlotMargin = (range.upper == 0) ? 0 : MARGIN_AT_MIN_MAX_PLOT;

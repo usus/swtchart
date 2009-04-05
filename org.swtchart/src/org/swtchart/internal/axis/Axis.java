@@ -358,25 +358,37 @@ public class Axis implements IAxis {
      * @see IAxis#zoomIn()
      */
     public void zoomIn() {
+        zoomIn((max + min) / 2d);
+    }
+
+    /*
+     * @see IAxis#zoomIn(double)
+     */
+    public void zoomIn(double coordinate) {
         double lower = min;
         double upper = max;
         if (isValidCategoryAxis()) {
-            if (min != max) {
-                lower = min + 1;
-                if (min != max) {
+            if (lower != upper) {
+                if ((min + max) / 2d < coordinate) {
+                    lower = min + 1;
+                } else if (coordinate < (min + max) / 2d) {
+                    upper = max - 1;
+                } else {
+                    lower = min + 1;
                     upper = max - 1;
                 }
             }
         } else if (isLogScaleEnabled()) {
             double digitMin = Math.log10(min);
             double digitMax = Math.log10(max);
-            lower = Math.pow(10, digitMin + (digitMax - digitMin)
-                    * SCROLL_RATIO);
-            upper = Math.pow(10, digitMax - (digitMax - digitMin)
-                    * SCROLL_RATIO);
+            double digitCoordinate = Math.log10(coordinate);
+            lower = Math.pow(10, digitMin + 2 * SCROLL_RATIO
+                    * (digitCoordinate - digitMin));
+            upper = Math.pow(10, digitMax + 2 * SCROLL_RATIO
+                    * (digitCoordinate - digitMax));
         } else {
-            lower = min + (max - min) * ZOOM_RATIO;
-            upper = max - (max - min) * ZOOM_RATIO;
+            lower = min + 2 * ZOOM_RATIO * (coordinate - min);
+            upper = max + 2 * ZOOM_RATIO * (coordinate - max);
         }
 
         setRange(new Range(lower, upper));
@@ -386,25 +398,36 @@ public class Axis implements IAxis {
      * @see IAxis#zoomOut()
      */
     public void zoomOut() {
+        zoomOut((min + max) / 2d);
+    }
+
+    /*
+     * @see IAxis#zoomOut(double)
+     */
+    public void zoomOut(double coordinate) {
         double lower = min;
         double upper = max;
         if (isValidCategoryAxis()) {
-            if (lower >= 1) {
+            if ((min + max) / 2d < coordinate && min != 0) {
                 lower = min - 1;
-            }
-            if (upper < categorySeries.length - 1) {
+            } else if (coordinate < (min + max) / 2d
+                    && max != categorySeries.length - 1) {
+                upper = max + 1;
+            } else {
+                lower = min - 1;
                 upper = max + 1;
             }
         } else if (isLogScaleEnabled()) {
-            double digitMax = Math.log10(upper);
-            double digitMin = Math.log10(lower);
-            lower = Math.pow(10, digitMin - (digitMax - digitMin)
-                    * SCROLL_RATIO);
-            upper = Math.pow(10, digitMax + (digitMax - digitMin)
-                    * SCROLL_RATIO);
+            double digitMin = Math.log10(min);
+            double digitMax = Math.log10(max);
+            double digitCoordinate = Math.log10(coordinate);
+            lower = Math.pow(10, (digitMin - ZOOM_RATIO * digitCoordinate)
+                    / (1 - ZOOM_RATIO));
+            upper = Math.pow(10, (digitMax - ZOOM_RATIO * digitCoordinate)
+                    / (1 - ZOOM_RATIO));
         } else {
-            lower = min - (max - min) / (1 - ZOOM_RATIO * 2) * ZOOM_RATIO;
-            upper = max + (max - min) / (1 - ZOOM_RATIO * 2) * ZOOM_RATIO;
+            lower = (min - 2 * ZOOM_RATIO * coordinate) / (1 - 2 * ZOOM_RATIO);
+            upper = (max - 2 * ZOOM_RATIO * coordinate) / (1 - 2 * ZOOM_RATIO);
         }
 
         setRange(new Range(lower, upper));

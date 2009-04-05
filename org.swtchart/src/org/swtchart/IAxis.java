@@ -133,9 +133,25 @@ public interface IAxis {
     void zoomIn();
 
     /**
+     * Zooms in the axis at the given coordinate.
+     * 
+     * @param coordinate
+     *            the coordinate
+     */
+    void zoomIn(double coordinate);
+
+    /**
      * Zooms out the axis.
      */
     void zoomOut();
+
+    /**
+     * Zooms out the axis at the given coordinate.
+     * 
+     * @param coordinate
+     *            the coordinate
+     */
+    void zoomOut(double coordinate);
 
     /**
      * Scrolls up the axis.
