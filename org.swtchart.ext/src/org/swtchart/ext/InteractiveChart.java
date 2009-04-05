@@ -63,9 +63,10 @@ public class InteractiveChart extends Chart implements PaintListener {
 
         Composite plot = getPlotArea();
         plot.addListener(SWT.Resize, this);
-        plot.addListener(SWT.MouseDown, this);
         plot.addListener(SWT.MouseMove, this);
+        plot.addListener(SWT.MouseDown, this);
         plot.addListener(SWT.MouseUp, this);
+        plot.addListener(SWT.MouseWheel, this);
         plot.addListener(SWT.KeyDown, this);
 
         plot.addPaintListener(this);
@@ -168,20 +169,23 @@ public class InteractiveChart extends Chart implements PaintListener {
         super.handleEvent(event);
 
         switch (event.type) {
-        case SWT.MouseDown:
-            handleMouseDownEvent(event);
-            break;
         case SWT.MouseMove:
             handleMouseMoveEvent(event);
+            break;
+        case SWT.MouseDown:
+            handleMouseDownEvent(event);
             break;
         case SWT.MouseUp:
             handleMouseUpEvent(event);
             break;
-        case SWT.Selection:
-            handleSelectionEvent(event);
+        case SWT.MouseWheel:
+            handleMouseWheel(event);
             break;
         case SWT.KeyDown:
             handleKeyDownEvent(event);
+            break;
+        case SWT.Selection:
+            handleSelectionEvent(event);
             break;
         default:
             break;
@@ -238,6 +242,33 @@ public class InteractiveChart extends Chart implements PaintListener {
             }
         }
         selection.dispose();
+        redraw();
+    }
+
+    /**
+     * Handles mouse wheel event.
+     * 
+     * @param event
+     *            the mouse wheel event
+     */
+    private void handleMouseWheel(Event event) {
+        for (IAxis axis : getAxes(SWT.HORIZONTAL)) {
+            double coordinate = axis.getDataCoordinate(event.x);
+            if (event.count > 0) {
+                axis.zoomIn(coordinate);
+            } else {
+                axis.zoomOut(coordinate);
+            }
+        }
+
+        for (IAxis axis : getAxes(SWT.VERTICAL)) {
+            double coordinate = axis.getDataCoordinate(event.y);
+            if (event.count > 0) {
+                axis.zoomIn(coordinate);
+            } else {
+                axis.zoomOut(coordinate);
+            }
+        }
         redraw();
     }
 
