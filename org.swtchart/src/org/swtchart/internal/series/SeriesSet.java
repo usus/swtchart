@@ -21,6 +21,7 @@ import org.swtchart.Range;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.internal.axis.Axis;
 import org.swtchart.internal.compress.CompressConfig;
+import org.swtchart.internal.compress.ICompress;
 
 /**
  * A series container.
@@ -280,7 +281,18 @@ public class SeriesSet implements ISeriesSet {
             }
             config.setYRange(lower, upper);
 
-            ((Series) series).getCompressor().compress(config);
+            ICompress compressor = ((Series) series).getCompressor();
+            if (((Axis) xAxis).isValidCategoryAxis()) {
+                double[] xSeries = new double[xAxis.getCategorySeries().length];
+                for (int i = 0; i < xSeries.length; i++) {
+                    xSeries[i] = i;
+                }
+                compressor.setXSeries(xSeries);
+            } else if (((Series) series).getXSeries() != null) {
+                compressor.setXSeries(((Series) series).getXSeries());
+            }
+
+            compressor.compress(config);
         }
     }
 
