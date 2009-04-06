@@ -24,6 +24,9 @@ public class InteractiveChartExample extends ViewPart {
     private static final double[] yBarSeries1 = { 1.1, 2.9, 3.3, 4.4, 3.5 };
     private static final double[] yBarSeries2 = { 4.3, 3.4, 2.8, 2.1, 1.9 };
 
+    /** the chart */
+    private Chart chart;
+
     /*
      * @see WorkbenchPart#createPartControl(Composite)
      */
@@ -32,7 +35,7 @@ public class InteractiveChartExample extends ViewPart {
         parent.setLayout(new FillLayout());
 
         // create an interactive chart
-        Chart chart = new InteractiveChart(parent, SWT.NONE);
+        chart = new InteractiveChart(parent, SWT.NONE);
 
         // set title
         chart.getTitle().setText("Sample Interactive Chart");
@@ -72,6 +75,6 @@ public class InteractiveChartExample extends ViewPart {
      */
     @Override
     public void setFocus() {
-        // do nothing
+        chart.getPlotArea().setFocus();
     }
 }
