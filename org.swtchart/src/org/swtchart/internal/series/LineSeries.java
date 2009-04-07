@@ -408,9 +408,14 @@ public class LineSeries extends Series implements ILineSeries {
         gc.setAntialias(antialias);
         gc.setLineWidth(lineWidth);
 
-        drawLineAndArea(gc, width, height, xAxis, yAxis);
+        if (lineStyle != LineStyle.NONE) {
+            drawLineAndArea(gc, width, height, xAxis, yAxis);
+        }
 
-        drawSymbols(gc, width, height, xAxis, yAxis);
+        if (symbolType != PlotSymbolType.NONE || getLabel().isVisible()
+                || getXErrorBar().isVisible() || getYErrorBar().isVisible()) {
+            drawSymbolAndLabel(gc, width, height, xAxis, yAxis);
+        }
 
         gc.setAntialias(oldAntialias);
         gc.setLineWidth(oldLineWidth);
@@ -443,33 +448,48 @@ public class LineSeries extends Series implements ILineSeries {
             }
         }
 
-        if (lineStyle != LineStyle.NONE) {
-            gc.setLineStyle(Util.getIndexDefinedInSWT(lineStyle));
-        }
+        gc.setLineStyle(Util.getIndexDefinedInSWT(lineStyle));
         gc.setForeground(lineColor);
+
         boolean isHorizontal = xAxis.isHorizontalAxis();
-        for (int i = 0; i < xseries.length - 1; i++) {
+        if (stepEnabled || areaEnabled || stackEnabled) {
+            for (int i = 0; i < xseries.length - 1; i++) {
+                int[] p = getLinePoints(xseries, yseries, indexes, i, xAxis,
+                        yAxis);
 
-            int[] p = getLinePoints(xseries, yseries, indexes, i, xAxis, yAxis);
-
-            // draw line
-            if (lineStyle != LineStyle.NONE) {
-                if (stepEnabled) {
-                    if (isHorizontal) {
-                        gc.drawLine(p[0], p[1], p[2], p[1]);
-                        gc.drawLine(p[2], p[1], p[2], p[3]);
+                // draw line
+                if (lineStyle != LineStyle.NONE) {
+                    if (stepEnabled) {
+                        if (isHorizontal) {
+                            gc.drawLine(p[0], p[1], p[2], p[1]);
+                            gc.drawLine(p[2], p[1], p[2], p[3]);
+                        } else {
+                            gc.drawLine(p[0], p[1], p[0], p[3]);
+                            gc.drawLine(p[0], p[3], p[2], p[3]);
+                        }
                     } else {
-                        gc.drawLine(p[0], p[1], p[0], p[3]);
-                        gc.drawLine(p[0], p[3], p[2], p[3]);
+                        gc.drawLine(p[0], p[1], p[2], p[3]);
                     }
-                } else {
-                    gc.drawLine(p[0], p[1], p[2], p[3]);
+                }
+
+                // draw area
+                if (areaEnabled) {
+                    drawArea(gc, p, isHorizontal);
                 }
             }
-
-            // draw area
-            if (areaEnabled) {
-                drawArea(gc, p, isHorizontal);
+        } else {
+            int prevX = xAxis.getPixelCoordinate(xseries[0]);
+            int prevY = yAxis.getPixelCoordinate(yseries[0]);
+            for (int i = 0; i < xseries.length - 1; i++) {
+                int x = xAxis.getPixelCoordinate(xseries[i + 1]);
+                int y = yAxis.getPixelCoordinate(yseries[i + 1]);
+                if (isHorizontal) {
+                    gc.drawLine(prevX, prevY, x, y);
+                } else {
+                    gc.drawLine(prevY, prevX, y, x);
+                }
+                prevX = x;
+                prevY = y;
             }
         }
     }
@@ -508,7 +528,7 @@ public class LineSeries extends Series implements ILineSeries {
     }
 
     /**
-     * Draws series symbol.
+     * Draws series symbol, label and error bars.
      * 
      * @param gc
      *            the graphics context
@@ -521,7 +541,7 @@ public class LineSeries extends Series implements ILineSeries {
      * @param yAxis
      *            the y axis
      */
-    private void drawSymbols(GC gc, int width, int height, Axis xAxis,
+    private void drawSymbolAndLabel(GC gc, int width, int height, Axis xAxis,
             Axis yAxis) {
 
         // get x and y series
@@ -538,7 +558,7 @@ public class LineSeries extends Series implements ILineSeries {
             }
         }
 
-        // draw symbol
+        // draw symbol and label
         for (int i = 0; i < xseries.length; i++) {
             Color color = symbolColor;
             if (symbolColors != null && symbolColors.length > i) {

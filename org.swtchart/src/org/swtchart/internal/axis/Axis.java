@@ -159,6 +159,18 @@ public class Axis implements IAxis {
      * @see IAxis#setRange(Range)
      */
     public void setRange(Range range) {
+        setRange(range, true);
+    }
+
+    /**
+     * Sets the axis range.
+     * 
+     * @param range
+     *            the axis range
+     * @param update
+     *            true if updating the chart layout
+     */
+    public void setRange(Range range, boolean update) {
         if (range == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
             return; // to suppress warnings...
@@ -200,9 +212,9 @@ public class Axis implements IAxis {
             max = range.upper;
         }
 
-        chart.updateLayout();
-
-        ((SeriesSet) chart.getSeriesSet()).compressAllSeries();
+        if (update) {
+            chart.updateLayout();
+        }
     }
 
     /*
@@ -311,6 +323,16 @@ public class Axis implements IAxis {
      * @see IAxis#adjustRange()
      */
     public void adjustRange() {
+        adjustRange(true);
+    }
+
+    /**
+     * Adjusts the axis range to the series belonging to the axis.
+     * 
+     * @param update
+     *            true if updating chart layout
+     */
+    public void adjustRange(boolean update) {
         if (isValidCategoryAxis()) {
             setRange(new Range(0, categorySeries.length - 1));
             return;
@@ -350,7 +372,7 @@ public class Axis implements IAxis {
                 minimum -= margin;
                 maximum += margin;
             }
-            setRange(new Range(minimum, maximum));
+            setRange(new Range(minimum, maximum), update);
         }
     }
 

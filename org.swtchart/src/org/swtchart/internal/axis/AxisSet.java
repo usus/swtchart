@@ -260,8 +260,9 @@ public class AxisSet implements IAxisSet {
      */
     public void adjustRange() {
         for (IAxis axis : getAxes()) {
-            axis.adjustRange();
+            ((Axis)axis).adjustRange(false);
         }
+        chart.updateLayout();
     }
 
     /*
