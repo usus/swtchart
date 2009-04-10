@@ -3,8 +3,6 @@ package org.swtchart.examples;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
@@ -46,8 +44,8 @@ public class CoordinateConversionExample4 {
         IBarSeries series2 = (IBarSeries) chart.getSeriesSet().createSeries(
                 SeriesType.BAR, "series 2");
         series2.setYSeries(ySeries2);
-        series2.setBarColor(new Color(Display.getDefault(), new RGB(80, 240,
-                180)));
+        series2.setBarColor(Display.getDefault()
+                .getSystemColor(SWT.COLOR_GREEN));
 
         // adjust the axis range
         chart.getAxisSet().adjustRange();

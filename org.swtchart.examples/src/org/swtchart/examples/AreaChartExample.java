@@ -1,7 +1,6 @@
 package org.swtchart.examples;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -24,24 +23,25 @@ public class AreaChartExample {
      * @param args
      *            the arguments.
      */
-	public static void main(String[] args) {
-		Display display = new Display();
-		Shell shell = new Shell(display);
-		shell.setText("Area Chart Example");
-		shell.setSize(500, 400);
-		shell.setLayout(new FillLayout());
+    public static void main(String[] args) {
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setText("Area Chart Example");
+        shell.setSize(500, 400);
+        shell.setLayout(new FillLayout());
 
-		// create a chart
+        // create a chart
         Chart chart = new Chart(shell, SWT.NONE);
 
         // set titles
         chart.getTitle().setText("Area Chart Example");
-        
+
         // create line series
         ILineSeries lineSeries1 = (ILineSeries) chart.getSeriesSet()
                 .createSeries(SeriesType.LINE, "line series 1");
         lineSeries1.setYSeries(ySeries1);
-        lineSeries1.setLineColor(new Color(Display.getDefault(), 255, 0 ,0));
+        lineSeries1.setLineColor(Display.getDefault().getSystemColor(
+                SWT.COLOR_RED));
         lineSeries1.enableArea(true);
 
         ILineSeries lineSeries2 = (ILineSeries) chart.getSeriesSet()

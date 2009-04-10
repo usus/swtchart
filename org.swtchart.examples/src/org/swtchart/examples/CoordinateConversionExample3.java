@@ -3,9 +3,7 @@ package org.swtchart.examples;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -39,16 +37,16 @@ public class CoordinateConversionExample3 {
         final Chart chart = new Chart(shell, SWT.NONE);
 
         // create line series
-        ILineSeries series1 = (ILineSeries) chart.getSeriesSet()
-                .createSeries(SeriesType.LINE, "series 1");
+        ILineSeries series1 = (ILineSeries) chart.getSeriesSet().createSeries(
+                SeriesType.LINE, "series 1");
         series1.setYSeries(ySeries1);
 
         ILineSeries series2 = (ILineSeries) chart.getSeriesSet().createSeries(
                 SeriesType.LINE, "series 2");
         series2.setYSeries(ySeries2);
-        series2.setLineColor(new Color(Display.getDefault(), new RGB(80, 240,
-                180)));
-        
+        series2.setLineColor(Display.getDefault()
+                        .getSystemColor(SWT.COLOR_RED));
+
         // adjust the axis range
         chart.getAxisSet().adjustRange();
 

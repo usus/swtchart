@@ -3,8 +3,6 @@ package org.swtchart.examples;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
@@ -44,13 +42,13 @@ public class CoordinateConversionExample5 {
         IBarSeries series1 = (IBarSeries) chart.getSeriesSet().createSeries(
                 SeriesType.BAR, "series 1");
         series1.setYSeries(ySeries1);
-        series1.setBarColor(new Color(Display.getDefault(), new RGB(80, 240,
-                180)));
+        series1.setBarColor(Display.getDefault()
+                .getSystemColor(SWT.COLOR_GREEN));
         IBarSeries series2 = (IBarSeries) chart.getSeriesSet().createSeries(
                 SeriesType.BAR, "series 2");
         series2.setYSeries(ySeries2);
-        series2.setBarColor(new Color(Display.getDefault(), new RGB(255, 200,
-                150)));
+        series2.setBarColor(Display.getDefault().getSystemColor(
+                SWT.COLOR_MAGENTA));
         IBarSeries series3 = (IBarSeries) chart.getSeriesSet().createSeries(
                 SeriesType.BAR, "series 3");
         series3.setYSeries(ySeries3);
