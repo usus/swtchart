@@ -9,10 +9,8 @@ package org.swtchart.internal.series;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.ILineSeries;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
@@ -67,10 +65,10 @@ public class LineSeries extends Series implements ILineSeries {
     private static final int DEFAULT_LINE_WIDTH = 1;
 
     /** the default line color */
-    private static final RGB DEFAULT_LINE_COLOR = Constants.BLUE;
+    private static final int DEFAULT_LINE_COLOR = SWT.COLOR_BLUE;
 
     /** the default symbol color */
-    private static final RGB DEFAULT_COLOR = Constants.DARK_GRAY;
+    private static final int DEFAULT_SYMBOL_COLOR = SWT.COLOR_DARK_GRAY;
 
     /** the default symbol size */
     private static final int DEFAULT_SIZE = 4;
@@ -96,11 +94,11 @@ public class LineSeries extends Series implements ILineSeries {
         super(chart, id);
 
         symbolSize = 4;
-        symbolColor = new Color(Display.getDefault(), DEFAULT_COLOR);
+        symbolColor = Display.getDefault().getSystemColor(DEFAULT_SYMBOL_COLOR);
         symbolType = DEFAULT_SYMBOL_TYPE;
 
         lineStyle = DEFAULT_LINE_STYLE;
-        lineColor = new Color(Display.getDefault(), DEFAULT_LINE_COLOR);
+        lineColor = Display.getDefault().getSystemColor(DEFAULT_LINE_COLOR);
 
         areaEnabled = false;
 
@@ -137,6 +135,9 @@ public class LineSeries extends Series implements ILineSeries {
      * @see ILineSeries#getLineColor()
      */
     public Color getLineColor() {
+        if (lineColor.isDisposed()) {
+            lineColor = Display.getDefault().getSystemColor(DEFAULT_LINE_COLOR);
+        }
         return lineColor;
     }
 
@@ -149,7 +150,8 @@ public class LineSeries extends Series implements ILineSeries {
         }
 
         if (color == null) {
-            this.lineColor = new Color(Display.getDefault(), DEFAULT_LINE_COLOR);
+            this.lineColor = Display.getDefault().getSystemColor(
+                    DEFAULT_LINE_COLOR);
         } else {
             this.lineColor = color;
         }
@@ -225,7 +227,8 @@ public class LineSeries extends Series implements ILineSeries {
         }
 
         if (color == null) {
-            this.symbolColor = new Color(Display.getDefault(), DEFAULT_COLOR);
+            this.symbolColor = Display.getDefault().getSystemColor(
+                    DEFAULT_SYMBOL_COLOR);
         } else {
             this.symbolColor = color;
         }
@@ -449,7 +452,7 @@ public class LineSeries extends Series implements ILineSeries {
         }
 
         gc.setLineStyle(Util.getIndexDefinedInSWT(lineStyle));
-        gc.setForeground(lineColor);
+        gc.setForeground(getLineColor());
 
         boolean isHorizontal = xAxis.isHorizontalAxis();
         if (stepEnabled || areaEnabled || stackEnabled) {
@@ -514,7 +517,7 @@ public class LineSeries extends Series implements ILineSeries {
     private void drawArea(GC gc, int[] p, boolean isHorizontal) {
         int alpha = gc.getAlpha();
         gc.setAlpha(ALPHA);
-        gc.setBackground(lineColor);
+        gc.setBackground(getLineColor());
 
         int[] pointArray;
         if (stepEnabled) {
@@ -567,7 +570,7 @@ public class LineSeries extends Series implements ILineSeries {
 
         // draw symbol and label
         for (int i = 0; i < xseries.length; i++) {
-            Color color = symbolColor;
+            Color color = getSymbolColor();
             if (symbolColors != null && symbolColors.length > i) {
                 color = symbolColors[i];
             }

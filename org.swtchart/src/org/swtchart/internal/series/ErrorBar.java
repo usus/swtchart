@@ -78,6 +78,9 @@ public class ErrorBar implements IErrorBar {
      * @see IErrorBar#getColor()
      */
     public Color getColor() {
+        if (color.isDisposed()) {
+            color = Display.getDefault().getSystemColor(DEFAULT_COLOR);
+        }
         return color;
     }
 
@@ -223,7 +226,7 @@ public class ErrorBar implements IErrorBar {
         int oldLineWidth = gc.getLineWidth();
         gc.setLineWidth(lineWidth);
         gc.setLineStyle(SWT.LINE_SOLID);
-        gc.setForeground(color);
+        gc.setForeground(getColor());
 
         // get plus/minus error
         double plusError = error;

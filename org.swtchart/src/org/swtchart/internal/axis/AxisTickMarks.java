@@ -13,11 +13,9 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.IAxis.Position;
 import org.swtchart.internal.ChartLayoutData;
 
@@ -51,7 +49,7 @@ public class AxisTickMarks implements PaintListener {
     public static final int TICK_LENGTH = 5;
 
     /** the default foreground */
-    private static final RGB DEFAULT_FOREGROUND = Constants.BLUE;
+    private static final int DEFAULT_FOREGROUND = SWT.COLOR_BLUE;
 
     /**
      * Constructor.
@@ -67,7 +65,7 @@ public class AxisTickMarks implements PaintListener {
         this.chart = chart;
         this.axis = axis;
 
-        foreground = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
+        foreground = Display.getDefault().getSystemColor(DEFAULT_FOREGROUND);
         chart.addPaintListener(this);
     }
 
@@ -79,7 +77,8 @@ public class AxisTickMarks implements PaintListener {
      */
     public void setForeground(Color color) {
         if (color == null) {
-            foreground = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
+            foreground = Display.getDefault()
+                    .getSystemColor(DEFAULT_FOREGROUND);
         } else {
             foreground = color;
         }
@@ -91,6 +90,10 @@ public class AxisTickMarks implements PaintListener {
      * @return the foreground color
      */
     protected Color getForeground() {
+        if (foreground.isDisposed()) {
+            foreground = Display.getDefault()
+                    .getSystemColor(DEFAULT_FOREGROUND);
+        }
         return foreground;
     }
 
@@ -169,7 +172,7 @@ public class AxisTickMarks implements PaintListener {
         ArrayList<Integer> tickLabelPositions = axis.getTick()
                 .getAxisTickLabels().getTickLabelPositions();
         e.gc.setBackground(chart.getBackground());
-        e.gc.setForeground(foreground);
+        e.gc.setForeground(getForeground());
         Rectangle oldClipping = e.gc.getClipping();
         e.gc.setClipping(bounds);
         if (axis.isHorizontalAxis()) {

@@ -19,7 +19,6 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -57,13 +56,15 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     private static final int LINE_WIDTH = 2;
 
     /** the default foreground */
-    private static final RGB DEFAULT_FOREGROUND = Constants.BLACK;
+    private static final Color DEFAULT_FOREGROUND = Display.getDefault()
+            .getSystemColor(SWT.COLOR_BLACK);
 
     /** the default background */
-    private static final RGB DEFAULT_BACKGROUND = Constants.WHITE;
+    private static final Color DEFAULT_BACKGROUND = Display.getDefault()
+            .getSystemColor(SWT.COLOR_WHITE);
 
     /** the default font */
-    private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
+    private static final Font DEFAULT_FONT = Constants.SMALL_FONT;
 
     /** the default position */
     private static final int DEFAULT_POSITION = SWT.RIGHT;
@@ -86,10 +87,9 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         visible = true;
         position = DEFAULT_POSITION;
         cellBounds = new HashMap<String, Rectangle>();
-        setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
-                SWT.NORMAL));
-        setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
-        setBackground(new Color(Display.getDefault(), DEFAULT_BACKGROUND));
+        setFont(DEFAULT_FONT);
+        setForeground(DEFAULT_FOREGROUND);
+        setBackground(DEFAULT_BACKGROUND);
         addPaintListener(this);
     }
 
@@ -120,8 +120,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     @Override
     public void setFont(Font font) {
         if (font == null) {
-            super.setFont(new Font(Display.getDefault(), "Tahoma",
-                    DEFAULT_FONT_SIZE, SWT.NORMAL));
+            super.setFont(DEFAULT_FONT);
         } else {
             super.setFont(font);
         }
@@ -134,8 +133,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     @Override
     public void setForeground(Color color) {
         if (color == null) {
-            super.setForeground(new Color(Display.getDefault(),
-                    DEFAULT_FOREGROUND));
+            super.setForeground(DEFAULT_FOREGROUND);
         } else {
             super.setForeground(color);
         }
@@ -147,8 +145,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     @Override
     public void setBackground(Color color) {
         if (color == null) {
-            super.setBackground(new Color(Display.getDefault(),
-                    DEFAULT_BACKGROUND));
+            super.setBackground(DEFAULT_BACKGROUND);
         } else {
             super.setBackground(color);
         }
@@ -393,7 +390,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         // draw frame
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.setLineWidth(1);
-        gc.setForeground(new Color(Display.getDefault(), Constants.GRAY));
+        gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
         gc.drawRectangle(0, 0, getSize().x - 1, getSize().y - 1);
 
         // draw content

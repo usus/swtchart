@@ -23,7 +23,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
@@ -73,7 +72,10 @@ public class AxisTickLabels implements PaintListener {
     private Format format;
 
     /** the default foreground */
-    private static final RGB DEFAULT_FOREGROUND = Constants.BLUE;
+    private static final int DEFAULT_FOREGROUND = SWT.COLOR_BLUE;
+
+    /** the default font */
+    private static final Font DEFAULT_FONT = Constants.SMALL_FONT;
 
     /** the default label format */
     private static final String DEFAULT_DECIMAL_FORMAT = "#.###########";
@@ -106,8 +108,8 @@ public class AxisTickLabels implements PaintListener {
 
         initializePossibleTickSteps();
 
-        font = Display.getDefault().getSystemFont();
-        setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
+        font = DEFAULT_FONT;
+        foreground = Display.getDefault().getSystemColor(DEFAULT_FOREGROUND);
         chart.addPaintListener(this);
     }
 
@@ -142,7 +144,8 @@ public class AxisTickLabels implements PaintListener {
      */
     public void setForeground(Color color) {
         if (color == null) {
-            foreground = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
+            foreground = Display.getDefault()
+                    .getSystemColor(DEFAULT_FOREGROUND);
         } else {
             foreground = color;
         }
@@ -154,6 +157,10 @@ public class AxisTickLabels implements PaintListener {
      * @return the foreground color
      */
     protected Color getForeground() {
+        if (foreground.isDisposed()) {
+            foreground = Display.getDefault()
+                    .getSystemColor(DEFAULT_FOREGROUND);
+        }
         return foreground;
     }
 
@@ -699,7 +706,7 @@ public class AxisTickLabels implements PaintListener {
      */
     protected void setFont(Font font) {
         if (font == null) {
-            this.font = Display.getDefault().getSystemFont();
+            this.font = DEFAULT_FONT;
         } else {
             this.font = font;
         }
@@ -711,6 +718,9 @@ public class AxisTickLabels implements PaintListener {
      * @return the font
      */
     protected Font getFont() {
+        if (font.isDisposed()) {
+            font = DEFAULT_FONT;
+        }
         return font;
     }
 
@@ -766,7 +776,8 @@ public class AxisTickLabels implements PaintListener {
             heightHint = 0;
         } else {
             if (axis.isHorizontalAxis()) {
-                heightHint = Axis.MARGIN + Util.getExtentInGC(font, "dummy").y;
+                heightHint = Axis.MARGIN
+                        + Util.getExtentInGC(getFont(), "dummy").y;
             } else {
                 widthHint = tickLabelMaxLength + Axis.MARGIN;
             }
@@ -778,7 +789,7 @@ public class AxisTickLabels implements PaintListener {
      */
     public void paintControl(PaintEvent e) {
         e.gc.setBackground(chart.getBackground());
-        e.gc.setForeground(foreground);
+        e.gc.setForeground(getForeground());
         if (axis.isHorizontalAxis()) {
             drawXTick(e.gc);
         } else {

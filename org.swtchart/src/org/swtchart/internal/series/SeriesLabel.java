@@ -13,7 +13,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Constants;
 import org.swtchart.ISeriesLabel;
@@ -40,21 +39,20 @@ public class SeriesLabel implements ISeriesLabel {
     private String[] formats;
 
     /** the default label color */
-    private static final RGB DEFAULT_COLOR = Constants.BLACK;
+    private static final int DEFAULT_COLOR = SWT.COLOR_BLACK;
+
+    /** the default font */
+    private static final Font DEFAULT_FONT = Constants.SMALL_FONT;
 
     /** the default label format */
     private static final String DEFAULT_FORMAT = "#.###########";
-
-    /** the default font */
-    private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
 
     /**
      * Constructor.
      */
     public SeriesLabel() {
-        font = new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
-                SWT.NORMAL);
-        color = new Color(Display.getDefault(), DEFAULT_COLOR);
+        font = DEFAULT_FONT;
+        color = Display.getDefault().getSystemColor(DEFAULT_COLOR);
         isVisible = false;
         format = DEFAULT_FORMAT;
     }
@@ -99,7 +97,7 @@ public class SeriesLabel implements ISeriesLabel {
             this.formats = null;
             return;
         }
-        
+
         this.formats = new String[formats.length];
         System.arraycopy(formats, 0, this.formats, 0, formats.length);
     }
@@ -120,7 +118,7 @@ public class SeriesLabel implements ISeriesLabel {
         }
 
         if (color == null) {
-            this.color = new Color(Display.getDefault(), DEFAULT_COLOR);
+            this.color = Display.getDefault().getSystemColor(DEFAULT_COLOR);
         } else {
             this.color = color;
         }
@@ -130,6 +128,9 @@ public class SeriesLabel implements ISeriesLabel {
      * @see ISeriesLabel#getFont()
      */
     public Font getFont() {
+        if (font.isDisposed()) {
+            font = DEFAULT_FONT;
+        }
         return font;
     }
 
@@ -141,7 +142,7 @@ public class SeriesLabel implements ISeriesLabel {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
         }
         if (font == null) {
-            this.font = Display.getDefault().getSystemFont();
+            this.font = DEFAULT_FONT;
         } else {
             this.font = font;
         }
@@ -184,7 +185,7 @@ public class SeriesLabel implements ISeriesLabel {
         }
 
         gc.setForeground(color);
-        gc.setFont(font);
+        gc.setFont(getFont());
 
         // get format
         String format1 = format;

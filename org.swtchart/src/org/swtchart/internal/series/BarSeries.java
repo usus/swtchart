@@ -9,11 +9,9 @@ package org.swtchart.internal.series;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.IBarSeries;
 import org.swtchart.Range;
 import org.swtchart.IAxis.Direction;
@@ -45,7 +43,7 @@ public class BarSeries extends Series implements IBarSeries {
     private static final int MARGIN_AT_MIN_MAX_PLOT = 6;
 
     /** the default bar color */
-    private static final RGB DEFAULT_BAR_COLOR = Constants.LIGHT_BLUE;
+    private static final int DEFAULT_BAR_COLOR = SWT.COLOR_CYAN;
 
     /**
      * Constructor.
@@ -58,7 +56,7 @@ public class BarSeries extends Series implements IBarSeries {
     protected BarSeries(Chart chart, String id) {
         super(chart, id);
 
-        barColor = new Color(Display.getDefault(), DEFAULT_BAR_COLOR);
+        barColor = Display.getDefault().getSystemColor(DEFAULT_BAR_COLOR);
         padding = INITIAL_PADDING;
         type = SeriesType.BAR;
 
@@ -86,6 +84,9 @@ public class BarSeries extends Series implements IBarSeries {
      * @see IBarSeries#getBarColor()
      */
     public Color getBarColor() {
+        if (barColor.isDisposed()) {
+            barColor = Display.getDefault().getSystemColor(DEFAULT_BAR_COLOR);
+        }
         return barColor;
     }
 
@@ -98,7 +99,8 @@ public class BarSeries extends Series implements IBarSeries {
         }
 
         if (color == null) {
-            this.barColor = new Color(Display.getDefault(), DEFAULT_BAR_COLOR);
+            this.barColor = Display.getDefault().getSystemColor(
+                    DEFAULT_BAR_COLOR);
         } else {
             this.barColor = color;
         }
@@ -382,12 +384,14 @@ public class BarSeries extends Series implements IBarSeries {
         int alpha = gc.getAlpha();
         gc.setAlpha(ALPHA);
 
-        gc.setBackground(barColor);
+        gc.setBackground(getBarColor());
         gc.fillRectangle(h, v, width, height);
 
         gc.setLineStyle(SWT.LINE_SOLID);
-        gc.setForeground(getFrameColor(barColor));
+        Color frameColor = getFrameColor(getBarColor());
+        gc.setForeground(frameColor);
         gc.drawRectangle(h, v, width, height);
+        frameColor.dispose();
 
         gc.setAlpha(alpha);
     }

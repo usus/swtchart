@@ -6,9 +6,7 @@
  *******************************************************************************/
 package org.swtchart.internal.axis;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.IAxis.Direction;
@@ -19,14 +17,17 @@ import org.swtchart.internal.Title;
  */
 public class AxisTitle extends Title {
 
-    /** the axis */
-    private Axis axis;
-
     /** the default text for X Axis */
     private static final String DEFAULT_TEXT_FOR_XAXIS = "X Axis";
 
     /** the default text for X Axis */
     private static final String DEFAULT_TEXT_FOR_YAXIS = "Y Axis";
+
+    /** the default font */
+    private static final Font DEFAULT_FONT = Constants.MEDIUM_FONT;
+
+    /** the axis */
+    private Axis axis;
 
     /** the direction of axis */
     private Direction direction;
@@ -47,8 +48,7 @@ public class AxisTitle extends Title {
         super(chart, style);
         this.axis = axis;
         this.direction = direction;
-        setFont(new Font(Display.getDefault(), "Tahoma",
-                Constants.MEDIUM_FONT_SIZE, SWT.BOLD));
+        setFont(DEFAULT_FONT);
     }
 
     /*

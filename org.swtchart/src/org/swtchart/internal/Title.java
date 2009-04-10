@@ -14,7 +14,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
@@ -37,10 +36,10 @@ public class Title extends Canvas implements ITitle, PaintListener {
     protected boolean isVisible;
 
     /** the default font */
-    private static final int DEFAULT_FONT_SIZE = Constants.LARGE_FONT_SIZE;
+    private static final Font DEFAULT_FONT = Constants.LARGE_FONT;
 
     /** the default color */
-    private static final RGB DEFAULT_FOREGROUND = Constants.BLUE;
+    private static final int DEFAULT_FOREGROUND = SWT.COLOR_BLUE;
 
     /** the default text */
     private static final String DEFAULT_TEXT = "";
@@ -62,9 +61,8 @@ public class Title extends Canvas implements ITitle, PaintListener {
         text = getDefaultText();
         isVisible = true;
 
-        setFont(new Font(Display.getDefault(), "Tahoma", DEFAULT_FONT_SIZE,
-                SWT.BOLD));
-        setForeground(new Color(Display.getDefault(), DEFAULT_FOREGROUND));
+        setFont(DEFAULT_FONT);
+        setForeground(Display.getDefault().getSystemColor(DEFAULT_FOREGROUND));
 
         addPaintListener(this);
     }
@@ -103,8 +101,7 @@ public class Title extends Canvas implements ITitle, PaintListener {
     @Override
     public void setFont(Font font) {
         if (font == null) {
-            super.setFont(new Font(Display.getDefault(), "Tahoma",
-                    DEFAULT_FONT_SIZE, SWT.BOLD));
+            super.setFont(DEFAULT_FONT);
         } else {
             super.setFont(font);
         }
@@ -117,7 +114,7 @@ public class Title extends Canvas implements ITitle, PaintListener {
     @Override
     public void setForeground(Color color) {
         if (color == null) {
-            super.setForeground(new Color(Display.getDefault(),
+            super.setForeground(Display.getDefault().getSystemColor(
                     DEFAULT_FOREGROUND));
         } else {
             super.setForeground(color);

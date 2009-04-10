@@ -13,11 +13,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.IAxis;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
@@ -44,7 +42,7 @@ public class PlotArea extends Canvas implements PaintListener {
     private boolean updateImageCache;
 
     /** the default background color */
-    private static final RGB DEFAULT_COLOR = Constants.WHITE;
+    private static final int DEFAULT_BACKGROUND = SWT.COLOR_WHITE;
 
     /**
      * Constructor.
@@ -62,7 +60,7 @@ public class PlotArea extends Canvas implements PaintListener {
         seriesSet = new SeriesSet(chart);
         updateImageCache = true;
 
-        setBackground(new Color(Display.getDefault(), DEFAULT_COLOR));
+        setBackground(Display.getDefault().getSystemColor(DEFAULT_BACKGROUND));
         addPaintListener(this);
     }
 
@@ -90,7 +88,8 @@ public class PlotArea extends Canvas implements PaintListener {
     @Override
     public void setBackground(Color color) {
         if (color == null) {
-            super.setBackground(new Color(Display.getDefault(), DEFAULT_COLOR));
+            super.setBackground(Display.getDefault().getSystemColor(
+                    DEFAULT_BACKGROUND));
         } else {
             super.setBackground(color);
         }

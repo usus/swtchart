@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-import org.swtchart.Constants;
 import org.swtchart.IGrid;
 import org.swtchart.LineStyle;
 import org.swtchart.internal.axis.Axis;
@@ -42,7 +40,7 @@ public class Grid implements IGrid {
     private final static LineStyle DEFAULT_STYLE = LineStyle.DOT;
 
     /** the default color */
-    private final static RGB DEFAULT_FOREGROUND = Constants.GRAY;
+    private final static int DEFAULT_FOREGROUND = SWT.COLOR_GRAY;
 
     /**
      * Constructor.
@@ -53,7 +51,7 @@ public class Grid implements IGrid {
     public Grid(Axis axis) {
         this.axis = axis;
 
-        color = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
+        color = Display.getDefault().getSystemColor(DEFAULT_FOREGROUND);
         lineStyle = DEFAULT_STYLE;
         isVisible = true;
     }
@@ -62,6 +60,9 @@ public class Grid implements IGrid {
      * @see IGrid#getForeground()
      */
     public Color getForeground() {
+        if (color.isDisposed()) {
+            color = Display.getDefault().getSystemColor(DEFAULT_FOREGROUND);
+        }
         return color;
     }
 
@@ -74,7 +75,8 @@ public class Grid implements IGrid {
         }
 
         if (color == null) {
-            this.color = new Color(Display.getDefault(), DEFAULT_FOREGROUND);
+            this.color = Display.getDefault()
+                    .getSystemColor(DEFAULT_FOREGROUND);
         } else {
             this.color = color;
         }
@@ -120,7 +122,7 @@ public class Grid implements IGrid {
             xWidth = height;
         }
 
-        gc.setForeground(color);
+        gc.setForeground(getForeground());
         ArrayList<Integer> tickLabelPosition = axis.getTick()
                 .getAxisTickLabels().getTickLabelPositions();
 
