@@ -18,6 +18,7 @@ import org.swtchart.IAxis;
 import org.swtchart.ISeries;
 import org.swtchart.ISeriesSet;
 import org.swtchart.Range;
+import org.swtchart.IAxis.Direction;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.internal.axis.Axis;
 import org.swtchart.internal.compress.CompressConfig;
@@ -282,8 +283,31 @@ public class SeriesSet implements ISeriesSet {
             config.setYRange(lower, upper);
 
             ICompress compressor = ((Series) series).getCompressor();
-            if (((Axis) xAxis).isValidCategoryAxis()) {
-                double[] xSeries = new double[xAxis.getCategorySeries().length];
+            compressor.compress(config);
+        }
+    }
+
+    /**
+     * Updates the compressor associated with the given axis.
+     * <p>
+     * In most cases, compressor is updated when series is changed. However,
+     * there is a case that compressor has to be updated with the changes in
+     * axis.
+     * 
+     * @param axis
+     *            the axis
+     */
+    public void updateCompressor(Axis axis) {
+        for (ISeries series : getSeries()) {
+            int axisId = (axis.getDirection() == Direction.X) ? series
+                    .getXAxisId() : series.getYAxisId();
+            if (axisId != axis.getId()) {
+                continue;
+            }
+
+            ICompress compressor = ((Series) series).getCompressor();
+            if (axis.isValidCategoryAxis()) {
+                double[] xSeries = new double[axis.getCategorySeries().length];
                 for (int i = 0; i < xSeries.length; i++) {
                     xSeries[i] = i;
                 }
@@ -291,9 +315,8 @@ public class SeriesSet implements ISeriesSet {
             } else if (((Series) series).getXSeries() != null) {
                 compressor.setXSeries(((Series) series).getXSeries());
             }
-
-            compressor.compress(config);
         }
+        compressAllSeries();
     }
 
     /**

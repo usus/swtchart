@@ -113,13 +113,11 @@ public class CompressLineSeries extends Compress {
                 }
             } else {
                 if (isPrevOutOfRange) {
-                    if (index > 0
-                            && ySeries[index - 1] < config.getYLowerValue()
-                            && ySeries[index] > config.getYUpperValue()) {
+                    if (index > 0 && ySeries[index - 1] < yLower
+                            && ySeries[index] > yUpper) {
                         state = STATE.SteppingOverYRange;
-                    } else if (index > 0
-                            && xSeries[index - 1] < config.getXLowerValue()
-                            && xSeries[index] > config.getXLowerValue()) {
+                    } else if (index > 0 && xSeries[index - 1] < xLower
+                            && xSeries[index] > xLower) {
                         state = STATE.SteppingInXRange;
                     } else {
                         state = STATE.OutOfRangeAgain;
@@ -131,13 +129,11 @@ public class CompressLineSeries extends Compress {
         } else {
             if (!isPrevOutOfRange) {
                 state = STATE.SteppingOutOfRange;
-            } else if (index > 0
-                    && xSeries[index - 1] < config.getXUpperValue()
-                    && xSeries[index] > config.getXUpperValue()) {
+            } else if (index > 0 && xSeries[index - 1] < xUpper
+                    && xSeries[index] > xUpper) {
                 state = STATE.SteppingOutOfXRange;
-            } else if (index > 0
-                    && xSeries[index - 1] < config.getXLowerValue()
-                    && xSeries[index] > config.getXUpperValue()) {
+            } else if (index > 0 && xSeries[index - 1] < xLower
+                    && xSeries[index] > xUpper) {
                 state = STATE.SteppingOverXRange;
             } else {
                 state = STATE.OutOfRangeAgain;

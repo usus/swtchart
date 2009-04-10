@@ -551,6 +551,7 @@ public class Axis implements IAxis {
 
         chart.updateLayout();
 
+        ((SeriesSet) chart.getSeriesSet()).updateCompressor(this);
         ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
     }
 
@@ -579,6 +580,7 @@ public class Axis implements IAxis {
 
         chart.updateLayout();
 
+        ((SeriesSet) chart.getSeriesSet()).updateCompressor(this);
         ((SeriesSet) chart.getSeriesSet()).updateStackAndRiserData();
     }
 

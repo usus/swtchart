@@ -43,6 +43,30 @@ public abstract class Compress implements ICompress {
     /** the compressed series indexes */
     protected transient int[] compressedIndexes = null;
 
+    /** the lower value of x range */
+    protected double xLower;
+
+    /** the upper value of x range */
+    protected double xUpper;
+
+    /** the lower value of y range */
+    protected double yLower;
+
+    /** the upper value of y range */
+    protected double yUpper;
+
+    /** the state indicating if x axis is log scale */
+    private boolean isXLogScale;
+
+    /** the state indicating if y axis is log scale */
+    private boolean isYLogScale;
+
+    /** the plot area width in pixels */
+    private long widthInPixel;
+
+    /** the plot area height in pixels */
+    private long heightInPixel;
+
     /*
      * @see ICompress#setXSeries(double[])
      */
@@ -120,6 +144,17 @@ public abstract class Compress implements ICompress {
         prevConfig = new CompressConfig(compressConfig);
 
         this.config = compressConfig;
+
+        // store into fields to improve performance
+        xLower = config.getXLowerValue();
+        xUpper = config.getXUpperValue();
+        yLower = config.getYLowerValue();
+        yUpper = config.getYUpperValue();
+        isXLogScale = config.isXLogScale();
+        isYLogScale = config.isYLogScale();
+        widthInPixel = config.getWidthInPixel();
+        heightInPixel = config.getHeightInPixel();
+
         previousXGridIndex = -1;
         previousYGridIndex = -1;
 
@@ -194,27 +229,21 @@ public abstract class Compress implements ICompress {
         int yGridIndex;
 
         // calculate the X grid index
-        if (config.isXLogScale()) {
-            double lower = Math.log10(config.getXLowerValue());
-            double upper = Math.log10(config.getXUpperValue());
-            xGridIndex = (int) ((Math.log10(x) - lower) / (upper - lower) * config
-                    .getWidthInPixel());
+        if (isXLogScale) {
+            double lower = Math.log10(xLower);
+            double upper = Math.log10(xUpper);
+            xGridIndex = (int) ((Math.log10(x) - lower) / (upper - lower) * widthInPixel);
         } else {
-            xGridIndex = (int) ((x - config.getXLowerValue())
-                    / (config.getXUpperValue() - config.getXLowerValue()) * config
-                    .getWidthInPixel());
+            xGridIndex = (int) ((x - xLower) / (xUpper - xLower) * widthInPixel);
         }
 
         // calculate the Y grid index
-        if (config.isYLogScale()) {
-            double lower = Math.log10(config.getYLowerValue());
-            double upper = Math.log10(config.getYUpperValue());
-            yGridIndex = (int) ((Math.log10(y) - lower) / (upper - lower) * config
-                    .getHeightInPixel());
+        if (isYLogScale) {
+            double lower = Math.log10(yLower);
+            double upper = Math.log10(yUpper);
+            yGridIndex = (int) ((Math.log10(y) - lower) / (upper - lower) * heightInPixel);
         } else {
-            yGridIndex = (int) ((y - config.getYLowerValue())
-                    / (config.getYUpperValue() - config.getYLowerValue()) * config
-                    .getHeightInPixel());
+            yGridIndex = (int) ((y - yLower) / (yUpper - yLower) * heightInPixel);
         }
 
         // check if the grid index is the same as previous
@@ -235,7 +264,7 @@ public abstract class Compress implements ICompress {
      * @return true if the given X value is in range.
      */
     protected boolean isInXRange(double x) {
-        return (x >= config.getXLowerValue() && x <= config.getXUpperValue());
+        return x >= xLower && x <= xUpper;
     }
 
     /**
@@ -246,6 +275,6 @@ public abstract class Compress implements ICompress {
      * @return true if the given Y value is in range.
      */
     protected boolean isInYRange(double y) {
-        return (y >= config.getYLowerValue() && y <= config.getYUpperValue());
+        return y >= yLower && y <= yUpper;
     }
 }
