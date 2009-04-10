@@ -260,7 +260,7 @@ public class AxisSet implements IAxisSet {
      */
     public void adjustRange() {
         for (IAxis axis : getAxes()) {
-            ((Axis)axis).adjustRange(false);
+            ((Axis) axis).adjustRange(false);
         }
         chart.updateLayout();
     }
@@ -370,8 +370,8 @@ public class AxisSet implements IAxisSet {
         for (IAxis axis : horizontalAxes) {
             axesHeight += ((ChartLayoutData) ((Title) ((Axis) axis).getTitle())
                     .getLayoutData()).heightHint
-                    + ((Axis) axis).getTick()
-                            .getAxisTickLabels().getLayoutData().heightHint
+                    + ((Axis) axis).getTick().getAxisTickLabels()
+                            .getLayoutData().heightHint
                     + ((Axis) axis).getTick().getAxisTickMarks()
                             .getLayoutData().heightHint;
         }
@@ -388,6 +388,15 @@ public class AxisSet implements IAxisSet {
 
         for (IAxis axis : verticalAxes) {
             ((Axis) axis).getTick().updateTick(axisHeight);
+        }
+    }
+
+    /**
+     * Refreshes the cache.
+     */
+    public void refresh() {
+        for (IAxis axis : getAxes()) {
+            ((Axis) axis).refresh();
         }
     }
 }

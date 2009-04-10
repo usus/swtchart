@@ -478,11 +478,18 @@ public class LineSeries extends Series implements ILineSeries {
                 }
             }
         } else {
-            int prevX = xAxis.getPixelCoordinate(xseries[0]);
-            int prevY = yAxis.getPixelCoordinate(yseries[0]);
+            double xLower = xAxis.getRange().lower;
+            double xUpper = xAxis.getRange().upper;
+            double yLower = yAxis.getRange().lower;
+            double yUpper = yAxis.getRange().upper;
+
+            int prevX = xAxis.getPixelCoordinate(xseries[0], xLower, xUpper);
+            int prevY = yAxis.getPixelCoordinate(yseries[0], yLower, yUpper);
             for (int i = 0; i < xseries.length - 1; i++) {
-                int x = xAxis.getPixelCoordinate(xseries[i + 1]);
-                int y = yAxis.getPixelCoordinate(yseries[i + 1]);
+                int x = xAxis
+                        .getPixelCoordinate(xseries[i + 1], xLower, xUpper);
+                int y = yAxis
+                        .getPixelCoordinate(yseries[i + 1], yLower, yUpper);
                 if (isHorizontal) {
                     gc.drawLine(prevX, prevY, x, y);
                 } else {

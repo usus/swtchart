@@ -70,6 +70,15 @@ public class Axis implements IAxis {
     /** the number of riser per category */
     private int numRisers;
 
+    /** the state indicating if the axis is horizontal */
+    private boolean isHorizontalAxis;
+
+    /** the plot area width */
+    private int width;
+
+    /** the plot area height */
+    private int height;
+
     /** the margin in pixels */
     public final static int MARGIN = 5;
 
@@ -349,7 +358,7 @@ public class Axis implements IAxis {
 
             // get axis length
             int length;
-            if (isHorizontalAxis()) {
+            if (isHorizontalAxis) {
                 length = chart.getPlotArea().getSize().x;
             } else {
                 length = chart.getPlotArea().getSize().y;
@@ -621,9 +630,7 @@ public class Axis implements IAxis {
     public int getPixelCoordinate(double dataCoordinate, double lower,
             double upper) {
         int pixelCoordinate;
-        if (isHorizontalAxis()) {
-            int width = chart.getPlotArea().getBounds().width;
-
+        if (isHorizontalAxis) {
             if (logScaleEnabled) {
                 pixelCoordinate = (int) ((Math.log10(dataCoordinate) - Math
                         .log10(lower))
@@ -636,8 +643,6 @@ public class Axis implements IAxis {
                         / (upper - lower) * width);
             }
         } else {
-            int height = chart.getPlotArea().getBounds().height;
-
             if (logScaleEnabled) {
                 pixelCoordinate = (int) ((Math.log10(upper) - Math
                         .log10(dataCoordinate))
@@ -675,9 +680,7 @@ public class Axis implements IAxis {
     public double getDataCoordinate(int pixelCoordinate, double lower,
             double upper) {
         double dataCoordinate;
-        if (isHorizontalAxis()) {
-            int width = chart.getPlotArea().getBounds().width;
-
+        if (isHorizontalAxis) {
             if (logScaleEnabled) {
                 dataCoordinate = Math.pow(10, pixelCoordinate / (double) width
                         * (Math.log10(upper) - Math.log10(lower))
@@ -690,8 +693,6 @@ public class Axis implements IAxis {
                         * (upper - lower) + lower;
             }
         } else {
-            int height = chart.getPlotArea().getBounds().height;
-
             if (logScaleEnabled) {
                 dataCoordinate = Math.pow(10, Math.log10(upper)
                         - pixelCoordinate / (double) height
@@ -754,6 +755,17 @@ public class Axis implements IAxis {
         title.updateLayoutData();
         tick.updateLayoutData();
     }
+    
+    /**
+     * Refreshes the cache.
+     */
+    public void refresh(){
+        int orientation = chart.getOrientation();
+        isHorizontalAxis = (direction == Direction.X && orientation == SWT.HORIZONTAL)
+        || (direction == Direction.Y && orientation == SWT.VERTICAL);
+        width = chart.getPlotArea().getBounds().width;
+        height = chart.getPlotArea().getBounds().height;
+    }
 
     /**
      * Gets the state indicating if date is enabled.
@@ -761,7 +773,7 @@ public class Axis implements IAxis {
      * @return true if date is enabled
      */
     public boolean isDateEnabled() {
-        if (!isHorizontalAxis()) {
+        if (!isHorizontalAxis) {
             return false;
         }
 

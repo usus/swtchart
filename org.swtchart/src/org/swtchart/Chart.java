@@ -211,6 +211,10 @@ public class Chart extends Composite implements Listener {
         }
 
         layout();
+
+        if (axisSet != null) {
+            axisSet.refresh();
+        }
     }
 
     /*
