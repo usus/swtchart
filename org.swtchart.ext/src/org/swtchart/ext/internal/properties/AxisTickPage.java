@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Direction;
 
@@ -198,9 +197,9 @@ public class AxisTickPage extends AbstractSelectorPage {
     @Override
     protected void performDefaults() {
         visibilityStates[selectedIndex] = true;
-        fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
-        foregroundColors[selectedIndex] = new Color(Display.getDefault(),
-                Constants.BLUE);
+        fontSizes[selectedIndex] = 9;
+        foregroundColors[selectedIndex] = Display.getDefault().getSystemColor(
+                SWT.COLOR_BLUE);
 
         updateControlSelections();
 

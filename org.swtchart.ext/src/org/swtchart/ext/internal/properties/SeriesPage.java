@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
@@ -489,15 +488,15 @@ public class SeriesPage extends AbstractSelectorPage {
         }
         if (series[selectedIndex] instanceof ILineSeries) {
             lineStyles[selectedIndex] = LineStyle.SOLID;
-            lineColors[selectedIndex] = new Color(Display.getDefault(),
-                    Constants.BLUE);
-            symbolColors[selectedIndex] = new Color(Display.getDefault(),
-                    Constants.DARK_GRAY);
+            lineColors[selectedIndex] = Display.getDefault().getSystemColor(
+                    SWT.COLOR_BLUE);
+            symbolColors[selectedIndex] = Display.getDefault().getSystemColor(
+                    SWT.COLOR_DARK_GRAY);
             symbolTypes[selectedIndex] = PlotSymbolType.CIRCLE;
             symbolSizes[selectedIndex] = 4;
         } else if (series[selectedIndex] instanceof IBarSeries) {
-            barColors[selectedIndex] = new Color(Display.getDefault(),
-                    Constants.BLUE);
+            barColors[selectedIndex] = Display.getDefault().getSystemColor(
+                    SWT.COLOR_BLUE);
             paddings[selectedIndex] = 20;
         }
 

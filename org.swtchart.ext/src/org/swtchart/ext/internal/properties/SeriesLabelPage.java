@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.ISeries;
 
 /**
@@ -191,8 +190,9 @@ public class SeriesLabelPage extends AbstractSelectorPage {
     @Override
     protected void performDefaults() {
         visibleStates[selectedIndex] = false;
-        colors[selectedIndex] = new Color(Display.getDefault(), Constants.BLACK);
-        fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
+        colors[selectedIndex] = Display.getDefault().getSystemColor(
+                SWT.COLOR_BLACK);
+        fontSizes[selectedIndex] = 9;
 
         updateControlSelections();
 

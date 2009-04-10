@@ -7,6 +7,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -17,7 +18,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.ITitle;
 
 /**
@@ -193,7 +193,7 @@ public class ChartPage extends AbstractPage {
      */
     @Override
     protected void performDefaults() {
-        backgroundInPlotAreaButton.setColorValue(Constants.WHITE);
+        backgroundInPlotAreaButton.setColorValue(new RGB(255, 255, 255));
         backgroundButton.setColorValue(Display.getDefault().getSystemColor(
                 SWT.COLOR_WIDGET_BACKGROUND).getRGB());
         orientationButton.setSelection(false);
@@ -201,8 +201,8 @@ public class ChartPage extends AbstractPage {
         showTitleButton.setSelection(true);
         setTitleControlsEnable(true);
         titleText.setText("Chart Title");
-        fontSizeSpinner.setSelection(Constants.LARGE_FONT_SIZE);
-        titleColorButton.setColorValue(Constants.BLUE);
+        fontSizeSpinner.setSelection(13);
+        titleColorButton.setColorValue(new RGB(0, 0, 255));
 
         super.performDefaults();
     }

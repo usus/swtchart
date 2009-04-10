@@ -7,6 +7,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -16,7 +17,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.ILegend;
 
 /**
@@ -163,9 +163,9 @@ public class LegendPage extends AbstractPage {
         showLegendButton.setSelection(true);
         setControlsEnable(true);
 
-        backgroundButton.setColorValue(Constants.WHITE);
-        foregroundButton.setColorValue(Constants.BLACK);
-        fontSizeSpinner.setSelection(Constants.SMALL_FONT_SIZE);
+        backgroundButton.setColorValue(new RGB(255, 255, 255));
+        foregroundButton.setColorValue(new RGB(0, 0, 0));
+        fontSizeSpinner.setSelection(9);
 
         super.performDefaults();
     }

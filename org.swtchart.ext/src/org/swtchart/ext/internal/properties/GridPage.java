@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.IAxis;
 import org.swtchart.LineStyle;
 import org.swtchart.IAxis.Direction;
@@ -162,8 +161,8 @@ public class GridPage extends AbstractSelectorPage {
     @Override
     protected void performDefaults() {
         styles[selectedIndex] = LineStyle.DOT;
-        foregroundColors[selectedIndex] = new Color(Display.getDefault(),
-                Constants.GRAY);
+        foregroundColors[selectedIndex] = Display.getDefault().getSystemColor(
+                SWT.COLOR_GRAY);
 
         updateControlSelections();
 

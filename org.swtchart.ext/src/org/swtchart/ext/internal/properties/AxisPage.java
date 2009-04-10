@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.IAxis;
 import org.swtchart.Range;
 import org.swtchart.IAxis.Direction;
@@ -374,9 +373,9 @@ public class AxisPage extends AbstractSelectorPage {
             titleTexts[selectedIndex] = "Y Axis";
         }
         positions[selectedIndex] = Position.Primary;
-        titleFontSizes[selectedIndex] = Constants.MEDIUM_FONT_SIZE;
-        titleColors[selectedIndex] = new Color(Display.getDefault(),
-                Constants.BLUE);
+        titleFontSizes[selectedIndex] = 11;
+        titleColors[selectedIndex] = Display.getDefault().getSystemColor(
+                SWT.COLOR_BLUE);
         minRanges[selectedIndex] = 0.0;
         maxRanges[selectedIndex] = 1.0;
         logScaleStates[selectedIndex] = false;
