@@ -39,6 +39,9 @@ public class Chart extends Composite implements Listener {
 
     /** the orientation of chart which can be horizontal or vertical */
     private int orientation;
+    
+    /** the state indicating if compressing series is enabled */
+    private boolean compressEnabled;
 
     /**
      * Constructor.
@@ -52,6 +55,7 @@ public class Chart extends Composite implements Listener {
         super(parent, style);
 
         orientation = SWT.HORIZONTAL;
+        compressEnabled = true;
 
         parent.layout();
 
@@ -178,6 +182,25 @@ public class Chart extends Composite implements Listener {
      */
     public int getOrientation() {
         return orientation;
+    }
+
+    /**
+     * Enables compressing series. By default, compressing series is enabled,
+     * and normally there should be no usecase to disable it. However, if you
+     * suspect that something is wrong in compressing series, you can disable it
+     * to isolate the issue.
+     */
+    public void enableCompress(boolean enabled) {
+        compressEnabled = enabled;
+    }
+
+    /**
+     * Gets the state indicating if compressing series is enabled.
+     * 
+     * @return true if compressing series is enabled
+     */
+    public boolean isCompressEnabled() {
+        return compressEnabled;
     }
 
     /*

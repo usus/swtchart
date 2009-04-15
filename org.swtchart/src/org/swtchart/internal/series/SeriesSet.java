@@ -250,6 +250,9 @@ public class SeriesSet implements ISeriesSet {
      * Compresses all series data.
      */
     public void compressAllSeries() {
+        if (!chart.isCompressEnabled()) {
+            return;
+        }
 
         CompressConfig config = new CompressConfig();
 
