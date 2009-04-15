@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.swtchart.Chart;
+import org.swtchart.ext.InteractiveChart;
 
 /**
  * Abstract class for properties page with selector.
@@ -33,13 +33,16 @@ abstract public class AbstractSelectorPage extends AbstractPage {
      * 
      * @param chart
      *            the chart
+     * @param resources
+     *            the properties resources
      * @param title
      *            the title
      * @param selector
      *            the selector name
      */
-    public AbstractSelectorPage(Chart chart, String title, String selector) {
-        super(chart, title);
+    public AbstractSelectorPage(InteractiveChart chart,
+            PropertiesResources resources, String title, String selector) {
+        super(chart, resources, title);
         this.selector = selector;
         selectedIndex = 0;
         selectorEnabled = true;

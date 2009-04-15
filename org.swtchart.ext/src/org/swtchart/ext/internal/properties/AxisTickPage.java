@@ -9,21 +9,31 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
-import org.swtchart.Chart;
+import org.swtchart.Constants;
 import org.swtchart.IAxis;
+import org.swtchart.IDisposeListener;
 import org.swtchart.IAxis.Direction;
+import org.swtchart.ext.InteractiveChart;
 
 /**
  * The tick page on properties dialog.
  */
 public class AxisTickPage extends AbstractSelectorPage {
+
+    /** the key for axis tick font */
+    private static final String AXIS_TICK_FONT = "org.swtchart.axistick.font";
+
+    /** the key for axis tick foreground */
+    private static final String AXIS_TICK_FOREGROUND = "org.swtchart.axistick.foreground";
 
     /** the axes */
     private IAxis[] axes;
@@ -50,20 +60,23 @@ public class AxisTickPage extends AbstractSelectorPage {
     protected int[] fontSizes;
 
     /** the foreground colors */
-    protected Color[] foregroundColors;
+    protected RGB[] foregroundColors;
 
     /**
      * Constructor.
      * 
      * @param chart
      *            the chart
+     * @param resources
+     *            the properties resources
      * @param direction
      *            the direction
      * @param title
      *            the title
      */
-    public AxisTickPage(Chart chart, Direction direction, String title) {
-        super(chart, title, "Axes:");
+    public AxisTickPage(InteractiveChart chart, PropertiesResources resources,
+            Direction direction, String title) {
+        super(chart, resources, title, "Axes:");
         if (direction == Direction.X) {
             this.axes = chart.getAxisSet().getXAxes();
         } else if (direction == Direction.Y) {
@@ -72,7 +85,7 @@ public class AxisTickPage extends AbstractSelectorPage {
 
         visibilityStates = new boolean[axes.length];
         fontSizes = new int[axes.length];
-        foregroundColors = new Color[axes.length];
+        foregroundColors = new RGB[axes.length];
     }
 
     /*
@@ -96,7 +109,7 @@ public class AxisTickPage extends AbstractSelectorPage {
             visibilityStates[i] = axes[i].getTick().isVisible();
             fontSizes[i] = axes[i].getTick().getFont().getFontData()[0]
                     .getHeight();
-            foregroundColors[i] = axes[i].getTick().getForeground();
+            foregroundColors[i] = axes[i].getTick().getForeground().getRGB();
         }
     }
 
@@ -108,8 +121,7 @@ public class AxisTickPage extends AbstractSelectorPage {
         showTickButton.setSelection(visibilityStates[selectedIndex]);
         setControlsEnable(visibilityStates[selectedIndex]);
         fontSizeSpinner.setSelection(fontSizes[selectedIndex]);
-        foregroundButton
-                .setColorValue(foregroundColors[selectedIndex].getRGB());
+        foregroundButton.setColorValue(foregroundColors[selectedIndex]);
     }
 
     /*
@@ -157,8 +169,8 @@ public class AxisTickPage extends AbstractSelectorPage {
         foregroundButton.addListener(new IPropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent event) {
-                foregroundColors[selectedIndex] = new Color(Display
-                        .getDefault(), foregroundButton.getColorValue());
+                foregroundColors[selectedIndex] = foregroundButton
+                        .getColorValue();
             }
         });
     }
@@ -183,11 +195,34 @@ public class AxisTickPage extends AbstractSelectorPage {
     public void apply() {
         for (int i = 0; i < axes.length; i++) {
             axes[i].getTick().setVisible(visibilityStates[i]);
+
             FontData fontData = axes[i].getTick().getFont().getFontData()[0];
-            Font font = new Font(axes[i].getTick().getFont().getDevice(),
-                    fontData.getName(), fontSizes[i], fontData.getStyle());
+            fontData.setHeight(fontSizes[i]);
+            Font font = new Font(Display.getDefault(), fontData);
             axes[i].getTick().setFont(font);
-            axes[i].getTick().setForeground(foregroundColors[i]);
+            final String fontKey = AXIS_TICK_FONT + axes[i].getDirection()
+                    + axes[i].getId();
+            if (resources.getFont(fontKey) == null) {
+                axes[i].addDisposeListener(new IDisposeListener() {
+                    public void disposed(Event e) {
+                        resources.removeFont(fontKey);
+                    }
+                });
+            }
+            resources.put(fontKey, font);
+
+            Color color = new Color(Display.getDefault(), foregroundColors[i]);
+            axes[i].getTick().setForeground(color);
+            final String colorKey = AXIS_TICK_FOREGROUND
+                    + axes[i].getDirection() + axes[i].getId();
+            if (resources.getColor(colorKey) == null) {
+                axes[i].addDisposeListener(new IDisposeListener() {
+                    public void disposed(Event e) {
+                        resources.removeColor(colorKey);
+                    }
+                });
+            }
+            resources.put(colorKey, color);
         }
     }
 
@@ -197,9 +232,9 @@ public class AxisTickPage extends AbstractSelectorPage {
     @Override
     protected void performDefaults() {
         visibilityStates[selectedIndex] = true;
-        fontSizes[selectedIndex] = 9;
+        fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
         foregroundColors[selectedIndex] = Display.getDefault().getSystemColor(
-                SWT.COLOR_BLUE);
+                SWT.COLOR_BLUE).getRGB();
 
         updateControlSelections();
 

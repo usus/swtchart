@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
-import org.swtchart.Chart;
+import org.swtchart.ext.InteractiveChart;
 
 /**
  * Abstract class for properties page.
@@ -20,18 +20,25 @@ import org.swtchart.Chart;
 public abstract class AbstractPage extends PreferencePage {
 
     /** the chart */
-    protected Chart chart;
+    protected InteractiveChart chart;
+
+    /** the properties resources */
+    protected PropertiesResources resources;
 
     /**
      * Constructor.
      * 
      * @param chart
      *            the chart
+     * @param resources
+     *            the properties resources
      * @param title
      *            the title
      */
-    public AbstractPage(Chart chart, String title) {
+    public AbstractPage(InteractiveChart chart,
+            PropertiesResources resources, String title) {
         this.chart = chart;
+        this.resources = resources;
         setTitle(title);
     }
 

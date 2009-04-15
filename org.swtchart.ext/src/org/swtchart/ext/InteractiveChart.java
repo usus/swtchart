@@ -21,6 +21,7 @@ import org.swtchart.ext.internal.properties.AxisTickPage;
 import org.swtchart.ext.internal.properties.ChartPage;
 import org.swtchart.ext.internal.properties.GridPage;
 import org.swtchart.ext.internal.properties.LegendPage;
+import org.swtchart.ext.internal.properties.PropertiesResources;
 import org.swtchart.ext.internal.properties.SeriesLabelPage;
 import org.swtchart.ext.internal.properties.SeriesPage;
 
@@ -41,6 +42,9 @@ public class InteractiveChart extends Chart implements PaintListener {
     /** the clicked time in milliseconds */
     private long clickedTime;
 
+    /** the resources created with properties dialog */
+    private PropertiesResources resources;
+
     /**
      * Constructor.
      * 
@@ -58,8 +62,8 @@ public class InteractiveChart extends Chart implements PaintListener {
      * Initializes.
      */
     private void init() {
-
         selection = new SelectionRectangle();
+        resources = new PropertiesResources();
 
         Composite plot = getPlotArea();
         plot.addListener(SWT.Resize, this);
@@ -190,6 +194,15 @@ public class InteractiveChart extends Chart implements PaintListener {
         default:
             break;
         }
+    }
+
+    /*
+     * @see Chart#dispose()
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        resources.dispose();
     }
 
     /**
@@ -384,50 +397,54 @@ public class InteractiveChart extends Chart implements PaintListener {
 
         final String chartTitle = "Chart";
         PreferenceNode chartNode = new PreferenceNode(chartTitle);
-        chartNode.setPage(new ChartPage(this, chartTitle));
+        chartNode.setPage(new ChartPage(this, resources, chartTitle));
         manager.addToRoot(chartNode);
 
         final String legendTitle = "Legend";
         PreferenceNode legendNode = new PreferenceNode(legendTitle);
-        legendNode.setPage(new LegendPage(this, legendTitle));
+        legendNode.setPage(new LegendPage(this, resources, legendTitle));
         manager.addTo(chartTitle, legendNode);
 
         final String xAxisTitle = "X Axis";
         PreferenceNode xAxisNode = new PreferenceNode(xAxisTitle);
-        xAxisNode.setPage(new AxisPage(this, Direction.X, xAxisTitle));
+        xAxisNode
+                .setPage(new AxisPage(this, resources, Direction.X, xAxisTitle));
         manager.addTo(chartTitle, xAxisNode);
 
         final String gridTitle = "Grid";
         PreferenceNode xGridNode = new PreferenceNode(gridTitle);
-        xGridNode.setPage(new GridPage(this, Direction.X, gridTitle));
+        xGridNode.setPage(new GridPage(this, resources, Direction.X, gridTitle));
         manager.addTo(chartTitle + "." + xAxisTitle, xGridNode);
 
         final String tickTitle = "Tick";
         PreferenceNode xTickNode = new PreferenceNode(tickTitle);
-        xTickNode.setPage(new AxisTickPage(this, Direction.X, tickTitle));
+        xTickNode.setPage(new AxisTickPage(this, resources, Direction.X,
+                tickTitle));
         manager.addTo(chartTitle + "." + xAxisTitle, xTickNode);
 
         final String yAxisTitle = "Y Axis";
         PreferenceNode yAxisNode = new PreferenceNode(yAxisTitle);
-        yAxisNode.setPage(new AxisPage(this, Direction.Y, yAxisTitle));
+        yAxisNode
+                .setPage(new AxisPage(this, resources, Direction.Y, yAxisTitle));
         manager.addTo(chartTitle, yAxisNode);
 
         PreferenceNode yGridNode = new PreferenceNode(gridTitle);
-        yGridNode.setPage(new GridPage(this, Direction.Y, gridTitle));
+        yGridNode.setPage(new GridPage(this, resources, Direction.Y, gridTitle));
         manager.addTo(chartTitle + "." + yAxisTitle, yGridNode);
 
         PreferenceNode yTickNode = new PreferenceNode(tickTitle);
-        yTickNode.setPage(new AxisTickPage(this, Direction.Y, tickTitle));
+        yTickNode.setPage(new AxisTickPage(this, resources, Direction.Y,
+                tickTitle));
         manager.addTo(chartTitle + "." + yAxisTitle, yTickNode);
 
         final String seriesTitle = "Series";
         PreferenceNode plotNode = new PreferenceNode(seriesTitle);
-        plotNode.setPage(new SeriesPage(this, seriesTitle));
+        plotNode.setPage(new SeriesPage(this, resources, seriesTitle));
         manager.addTo(chartTitle, plotNode);
 
         final String labelTitle = "Label";
         PreferenceNode labelNode = new PreferenceNode(labelTitle);
-        labelNode.setPage(new SeriesLabelPage(this, labelTitle));
+        labelNode.setPage(new SeriesLabelPage(this, resources, labelTitle));
         manager.addTo(chartTitle + "." + seriesTitle, labelNode);
 
         PreferenceDialog dialog = new PreferenceDialog(getShell(), manager);

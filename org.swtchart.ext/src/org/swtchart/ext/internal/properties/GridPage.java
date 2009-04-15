@@ -7,20 +7,24 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.LineStyle;
 import org.swtchart.IAxis.Direction;
+import org.swtchart.ext.InteractiveChart;
 
 /**
  * The grid page on properties dialog.
  */
 public class GridPage extends AbstractSelectorPage {
+
+    /** the key for grid foreground */
+    private static final String GRID_FOREGROUND = "org.swtchart.grid.foreground";
 
     /** the axes */
     private IAxis[] axes;
@@ -35,27 +39,31 @@ public class GridPage extends AbstractSelectorPage {
     protected LineStyle[] styles;
 
     /** the foreground colors */
-    protected Color[] foregroundColors;
+    protected RGB[] foregroundColors;
 
     /**
      * Constructor.
      * 
      * @param chart
      *            the chart
+     * @param resources
+     *            the properties resources
      * @param direction
      *            the direction
      * @param title
      *            the title
      */
-    public GridPage(Chart chart, Direction direction, String title) {
-        super(chart, title, "Axes:");
+    public GridPage(InteractiveChart chart,
+            PropertiesResources resources, Direction direction,
+            String title) {
+        super(chart, resources, title, "Axes:");
         if (direction == Direction.X) {
             this.axes = chart.getAxisSet().getXAxes();
         } else if (direction == Direction.Y) {
             this.axes = chart.getAxisSet().getYAxes();
         }
         styles = new LineStyle[axes.length];
-        foregroundColors = new Color[axes.length];
+        foregroundColors = new RGB[axes.length];
     }
 
     /*
@@ -77,7 +85,7 @@ public class GridPage extends AbstractSelectorPage {
     protected void selectInitialValues() {
         for (int i = 0; i < axes.length; i++) {
             styles[i] = axes[i].getGrid().getStyle();
-            foregroundColors[i] = axes[i].getGrid().getForeground();
+            foregroundColors[i] = axes[i].getGrid().getForeground().getRGB();
         }
     }
 
@@ -87,8 +95,7 @@ public class GridPage extends AbstractSelectorPage {
     @Override
     protected void updateControlSelections() {
         styleCombo.setText(String.valueOf(styles[selectedIndex]));
-        foregroundButton
-                .setColorValue(foregroundColors[selectedIndex].getRGB());
+        foregroundButton.setColorValue(foregroundColors[selectedIndex]);
     }
 
     /*
@@ -138,8 +145,8 @@ public class GridPage extends AbstractSelectorPage {
         foregroundButton.addListener(new IPropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent event) {
-                foregroundColors[selectedIndex] = new Color(Display
-                        .getDefault(), foregroundButton.getColorValue());
+                foregroundColors[selectedIndex] = foregroundButton
+                        .getColorValue();
             }
         });
     }
@@ -151,7 +158,10 @@ public class GridPage extends AbstractSelectorPage {
     public void apply() {
         for (int i = 0; i < axes.length; i++) {
             axes[i].getGrid().setStyle(styles[i]);
-            axes[i].getGrid().setForeground(foregroundColors[i]);
+            Color color = new Color(Display.getDefault(), foregroundColors[i]);
+            axes[i].getGrid().setForeground(color);
+            resources.put(GRID_FOREGROUND + axes[i].getDirection()
+                    + axes[i].getId(), color);
         }
     }
 
@@ -162,7 +172,7 @@ public class GridPage extends AbstractSelectorPage {
     protected void performDefaults() {
         styles[selectedIndex] = LineStyle.DOT;
         foregroundColors[selectedIndex] = Display.getDefault().getSystemColor(
-                SWT.COLOR_GRAY);
+                SWT.COLOR_GRAY).getRGB();
 
         updateControlSelections();
 

@@ -16,13 +16,23 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
-import org.swtchart.Chart;
+import org.swtchart.Constants;
 import org.swtchart.ILegend;
+import org.swtchart.ext.InteractiveChart;
 
 /**
  * The legend property page on properties dialog.
  */
 public class LegendPage extends AbstractPage {
+
+    /** the key for legend font */
+    private static final String LEGEND_FONT = "org.swtchart.legend.font";
+
+    /** the key for legend foreground */
+    private static final String LEGEND_FOREGROUND = "org.swtchart.legend.foreground";
+
+    /** the key for legend background */
+    private static final String LEGEND_GACKGROUND = "org.swtchart.legend.background";
 
     /** the show legend button */
     protected Button showLegendButton;
@@ -53,11 +63,14 @@ public class LegendPage extends AbstractPage {
      * 
      * @param chart
      *            the chart
+     * @param resources
+     *            the properties resources
      * @param title
      *            the title
      */
-    public LegendPage(Chart chart, String title) {
-        super(chart, title);
+    public LegendPage(InteractiveChart chart,
+            PropertiesResources resources, String title) {
+        super(chart, resources, title);
         legend = chart.getLegend();
     }
 
@@ -145,14 +158,21 @@ public class LegendPage extends AbstractPage {
     public void apply() {
         legend.setVisible(showLegendButton.getSelection());
 
-        legend.setBackground(new Color(Display.getDefault(), backgroundButton
-                .getColorValue()));
-        legend.setForeground(new Color(Display.getDefault(), foregroundButton
-                .getColorValue()));
+        Color color = new Color(Display.getDefault(), backgroundButton
+                .getColorValue());
+        legend.setBackground(color);
+        resources.put(LEGEND_GACKGROUND, color);
+
+        color = new Color(Display.getDefault(), foregroundButton
+                .getColorValue());
+        legend.setForeground(color);
+        resources.put(LEGEND_FOREGROUND, color);
+
         FontData fontData = legend.getFont().getFontData()[0];
         Font font = new Font(legend.getFont().getDevice(), fontData.getName(),
                 fontSizeSpinner.getSelection(), fontData.getStyle());
         legend.setFont(font);
+        resources.put(LEGEND_FONT, font);
     }
 
     /*
@@ -165,7 +185,7 @@ public class LegendPage extends AbstractPage {
 
         backgroundButton.setColorValue(new RGB(255, 255, 255));
         foregroundButton.setColorValue(new RGB(0, 0, 0));
-        fontSizeSpinner.setSelection(9);
+        fontSizeSpinner.setSelection(Constants.SMALL_FONT_SIZE);
 
         super.performDefaults();
     }

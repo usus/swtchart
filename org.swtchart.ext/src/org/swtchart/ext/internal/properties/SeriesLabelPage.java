@@ -11,19 +11,29 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
-import org.swtchart.Chart;
+import org.swtchart.Constants;
+import org.swtchart.IDisposeListener;
 import org.swtchart.ISeries;
+import org.swtchart.ext.InteractiveChart;
 
 /**
  * The series label page on properties dialog.
  */
 public class SeriesLabelPage extends AbstractSelectorPage {
+
+    /** the key for series label foreground */
+    private static final String SERIES_LABEL_FOREGROUND = "org.swtchart.series.foreground";
+
+    /** the key for series label font */
+    private static final String SERIES_LABEL_FONT = "org.swtchart.series.font";
 
     /** the series array */
     private ISeries[] series;
@@ -47,7 +57,7 @@ public class SeriesLabelPage extends AbstractSelectorPage {
     protected boolean[] visibleStates;
 
     /** the colors */
-    protected Color[] colors;
+    protected RGB[] colors;
 
     /** the font size */
     protected int[] fontSizes;
@@ -57,18 +67,21 @@ public class SeriesLabelPage extends AbstractSelectorPage {
      * 
      * @param chart
      *            the chart
+     * @param resources
+     *            the properties resources
      * @param axes
      *            the axes
      * @param title
      *            the title
      */
-    public SeriesLabelPage(Chart chart, String title) {
-        super(chart, title, "Series:");
+    public SeriesLabelPage(InteractiveChart chart,
+            PropertiesResources resources, String title) {
+        super(chart, resources, title, "Series:");
 
         series = chart.getSeriesSet().getSeries();
 
         visibleStates = new boolean[series.length];
-        colors = new Color[series.length];
+        colors = new RGB[series.length];
         fontSizes = new int[series.length];
     }
 
@@ -91,7 +104,7 @@ public class SeriesLabelPage extends AbstractSelectorPage {
     protected void selectInitialValues() {
         for (int i = 0; i < series.length; i++) {
             visibleStates[i] = series[i].getLabel().isVisible();
-            colors[i] = series[i].getLabel().getForeground();
+            colors[i] = series[i].getLabel().getForeground().getRGB();
             fontSizes[i] = series[i].getLabel().getFont().getFontData()[0]
                     .getHeight();
         }
@@ -104,7 +117,7 @@ public class SeriesLabelPage extends AbstractSelectorPage {
     protected void updateControlSelections() {
         showLabelButton.setSelection(visibleStates[selectedIndex]);
         setControlsEnable(visibleStates[selectedIndex]);
-        colorButton.setColorValue(colors[selectedIndex].getRGB());
+        colorButton.setColorValue(colors[selectedIndex]);
         fontSizeSpinner.setSelection(fontSizes[selectedIndex]);
     }
 
@@ -141,8 +154,7 @@ public class SeriesLabelPage extends AbstractSelectorPage {
         colorButton.addListener(new IPropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent event) {
-                colors[selectedIndex] = new Color(Display.getDefault(),
-                        colorButton.getColorValue());
+                colors[selectedIndex] = colorButton.getColorValue();
             }
         });
 
@@ -176,11 +188,32 @@ public class SeriesLabelPage extends AbstractSelectorPage {
     public void apply() {
         for (int i = 0; i < series.length; i++) {
             series[i].getLabel().setVisible(visibleStates[i]);
-            series[i].getLabel().setForeground(colors[i]);
+
+            Color color = new Color(Display.getDefault(), colors[i]);
+            series[i].getLabel().setForeground(color);
+            final String colorKey = SERIES_LABEL_FOREGROUND + series[i].getId();
+            if (resources.getColor(colorKey) == null) {
+                series[i].addDisposeListener(new IDisposeListener() {
+                    public void disposed(Event e) {
+                        resources.removeColor(colorKey);
+                    }
+                });
+            }
+            resources.put(colorKey, color);
+
             FontData fontData = series[i].getLabel().getFont().getFontData()[0];
-            Font font = new Font(series[i].getLabel().getFont().getDevice(),
-                    fontData.getName(), fontSizes[i], fontData.getStyle());
+            fontData.setHeight(fontSizes[i]);
+            Font font = new Font(Display.getDefault(), fontData);
             series[i].getLabel().setFont(font);
+            final String fontKey = SERIES_LABEL_FONT + series[i].getId();
+            if (resources.getFont(fontKey) == null) {
+                series[i].addDisposeListener(new IDisposeListener() {
+                    public void disposed(Event e) {
+                        resources.removeFont(fontKey);
+                    }
+                });
+            }
+            resources.put(fontKey, font);
         }
     }
 
@@ -191,8 +224,8 @@ public class SeriesLabelPage extends AbstractSelectorPage {
     protected void performDefaults() {
         visibleStates[selectedIndex] = false;
         colors[selectedIndex] = Display.getDefault().getSystemColor(
-                SWT.COLOR_BLACK);
-        fontSizes[selectedIndex] = 9;
+                SWT.COLOR_BLACK).getRGB();
+        fontSizes[selectedIndex] = Constants.SMALL_FONT_SIZE;
 
         updateControlSelections();
 

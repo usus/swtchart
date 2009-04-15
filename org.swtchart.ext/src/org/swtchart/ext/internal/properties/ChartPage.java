@@ -17,13 +17,26 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
-import org.swtchart.Chart;
+import org.swtchart.Constants;
 import org.swtchart.ITitle;
+import org.swtchart.ext.InteractiveChart;
 
 /**
  * The chart property page on properties dialog.
  */
 public class ChartPage extends AbstractPage {
+
+    /** the key for plot area background */
+    private static final String PLOT_AREA_BACKGROUND = "org.swtchart.plotarea.background";
+
+    /** the key for chart background */
+    private static final String CHART_BACKGROUND = "org.swtchart.chart.background";
+
+    /** the key for chart background */
+    private static final String TITLE_FOREGROUND = "org.swtchart.chart.title.foreground";
+
+    /** the key for title font */
+    private static final String TITLE_FONT = "org.swtchart.chart.title.font";
 
     /** the color selector for background color in plot area */
     private ColorSelector backgroundInPlotAreaButton;
@@ -60,11 +73,14 @@ public class ChartPage extends AbstractPage {
      * 
      * @param chart
      *            the chart
+     * @param resources
+     *            the properties resources
      * @param title
      *            the title
      */
-    public ChartPage(Chart chart, String title) {
-        super(chart, title);
+    public ChartPage(InteractiveChart chart,
+            PropertiesResources resources, String title) {
+        super(chart, resources, title);
     }
 
     /*
@@ -170,22 +186,33 @@ public class ChartPage extends AbstractPage {
      */
     @Override
     public void apply() {
-        chart.setBackgroundInPlotArea(new Color(Display.getDefault(),
-                backgroundInPlotAreaButton.getColorValue()));
-        chart.setBackground(new Color(Display.getDefault(), backgroundButton
-                .getColorValue()));
+        Color color = new Color(Display.getDefault(),
+                backgroundInPlotAreaButton.getColorValue());
+        chart.setBackgroundInPlotArea(color);
+        resources.put(PLOT_AREA_BACKGROUND, color);
+
+        color = new Color(Display.getDefault(), backgroundButton
+                .getColorValue());
+        chart.setBackground(color);
+        resources.put(CHART_BACKGROUND, color);
+
         chart.setOrientation(orientationButton.getSelection() ? SWT.VERTICAL
                 : SWT.HORIZONTAL);
 
         ITitle title = chart.getTitle();
         title.setVisible(showTitleButton.getSelection());
         title.setText(titleText.getText());
+
         FontData fontData = title.getFont().getFontData()[0];
-        Font font = new Font(title.getFont().getDevice(), fontData.getName(),
-                fontSizeSpinner.getSelection(), fontData.getStyle());
+        fontData.setHeight(fontSizeSpinner.getSelection());
+        Font font = new Font(Display.getDefault(), fontData);
         title.setFont(font);
-        title.setForeground(new Color(Display.getDefault(), titleColorButton
-                .getColorValue()));
+        resources.put(TITLE_FONT, font);
+
+        color = new Color(Display.getDefault(), titleColorButton
+                .getColorValue());
+        title.setForeground(color);
+        resources.put(TITLE_FOREGROUND, color);
     }
 
     /*
@@ -201,7 +228,7 @@ public class ChartPage extends AbstractPage {
         showTitleButton.setSelection(true);
         setTitleControlsEnable(true);
         titleText.setText("Chart Title");
-        fontSizeSpinner.setSelection(13);
+        fontSizeSpinner.setSelection(Constants.LARGE_FONT_SIZE);
         titleColorButton.setColorValue(new RGB(0, 0, 255));
 
         super.performDefaults();

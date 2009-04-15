@@ -10,26 +10,38 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
-import org.swtchart.Chart;
 import org.swtchart.IBarSeries;
+import org.swtchart.IDisposeListener;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
 import org.swtchart.LineStyle;
 import org.swtchart.ILineSeries.PlotSymbolType;
+import org.swtchart.ext.InteractiveChart;
 
 /**
  * The series page on properties dialog.
  */
 public class SeriesPage extends AbstractSelectorPage {
+
+    /** the key for series line color */
+    private static final String SERIES_LINE_COLOR = "org.swtchart.series.line.color";
+
+    /** the key for series symbol color */
+    private static final String SERIES_SYMBOL_COLOR = "org.swtchart.series.symbol.color";
+
+    /** the key for series bar color */
+    private static final String SERIES_BAR_COLOR = "org.swtchart.series.bar.color";
 
     /** the button for visibility */
     protected Button visibleButton;
@@ -86,13 +98,13 @@ public class SeriesPage extends AbstractSelectorPage {
     protected int[] yAxisIds;
 
     /** the line colors */
-    protected Color[] lineColors;
+    protected RGB[] lineColors;
 
     /** the line styles */
     protected LineStyle[] lineStyles;
 
     /** the symbol colors */
-    protected Color[] symbolColors;
+    protected RGB[] symbolColors;
 
     /** the symbol types */
     protected PlotSymbolType[] symbolTypes;
@@ -101,7 +113,7 @@ public class SeriesPage extends AbstractSelectorPage {
     protected int[] symbolSizes;
 
     /** the bar colors */
-    protected Color[] barColors;
+    protected RGB[] barColors;
 
     /** the paddings */
     protected int[] paddings;
@@ -123,13 +135,16 @@ public class SeriesPage extends AbstractSelectorPage {
      * 
      * @param chart
      *            the chart
+     * @param resources
+     *            the properties resources
      * @param axes
      *            the axes
      * @param title
      *            the title
      */
-    public SeriesPage(Chart chart, String title) {
-        super(chart, title, "Series:");
+    public SeriesPage(InteractiveChart chart, PropertiesResources resources,
+            String title) {
+        super(chart, resources, title, "Series:");
 
         series = chart.getSeriesSet().getSeries();
         xAxisIdItems = chart.getAxisSet().getXAxisIds();
@@ -139,12 +154,12 @@ public class SeriesPage extends AbstractSelectorPage {
         stackedStates = new boolean[series.length];
         xAxisIds = new int[series.length];
         yAxisIds = new int[series.length];
-        lineColors = new Color[series.length];
+        lineColors = new RGB[series.length];
         lineStyles = new LineStyle[series.length];
-        symbolColors = new Color[series.length];
+        symbolColors = new RGB[series.length];
         symbolTypes = new PlotSymbolType[series.length];
         symbolSizes = new int[series.length];
-        barColors = new Color[series.length];
+        barColors = new RGB[series.length];
         paddings = new int[series.length];
     }
 
@@ -172,13 +187,15 @@ public class SeriesPage extends AbstractSelectorPage {
             visibleStates[i] = series[i].isVisible();
             stackedStates[i] = series[i].isStackEnabled();
             if (series[i] instanceof ILineSeries) {
-                lineColors[i] = ((ILineSeries) series[i]).getLineColor();
+                lineColors[i] = ((ILineSeries) series[i]).getLineColor()
+                        .getRGB();
                 lineStyles[i] = ((ILineSeries) series[i]).getLineStyle();
-                symbolColors[i] = ((ILineSeries) series[i]).getSymbolColor();
+                symbolColors[i] = ((ILineSeries) series[i]).getSymbolColor()
+                        .getRGB();
                 symbolTypes[i] = ((ILineSeries) series[i]).getSymbolType();
                 symbolSizes[i] = ((ILineSeries) series[i]).getSymbolSize();
             } else if (series[i] instanceof IBarSeries) {
-                barColors[i] = ((IBarSeries) series[i]).getBarColor();
+                barColors[i] = ((IBarSeries) series[i]).getBarColor().getRGB();
                 paddings[i] = ((IBarSeries) series[i]).getBarPadding();
             }
             xAxisIds[i] = series[i].getXAxisId();
@@ -204,13 +221,12 @@ public class SeriesPage extends AbstractSelectorPage {
         if (series[selectedIndex] instanceof ILineSeries) {
             lineStyleCombo.setText(lineStyles[selectedIndex].label);
             lineStyleCombo.setEnabled(true);
-            lineColorButton.setColorValue(lineColors[selectedIndex].getRGB());
-            symbolColorButton.setColorValue(symbolColors[selectedIndex]
-                    .getRGB());
+            lineColorButton.setColorValue(lineColors[selectedIndex]);
+            symbolColorButton.setColorValue(symbolColors[selectedIndex]);
             symbolTypeCombo.setText(symbolTypes[selectedIndex].label);
             symbolSizeSpinner.setSelection(symbolSizes[selectedIndex]);
         } else if (series[selectedIndex] instanceof IBarSeries) {
-            barColorButton.setColorValue(barColors[selectedIndex].getRGB());
+            barColorButton.setColorValue(barColors[selectedIndex]);
             paddingSizeSpinner.setSelection(paddings[selectedIndex]);
         }
 
@@ -324,8 +340,7 @@ public class SeriesPage extends AbstractSelectorPage {
         lineColorButton.addListener(new IPropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent event) {
-                lineColors[selectedIndex] = new Color(Display.getDefault(),
-                        lineColorButton.getColorValue());
+                lineColors[selectedIndex] = lineColorButton.getColorValue();
             }
         });
 
@@ -355,8 +370,7 @@ public class SeriesPage extends AbstractSelectorPage {
         symbolColorButton.addListener(new IPropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent event) {
-                symbolColors[selectedIndex] = new Color(Display.getDefault(),
-                        symbolColorButton.getColorValue());
+                symbolColors[selectedIndex] = symbolColorButton.getColorValue();
             }
         });
 
@@ -410,8 +424,7 @@ public class SeriesPage extends AbstractSelectorPage {
         barColorButton.addListener(new IPropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent event) {
-                barColors[selectedIndex] = new Color(Display.getDefault(),
-                        barColorButton.getColorValue());
+                barColors[selectedIndex] = barColorButton.getColorValue();
             }
         });
 
@@ -453,13 +466,49 @@ public class SeriesPage extends AbstractSelectorPage {
         for (int i = 0; i < series.length; i++) {
             series[i].setVisible(visibleStates[i]);
             if (series[i] instanceof ILineSeries) {
-                ((ILineSeries) series[i]).setLineColor(lineColors[i]);
+                Color lineColor = new Color(Display.getDefault(), lineColors[i]);
+                ((ILineSeries) series[i]).setLineColor(lineColor);
+                final String lineColorKey = SERIES_LINE_COLOR
+                        + series[i].getId();
+                if (resources.getColor(lineColorKey) == null) {
+                    series[i].addDisposeListener(new IDisposeListener() {
+                        public void disposed(Event e) {
+                            resources.removeColor(lineColorKey);
+                        }
+                    });
+                }
+                resources.put(lineColorKey, lineColor);
+
+                Color symbolColor = new Color(Display.getDefault(),
+                        symbolColors[i]);
+                ((ILineSeries) series[i]).setSymbolColor(symbolColor);
+                final String symbolColorKey = SERIES_SYMBOL_COLOR
+                        + series[i].getId();
+                if (resources.getColor(symbolColorKey) == null) {
+                    series[i].addDisposeListener(new IDisposeListener() {
+                        public void disposed(Event e) {
+                            resources.removeColor(symbolColorKey);
+                        }
+                    });
+                }
+                resources.put(symbolColorKey, symbolColor);
+
                 ((ILineSeries) series[i]).setLineStyle(lineStyles[i]);
-                ((ILineSeries) series[i]).setSymbolColor(symbolColors[i]);
                 ((ILineSeries) series[i]).setSymbolType(symbolTypes[i]);
                 ((ILineSeries) series[i]).setSymbolSize(symbolSizes[i]);
             } else if (series[i] instanceof IBarSeries) {
-                ((IBarSeries) series[i]).setBarColor(barColors[i]);
+                Color barColor = new Color(Display.getDefault(), barColors[i]);
+                ((IBarSeries) series[i]).setBarColor(barColor);
+                final String barColorKey = SERIES_BAR_COLOR + series[i].getId();
+                if (resources.getColor(barColorKey) == null) {
+                    series[i].addDisposeListener(new IDisposeListener() {
+                        public void disposed(Event e) {
+                            resources.removeColor(barColorKey);
+                        }
+                    });
+                }
+                resources.put(barColorKey, barColor);
+
                 ((IBarSeries) series[i]).setBarPadding(paddings[i]);
             }
             try {
@@ -489,14 +538,14 @@ public class SeriesPage extends AbstractSelectorPage {
         if (series[selectedIndex] instanceof ILineSeries) {
             lineStyles[selectedIndex] = LineStyle.SOLID;
             lineColors[selectedIndex] = Display.getDefault().getSystemColor(
-                    SWT.COLOR_BLUE);
+                    SWT.COLOR_BLUE).getRGB();
             symbolColors[selectedIndex] = Display.getDefault().getSystemColor(
-                    SWT.COLOR_DARK_GRAY);
+                    SWT.COLOR_DARK_GRAY).getRGB();
             symbolTypes[selectedIndex] = PlotSymbolType.CIRCLE;
             symbolSizes[selectedIndex] = 4;
         } else if (series[selectedIndex] instanceof IBarSeries) {
             barColors[selectedIndex] = Display.getDefault().getSystemColor(
-                    SWT.COLOR_BLUE);
+                    SWT.COLOR_BLUE).getRGB();
             paddings[selectedIndex] = 20;
         }
 
