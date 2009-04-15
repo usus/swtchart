@@ -399,4 +399,13 @@ public class AxisSet implements IAxisSet {
             ((Axis) axis).refresh();
         }
     }
+
+    /**
+     * Disposes the resources.
+     */
+    public void dispose() {
+        for (IAxis axis : getAxes()) {
+            ((Axis) axis).dispose();
+        }
+    }
 }

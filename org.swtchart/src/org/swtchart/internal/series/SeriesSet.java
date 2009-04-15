@@ -50,7 +50,6 @@ public class SeriesSet implements ISeriesSet {
     /*
      * @see ISeriesSet#createSeries(ISeries.SeriesType, String)
      */
-    @SuppressWarnings("null")
     public ISeries createSeries(SeriesType type, String id) {
         if (id == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -69,6 +68,11 @@ public class SeriesSet implements ISeriesSet {
             series = new LineSeries(chart, identifier);
         } else {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+        }
+
+        Series oldSeries = (Series) seriesMap.get(id);
+        if (oldSeries != null) {
+            oldSeries.dispose();
         }
 
         int[] xAxisIds = chart.getAxisSet().getXAxisIds();
@@ -119,6 +123,7 @@ public class SeriesSet implements ISeriesSet {
     public void deleteSeries(String id) {
         validateSeriesId(id);
 
+        ((Series) seriesMap.get(id)).dispose();
         seriesMap.remove(id);
 
         updateStackAndRiserData();
@@ -215,6 +220,15 @@ public class SeriesSet implements ISeriesSet {
 
         updateStackAndRiserData();
         chart.updateLayout();
+    }
+
+    /**
+     * Disposes the series.
+     */
+    public void dispose() {
+        for (Entry<String, ISeries> entry : seriesMap.entrySet()) {
+            ((Series) entry.getValue()).dispose();
+        }
     }
 
     /**

@@ -6,9 +6,14 @@
  *******************************************************************************/
 package org.swtchart.internal.axis;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
+import org.swtchart.IDisposeListener;
 import org.swtchart.IGrid;
 import org.swtchart.ISeries;
 import org.swtchart.ITitle;
@@ -21,6 +26,30 @@ import org.swtchart.internal.series.SeriesSet;
  * An axis.
  */
 public class Axis implements IAxis {
+
+    /** the margin in pixels */
+    public final static int MARGIN = 5;
+
+    /** the default minimum value of range */
+    public final static double DEFAULT_MIN = 0d;
+
+    /** the default maximum value of range */
+    public final static double DEFAULT_MAX = 1d;
+
+    /** the default minimum value of log scale range */
+    public final static double DEFAULT_LOG_SCALE_MIN = 0.1d;
+
+    /** the default maximum value of log scale range */
+    public final static double DEFAULT_LOG_SCALE_MAX = 1d;
+
+    /** the ratio to be zoomed */
+    private static final double ZOOM_RATIO = 0.2;
+
+    /** the ratio to be scrolled */
+    private static final double SCROLL_RATIO = 0.1;
+
+    /** the maximum resolution with digits */
+    private static final double MAX_RESOLUTION = 13;
 
     /** the axis id */
     private int id;
@@ -52,15 +81,6 @@ public class Axis implements IAxis {
     /** the state if the axis scale is log scale */
     private boolean logScaleEnabled;
 
-    /** the ratio to be zoomed */
-    private static final double ZOOM_RATIO = 0.2;
-
-    /** the ratio to be scrolled */
-    private static final double SCROLL_RATIO = 0.1;
-
-    /** the maximum resolution with digits */
-    private static final double MAX_RESOLUTION = 13;
-
     /** the state indicating if axis type is category */
     private boolean categoryAxisEnabled;
 
@@ -79,20 +99,8 @@ public class Axis implements IAxis {
     /** the plot area height */
     private int height;
 
-    /** the margin in pixels */
-    public final static int MARGIN = 5;
-
-    /** the default minimum value of range */
-    public final static double DEFAULT_MIN = 0d;
-
-    /** the default maximum value of range */
-    public final static double DEFAULT_MAX = 1d;
-
-    /** the default minimum value of log scale range */
-    public final static double DEFAULT_LOG_SCALE_MIN = 0.1d;
-
-    /** the default maximum value of log scale range */
-    public final static double DEFAULT_LOG_SCALE_MAX = 1d;
+    /** the list of dispose listeners */
+    private List<IDisposeListener> listeners;
 
     /**
      * Constructor.
@@ -112,6 +120,7 @@ public class Axis implements IAxis {
         grid = new Grid(this);
         title = new AxisTitle(chart, SWT.NONE, this, direction);
         tick = new AxisTick(chart, this);
+        listeners = new ArrayList<IDisposeListener>();
 
         // sets initial default values
         position = Position.Primary;
@@ -740,12 +749,23 @@ public class Axis implements IAxis {
     }
 
     /**
-     * Disposes the OS resources.
+     * Disposes the resources.
      */
     protected void dispose() {
         tick.getAxisTickLabels().dispose();
         tick.getAxisTickMarks().dispose();
         title.dispose();
+
+        for (IDisposeListener listener : listeners) {
+            listener.disposed(new Event());
+        }
+    }
+
+    /*
+     * @see IAxis#addDisposeListener(IDisposeListener)
+     */
+    public void addDisposeListener(IDisposeListener listener) {
+        listeners.add(listener);
     }
 
     /**
@@ -755,14 +775,14 @@ public class Axis implements IAxis {
         title.updateLayoutData();
         tick.updateLayoutData();
     }
-    
+
     /**
      * Refreshes the cache.
      */
-    public void refresh(){
+    public void refresh() {
         int orientation = chart.getOrientation();
         isHorizontalAxis = (direction == Direction.X && orientation == SWT.HORIZONTAL)
-        || (direction == Direction.Y && orientation == SWT.VERTICAL);
+                || (direction == Direction.Y && orientation == SWT.VERTICAL);
         width = chart.getPlotArea().getBounds().width;
         height = chart.getPlotArea().getBounds().height;
     }

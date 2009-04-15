@@ -215,4 +215,13 @@ public interface IAxis {
      * @return the data coordinate
      */
     double getDataCoordinate(int pixelCoordinate);
+
+    /**
+     * Adds the dispose listener. The newly created color or font for axis can
+     * be disposed with the dispose listener when they are no longer needed.
+     * 
+     * @param listener
+     *            the dispose listener
+     */
+    void addDisposeListener(IDisposeListener listener);
 }

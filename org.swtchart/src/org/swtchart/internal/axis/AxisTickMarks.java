@@ -162,7 +162,9 @@ public class AxisTickMarks implements PaintListener {
      * Disposes the resources.
      */
     protected void dispose() {
-        chart.removePaintListener(this);
+        if (!chart.isDisposed()) {
+            chart.removePaintListener(this);
+        }
     }
 
     /*

@@ -104,8 +104,8 @@ public class CompressLineSeries extends Compress {
 
         STATE state;
 
-        if (isInXRange(xSeries[index])) {
-            if (isInYRange(ySeries[index])) {
+        if (xLower <= xSeries[index] && xSeries[index] <= xUpper) {
+            if (yLower <= ySeries[index] && ySeries[index] <= yUpper) {
                 if (index > 0 && isPrevOutOfRange) {
                     state = STATE.SteppingInRange;
                 } else {
@@ -141,7 +141,8 @@ public class CompressLineSeries extends Compress {
         }
 
         // set flag
-        if (isInXRange(xSeries[index]) && isInYRange(ySeries[index])) {
+        if (xLower <= xSeries[index] && xSeries[index] <= xUpper
+                && yLower <= ySeries[index] && ySeries[index] <= yUpper) {
             isPrevOutOfRange = false;
         } else {
             isPrevOutOfRange = true;

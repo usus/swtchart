@@ -6,7 +6,9 @@
  *******************************************************************************/
 package org.swtchart.internal.axis;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.Constants;
 import org.swtchart.IAxis.Direction;
@@ -23,8 +25,11 @@ public class AxisTitle extends Title {
     /** the default text for X Axis */
     private static final String DEFAULT_TEXT_FOR_YAXIS = "Y Axis";
 
+    /** the default color */
+    private static final int DEFAULT_FONT_SIZE = Constants.MEDIUM_FONT_SIZE;
+
     /** the default font */
-    private static final Font DEFAULT_FONT = Constants.MEDIUM_FONT;
+    private Font defaultFont;
 
     /** the axis */
     private Axis axis;
@@ -48,7 +53,9 @@ public class AxisTitle extends Title {
         super(chart, style);
         this.axis = axis;
         this.direction = direction;
-        setFont(DEFAULT_FONT);
+        defaultFont = new Font(Display.getDefault(), "Tahoma",
+                DEFAULT_FONT_SIZE, SWT.BOLD);
+        setFont(defaultFont);
     }
 
     /*
@@ -68,5 +75,16 @@ public class AxisTitle extends Title {
     @Override
     protected boolean isHorizontal() {
         return axis.isHorizontalAxis();
+    }
+
+    /*
+     * @see Title#dispose()
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (!defaultFont.isDisposed()) {
+            defaultFont.dispose();
+        }
     }
 }

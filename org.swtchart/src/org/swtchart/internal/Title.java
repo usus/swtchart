@@ -36,7 +36,10 @@ public class Title extends Canvas implements ITitle, PaintListener {
     protected boolean isVisible;
 
     /** the default font */
-    private static final Font DEFAULT_FONT = Constants.LARGE_FONT;
+    private Font defaultFont;
+
+    /** the default font size */
+    private static final int DEFAULT_FONT_SIZE = Constants.LARGE_FONT_SIZE;
 
     /** the default color */
     private static final int DEFAULT_FOREGROUND = SWT.COLOR_BLUE;
@@ -61,7 +64,9 @@ public class Title extends Canvas implements ITitle, PaintListener {
         text = getDefaultText();
         isVisible = true;
 
-        setFont(DEFAULT_FONT);
+        defaultFont = new Font(Display.getDefault(), "Tahoma",
+                DEFAULT_FONT_SIZE, SWT.BOLD);
+        setFont(defaultFont);
         setForeground(Display.getDefault().getSystemColor(DEFAULT_FOREGROUND));
 
         addPaintListener(this);
@@ -101,7 +106,7 @@ public class Title extends Canvas implements ITitle, PaintListener {
     @Override
     public void setFont(Font font) {
         if (font == null) {
-            super.setFont(DEFAULT_FONT);
+            super.setFont(defaultFont);
         } else {
             super.setFont(font);
         }
@@ -169,6 +174,17 @@ public class Title extends Canvas implements ITitle, PaintListener {
             setLayoutData(new ChartLayoutData(width, height));
         } else {
             setLayoutData(new ChartLayoutData(height, width));
+        }
+    }
+
+    /*
+     * @see Widget#dispose()
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (!defaultFont.isDisposed()) {
+            defaultFont.dispose();
         }
     }
 

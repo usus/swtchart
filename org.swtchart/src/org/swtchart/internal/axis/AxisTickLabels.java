@@ -26,7 +26,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
-import org.swtchart.Constants;
 import org.swtchart.internal.ChartLayoutData;
 import org.swtchart.internal.Util;
 
@@ -75,7 +74,8 @@ public class AxisTickLabels implements PaintListener {
     private static final int DEFAULT_FOREGROUND = SWT.COLOR_BLUE;
 
     /** the default font */
-    private static final Font DEFAULT_FONT = Constants.SMALL_FONT;
+    private static final Font DEFAULT_FONT = Display.getDefault()
+            .getSystemFont();
 
     /** the default label format */
     private static final String DEFAULT_DECIMAL_FORMAT = "#.###########";
@@ -762,7 +762,9 @@ public class AxisTickLabels implements PaintListener {
      * Disposes the resources.
      */
     protected void dispose() {
-        chart.removePaintListener(this);
+        if (!chart.isDisposed()) {
+            chart.removePaintListener(this);
+        }
     }
 
     /**

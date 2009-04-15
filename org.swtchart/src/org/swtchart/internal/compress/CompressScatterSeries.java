@@ -45,7 +45,8 @@ public class CompressScatterSeries extends Compress {
             occupied = new boolean[width][height];
 
             for (int i = 0; i < xSeries.length; i++) {
-                if (isInXRange(xSeries[i]) && isInYRange(ySeries[i])
+                if (xSeries[i] >= xLower && xSeries[i] <= xUpper
+                        && ySeries[i] >= yLower && ySeries[i] <= yUpper
                         && !isOccupied(xSeries[i], ySeries[i])) {
                     addToList(xList, yList, indexList, xSeries[i], ySeries[i],
                             i);

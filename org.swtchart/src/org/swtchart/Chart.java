@@ -229,6 +229,18 @@ public class Chart extends Composite implements Listener {
     }
 
     /*
+     * @see Widget#dispose()
+     */
+    @Override
+    public void dispose() {
+        title.dispose();
+        legend.dispose();
+        axisSet.dispose();
+        plotArea.dispose();
+        super.dispose();
+    }
+
+    /*
      * @see Control#redraw()
      */
     @Override

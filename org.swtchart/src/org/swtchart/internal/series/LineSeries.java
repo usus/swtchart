@@ -444,6 +444,9 @@ public class LineSeries extends Series implements ILineSeries {
         // get x and y series
         double[] xseries = compressor.getCompressedXSeries();
         double[] yseries = compressor.getCompressedYSeries();
+        if (xseries.length == 0 || yseries.length == 0){
+            return;
+        }
         int[] indexes = compressor.getCompressedIndexes();
         if (xAxis.isValidCategoryAxis()) {
             for (int i = 0; i < xseries.length; i++) {

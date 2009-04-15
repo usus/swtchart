@@ -20,7 +20,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
@@ -35,7 +34,7 @@ import org.swtchart.internal.series.Series;
 /**
  * A legend for chart.
  */
-public class Legend extends Canvas implements ILegend, PaintListener {
+public class Legend extends Composite implements ILegend, PaintListener {
 
     /** the plot chart */
     private Chart chart;
@@ -64,7 +63,10 @@ public class Legend extends Canvas implements ILegend, PaintListener {
             .getSystemColor(SWT.COLOR_WHITE);
 
     /** the default font */
-    private static final Font DEFAULT_FONT = Constants.SMALL_FONT;
+    private Font defaultFont;
+
+    /** the default font size */
+    private static final int DEFAULT_FONT_SIZE = Constants.SMALL_FONT_SIZE;
 
     /** the default position */
     private static final int DEFAULT_POSITION = SWT.RIGHT;
@@ -87,7 +89,9 @@ public class Legend extends Canvas implements ILegend, PaintListener {
         visible = true;
         position = DEFAULT_POSITION;
         cellBounds = new HashMap<String, Rectangle>();
-        setFont(DEFAULT_FONT);
+        defaultFont = new Font(Display.getDefault(), "Tahoma",
+                DEFAULT_FONT_SIZE, SWT.NORMAL);
+        setFont(defaultFont);
         setForeground(DEFAULT_FOREGROUND);
         setBackground(DEFAULT_BACKGROUND);
         addPaintListener(this);
@@ -120,7 +124,7 @@ public class Legend extends Canvas implements ILegend, PaintListener {
     @Override
     public void setFont(Font font) {
         if (font == null) {
-            super.setFont(DEFAULT_FONT);
+            super.setFont(defaultFont);
         } else {
             super.setFont(font);
         }
@@ -176,6 +180,17 @@ public class Legend extends Canvas implements ILegend, PaintListener {
      */
     public Rectangle getBounds(String seriesId) {
         return cellBounds.get(seriesId);
+    }
+
+    /*
+     * @see Widget#dispose()
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (!defaultFont.isDisposed()) {
+            defaultFont.dispose();
+        }
     }
 
     /**

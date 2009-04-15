@@ -255,26 +255,4 @@ public abstract class Compress implements ICompress {
 
         return isInSameGridAsPrevious;
     }
-
-    /**
-     * Checks if the given value is in range.
-     * 
-     * @param x
-     *            the X value
-     * @return true if the given X value is in range.
-     */
-    protected boolean isInXRange(double x) {
-        return x >= xLower && x <= xUpper;
-    }
-
-    /**
-     * Checks if the given value is in range.
-     * 
-     * @param y
-     *            the Y value
-     * @return true if the given Y value is in range.
-     */
-    protected boolean isInYRange(double y) {
-        return y >= yLower && y <= yUpper;
-    }
 }

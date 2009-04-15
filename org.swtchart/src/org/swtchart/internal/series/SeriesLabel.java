@@ -14,7 +14,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
-import org.swtchart.Constants;
 import org.swtchart.ISeriesLabel;
 import org.swtchart.internal.Util;
 
@@ -42,7 +41,8 @@ public class SeriesLabel implements ISeriesLabel {
     private static final int DEFAULT_COLOR = SWT.COLOR_BLACK;
 
     /** the default font */
-    private static final Font DEFAULT_FONT = Constants.SMALL_FONT;
+    private static final Font DEFAULT_FONT = Display.getDefault()
+            .getSystemFont();
 
     /** the default label format */
     private static final String DEFAULT_FORMAT = "#.###########";

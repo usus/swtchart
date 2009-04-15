@@ -6,13 +6,17 @@
  *******************************************************************************/
 package org.swtchart.internal.series;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Event;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
+import org.swtchart.IDisposeListener;
 import org.swtchart.IErrorBar;
 import org.swtchart.ISeries;
 import org.swtchart.ISeriesLabel;
@@ -25,6 +29,9 @@ import org.swtchart.internal.compress.ICompress;
  * Series.
  */
 abstract public class Series implements ISeries {
+
+    /** the default series type */
+    protected static final SeriesType DEFAULT_SERIES_TYPE = SeriesType.LINE;
 
     /** the x series */
     protected double[] xSeries;
@@ -86,8 +93,8 @@ abstract public class Series implements ISeries {
     /** the state indicating if the type of X series is <tt>Date</tt> */
     private boolean isDateSeries;
 
-    /** the default series type */
-    protected static final SeriesType DEFAULT_SERIES_TYPE = SeriesType.LINE;
+    /** the list of dispose listeners */
+    private List<IDisposeListener> listeners;
 
     /**
      * Constructor.
@@ -111,6 +118,7 @@ abstract public class Series implements ISeries {
         seriesLabel = new SeriesLabel();
         xErrorBar = new ErrorBar();
         yErrorBar = new ErrorBar();
+        listeners = new ArrayList<IDisposeListener>();
     }
 
     /*
@@ -595,6 +603,22 @@ abstract public class Series implements ISeries {
                 range.lower, range.upper);
 
         return new Range(lower, upper);
+    }
+
+    /**
+     * Disposes SWT resources.
+     */
+    protected void dispose() {
+        for (IDisposeListener listener : listeners) {
+            listener.disposed(new Event());
+        }
+    }
+
+    /*
+     * @see IAxis#addDisposeListener(IDisposeListener)
+     */
+    public void addDisposeListener(IDisposeListener listener) {
+        listeners.add(listener);
     }
 
     /**
