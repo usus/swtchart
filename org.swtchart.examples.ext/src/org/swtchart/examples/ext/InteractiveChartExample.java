@@ -1,7 +1,6 @@
 package org.swtchart.examples.ext;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -53,7 +52,7 @@ public class InteractiveChartExample extends ViewPart {
         ILineSeries lineSeries2 = (ILineSeries) chart.getSeriesSet()
                 .createSeries(SeriesType.LINE, "line series 2");
         lineSeries2.setYSeries(yLineSeries2);
-        lineSeries2.setLineColor(new Color(Display.getDefault(), 255, 0, 0));
+        lineSeries2.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 
         // create bar series 1
         IBarSeries barSeries1 = (IBarSeries) chart.getSeriesSet().createSeries(
@@ -64,7 +63,7 @@ public class InteractiveChartExample extends ViewPart {
         IBarSeries barSeries2 = (IBarSeries) chart.getSeriesSet().createSeries(
                 SeriesType.BAR, "bar series 2");
         barSeries2.setYSeries(yBarSeries2);
-        barSeries2.setBarColor(new Color(Display.getDefault(), 80, 240, 180));
+        barSeries2.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_GREEN));
 
         // adjust the axis range
         chart.getAxisSet().adjustRange();
@@ -76,5 +75,14 @@ public class InteractiveChartExample extends ViewPart {
     @Override
     public void setFocus() {
         chart.getPlotArea().setFocus();
+    }
+    
+    /*
+     * @see WorkbenchPart#dispose()
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        chart.dispose();
     }
 }
