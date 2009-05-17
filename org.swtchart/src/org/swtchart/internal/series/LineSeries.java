@@ -589,8 +589,8 @@ public class LineSeries extends Series implements ILineSeries {
                 drawSeriesSymbol(gc, h, v, color);
             }
             seriesLabel.draw(gc, h, v, yseries[i], indexes[i], SWT.BOTTOM);
-            xErrorBar.draw(gc, h, v, xAxis, i);
-            yErrorBar.draw(gc, h, v, yAxis, i);
+            xErrorBar.draw(gc, h, v, xAxis, indexes[i]);
+            yErrorBar.draw(gc, h, v, yAxis, indexes[i]);
         }
     }
 
