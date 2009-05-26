@@ -5,11 +5,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
-import org.swtchart.ISeries;
+import org.swtchart.IBarSeries;
 import org.swtchart.ISeries.SeriesType;
 
 /**
- * An example for axis orientation.
+ * An example for chart orientation.
  */
 public class OrientationExample {
 
@@ -31,19 +31,19 @@ public class OrientationExample {
 
 		// create a chart
 		Chart chart = new Chart(shell, SWT.NONE);
-		
+
 		// set the chart orientation
 		chart.setOrientation(SWT.VERTICAL);
-		
+
 		// set titles
 		chart.getTitle().setText("Orientation Example");
 		chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
 		chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
 
 		// create bar series
-		ISeries barPlot = chart.getSeriesSet().createSeries(SeriesType.BAR,
-				"bar series");
-		barPlot.setYSeries(ySeries);
+		IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(
+				SeriesType.BAR, "bar series");
+		barSeries.setYSeries(ySeries);
 
 		// adjust the axis range
 		chart.getAxisSet().adjustRange();
