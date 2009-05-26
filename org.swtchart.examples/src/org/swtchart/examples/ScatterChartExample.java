@@ -34,7 +34,7 @@ public class ScatterChartExample {
 
 		// create a chart
 		Chart chart = new Chart(shell, SWT.NONE);
-		
+
 		// set titles
 		chart.getTitle().setText("Scatter Chart Example");
 		chart.getAxisSet().getXAxis(0).getTitle().setText("Score A");
@@ -42,7 +42,7 @@ public class ScatterChartExample {
 
 		// create scatter series
 		ILineSeries scatterSeries = (ILineSeries) chart.getSeriesSet()
-				.createSeries(SeriesType.LINE, "scatter plot");
+				.createSeries(SeriesType.LINE, "scatter series");
 		scatterSeries.setLineStyle(LineStyle.NONE);
 		scatterSeries.setXSeries(xSeries);
 		scatterSeries.setYSeries(ySeries);
