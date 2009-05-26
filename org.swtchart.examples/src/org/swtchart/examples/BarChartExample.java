@@ -5,7 +5,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
-import org.swtchart.ISeries;
+import org.swtchart.IBarSeries;
 import org.swtchart.ISeries.SeriesType;
 
 /**
@@ -31,15 +31,15 @@ public class BarChartExample {
 
 		// create a chart
 		Chart chart = new Chart(shell, SWT.NONE);
-		
+
 		// set titles
 		chart.getTitle().setText("Bar Chart Example");
 		chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
 		chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
 
 		// create bar series
-		ISeries barPlot = chart.getSeriesSet().createSeries(SeriesType.BAR,
-				"bar series");
+		IBarSeries barPlot = (IBarSeries) chart.getSeriesSet().createSeries(
+				SeriesType.BAR, "bar series");
 		barPlot.setYSeries(ySeries);
 
 		// adjust the axis range
