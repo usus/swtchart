@@ -38,9 +38,9 @@ public class BarChartExample {
 		chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
 
 		// create bar series
-		IBarSeries barPlot = (IBarSeries) chart.getSeriesSet().createSeries(
+		IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(
 				SeriesType.BAR, "bar series");
-		barPlot.setYSeries(ySeries);
+		barSeries.setYSeries(ySeries);
 
 		// adjust the axis range
 		chart.getAxisSet().adjustRange();
