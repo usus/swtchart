@@ -386,7 +386,7 @@ public class Axis implements IAxis {
         // set adjusted range
         if (!Double.isNaN(minimum) && !Double.isNaN(maximum)) {
             if (minimum == maximum) {
-                double margin = Math.abs(minimum / 2d);
+                double margin = (minimum == 0)? 1d : Math.abs(minimum / 2d);
                 minimum -= margin;
                 maximum += margin;
             }
