@@ -9,6 +9,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.swtchart.Chart;
@@ -31,10 +32,15 @@ import org.swtchart.ext.internal.properties.SeriesPage;
  * <li>scroll with arrow keys</li>
  * <li>zoom in and out with ctrl + arrow up/down keys</li>
  * <li>context menus for adjusting axis range and zooming in/out.</li>
+ * <li>file selector dialog to save chart to image file.</li>
  * <li>properties dialog to configure the chart settings</li>
  * </ul>
  */
 public class InteractiveChart extends Chart implements PaintListener {
+
+    /** the filter extensions */
+    private static final String[] EXTENSIONS = new String[] { "*.jpeg",
+            "*.jpg", "*.png" };
 
     /** the selection rectangle for zoom in/out */
     protected SelectionRectangle selection;
@@ -148,6 +154,13 @@ public class InteractiveChart extends Chart implements PaintListener {
         // zoom out Y axis
         menuItem = new MenuItem(zoomOutMenu, SWT.PUSH);
         menuItem.setText(Messages.ZOOMOUT_Y);
+        menuItem.addListener(SWT.Selection, this);
+
+        menuItem = new MenuItem(menu, SWT.SEPARATOR);
+
+        // save as
+        menuItem = new MenuItem(menu, SWT.PUSH);
+        menuItem.setText(Messages.SAVE_AS);
         menuItem.addListener(SWT.Selection, this);
 
         menuItem = new MenuItem(menu, SWT.SEPARATOR);
@@ -383,10 +396,39 @@ public class InteractiveChart extends Chart implements PaintListener {
             for (IAxis axis : getAxisSet().getYAxes()) {
                 axis.zoomOut();
             }
+        } else if (menuItem.getText().equals(Messages.SAVE_AS)) {
+            openSaveAsDialog();
         } else if (menuItem.getText().equals(Messages.PROPERTIES)) {
             openPropertiesDialog();
         }
         redraw();
+    }
+
+    /**
+     * Opens the Save As dialog.
+     */
+    private void openSaveAsDialog() {
+        FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+        dialog.setText(Messages.SAVE_AS_DIALOG_TITLE);
+        dialog.setFilterExtensions(EXTENSIONS);
+
+        String filename = dialog.open();
+        if (filename == null) {
+            return;
+        }
+
+        int format;
+        if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+            format = SWT.IMAGE_JPEG;
+        } else if (filename.endsWith(".png")) {
+            format = SWT.IMAGE_PNG;
+        } else {
+            format = SWT.IMAGE_UNDEFINED;
+        }
+
+        if (format != SWT.IMAGE_UNDEFINED) {
+            save(filename, format);
+        }
     }
 
     /**
@@ -413,7 +455,8 @@ public class InteractiveChart extends Chart implements PaintListener {
 
         final String gridTitle = "Grid";
         PreferenceNode xGridNode = new PreferenceNode(gridTitle);
-        xGridNode.setPage(new GridPage(this, resources, Direction.X, gridTitle));
+        xGridNode
+                .setPage(new GridPage(this, resources, Direction.X, gridTitle));
         manager.addTo(chartTitle + "." + xAxisTitle, xGridNode);
 
         final String tickTitle = "Tick";
@@ -429,7 +472,8 @@ public class InteractiveChart extends Chart implements PaintListener {
         manager.addTo(chartTitle, yAxisNode);
 
         PreferenceNode yGridNode = new PreferenceNode(gridTitle);
-        yGridNode.setPage(new GridPage(this, resources, Direction.Y, gridTitle));
+        yGridNode
+                .setPage(new GridPage(this, resources, Direction.Y, gridTitle));
         manager.addTo(chartTitle + "." + yAxisTitle, yGridNode);
 
         PreferenceNode yTickNode = new PreferenceNode(tickTitle);

@@ -41,7 +41,13 @@ public class Messages {
     /** the menu for zoom out Y axis */
     public static final String ZOOMOUT_Y = "Zoom Out &Y Axis";
 
+    /** the menu for save as */
+    public static final String SAVE_AS = "Save As...";
+
     /** the menu for opening properties dialog */
     public static final String PROPERTIES = "P&roperties...";
+
+    /** the title for save as dialog */
+	public static final String SAVE_AS_DIALOG_TITLE = "Save As";
 
 }
