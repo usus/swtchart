@@ -8,8 +8,14 @@ package org.swtchart;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.swtchart.internal.ChartLayout;
@@ -39,7 +45,7 @@ public class Chart extends Composite implements Listener {
 
     /** the orientation of chart which can be horizontal or vertical */
     private int orientation;
-    
+
     /** the state indicating if compressing series is enabled */
     private boolean compressEnabled;
 
@@ -189,6 +195,9 @@ public class Chart extends Composite implements Listener {
      * and normally there should be no usecase to disable it. However, if you
      * suspect that something is wrong in compressing series, you can disable it
      * to isolate the issue.
+     * 
+     * @param enabled
+     *            true if enabling compressing series
      */
     public void enableCompress(boolean enabled) {
         compressEnabled = enabled;
@@ -272,5 +281,27 @@ public class Chart extends Composite implements Listener {
         for (Control child : getChildren()) {
             child.redraw();
         }
+    }
+
+    /**
+     * Saves to file with given format.
+     * 
+     * @param filename
+     *            the file name
+     * @param format
+     *            the format (SWT.IMAGE_*). The supported formats depend on OS.
+     */
+    public void save(String filename, int format) {
+        Point size = getSize();
+        GC gc = new GC(this);
+        Image image = new Image(Display.getDefault(), size.x, size.y);
+        gc.copyArea(image, 0, 0);
+        gc.dispose();
+
+        ImageData data = image.getImageData();
+        ImageLoader loader = new ImageLoader();
+        loader.data = new ImageData[] { data };
+        loader.save(filename, format);
+        image.dispose();
     }
 }
