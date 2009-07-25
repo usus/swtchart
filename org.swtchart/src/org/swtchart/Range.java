@@ -37,8 +37,8 @@ public class Range {
      *            the range
      */
     public Range(Range range) {
-        lower = (range.upper > range.lower) ? lower : upper;
-        upper = (range.upper > range.lower) ? upper : lower;
+        lower = (range.upper > range.lower) ? range.lower : range.upper;
+        upper = (range.upper > range.lower) ? range.upper : range.lower;
     }
 
     /*
