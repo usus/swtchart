@@ -70,7 +70,7 @@ public class SeriesSet implements ISeriesSet {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
         }
 
-        Series oldSeries = (Series) seriesMap.get(id);
+        Series oldSeries = (Series) seriesMap.get(identifier);
         if (oldSeries != null) {
             oldSeries.dispose();
         }
