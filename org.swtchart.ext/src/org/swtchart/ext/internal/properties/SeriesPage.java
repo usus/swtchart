@@ -137,8 +137,6 @@ public class SeriesPage extends AbstractSelectorPage {
      *            the chart
      * @param resources
      *            the properties resources
-     * @param axes
-     *            the axes
      * @param title
      *            the title
      */

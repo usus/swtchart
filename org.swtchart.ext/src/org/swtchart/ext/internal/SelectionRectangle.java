@@ -8,8 +8,10 @@ import org.eclipse.swt.graphics.Point;
  */
 public class SelectionRectangle {
 
+    /** the start point of selection */
     private Point startPoint;
 
+    /** the end point of selection */
     private Point endPoint;
 
     /**
