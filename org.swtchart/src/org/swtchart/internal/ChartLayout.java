@@ -65,9 +65,16 @@ public class ChartLayout extends Layout {
     /** the axes */
     private List<Axis> axes;
 
+    /** the offset for bottom axis */
     private int bottomAxisOffset = 0;
+
+    /** the offset for top axis */
     private int topAxisOffset = 0;
+
+    /** the offset for left axis */
     private int leftAxisOffset = 0;
+
+    /** the offset for right axis */
     private int rightAxisOffset = 0;
 
     /** the margin */

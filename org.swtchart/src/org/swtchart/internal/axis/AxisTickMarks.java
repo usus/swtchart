@@ -56,8 +56,6 @@ public class AxisTickMarks implements PaintListener {
      * 
      * @param chart
      *            the chart
-     * @param style
-     *            the style
      * @param axis
      *            the axis
      */

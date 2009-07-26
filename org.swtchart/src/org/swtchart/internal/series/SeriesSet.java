@@ -53,6 +53,7 @@ public class SeriesSet implements ISeriesSet {
     public ISeries createSeries(SeriesType type, String id) {
         if (id == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return null; // to suppress warning...
         }
 
         String identifier = id.trim();
@@ -68,6 +69,7 @@ public class SeriesSet implements ISeriesSet {
             series = new LineSeries(chart, identifier);
         } else {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+            return null; // to suppress warning...
         }
 
         Series oldSeries = (Series) seriesMap.get(identifier);

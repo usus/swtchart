@@ -13,6 +13,7 @@ import java.util.ArrayList;
  */
 public class CompressLineSeries extends Compress {
 
+    /** the state indicating the relation between previous and current data points */
     enum STATE {
         /** stepping over x range */
         SteppingOverXRange,

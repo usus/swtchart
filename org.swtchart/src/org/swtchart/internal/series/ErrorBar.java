@@ -156,6 +156,7 @@ public class ErrorBar implements IErrorBar {
     public void setPlusErrors(double[] errors) {
         if (errors == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return; // to suppress warning...
         }
 
         this.plusErrors = new double[errors.length];
@@ -182,6 +183,7 @@ public class ErrorBar implements IErrorBar {
     public void setMinusErrors(double[] errors) {
         if (errors == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
+            return; // to suppress warning...
         }
 
         this.minusErrors = new double[errors.length];

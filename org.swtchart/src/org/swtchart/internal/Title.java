@@ -54,8 +54,6 @@ public class Title extends Canvas implements ITitle, PaintListener {
      *            the parent composite
      * @param style
      *            the style
-     * @param chart
-     *            the chart
      */
     public Title(Chart parent, int style) {
         super(parent, style);
