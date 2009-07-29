@@ -50,7 +50,6 @@ public class CoordinateConversionExample1 {
 
         // add paint listener to draw threshold
         chart.getPlotArea().addPaintListener(new PaintListener() {
-            @Override
             public void paintControl(PaintEvent e) {
                 int y = yAxis.getPixelCoordinate(0.65);
                 e.gc.drawLine(0, y, e.width, y);

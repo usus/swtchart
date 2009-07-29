@@ -52,7 +52,6 @@ public class CoordinateConversionExample4 {
 
         // add mouse move listener to open tooltip on data point
         chart.getPlotArea().addMouseMoveListener(new MouseMoveListener() {
-            @Override
             public void mouseMove(MouseEvent e) {
                 for (ISeries series : chart.getSeriesSet().getSeries()) {
                     Rectangle[] rs = ((IBarSeries) series).getBounds();

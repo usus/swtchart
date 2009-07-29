@@ -46,7 +46,6 @@ public class CoordinateConversionExample6 {
 
         // add mouse move listener to chart
         chart.addMouseMoveListener(new MouseMoveListener() {
-            @Override
             public void mouseMove(MouseEvent e) {
                 for (IAxis axis : chart.getAxisSet().getAxes()) {
                     Rectangle r = axis.getTick().getBounds();

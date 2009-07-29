@@ -420,7 +420,7 @@ public class Legend extends Composite implements ILegend, PaintListener {
             // draw plot id
             gc.setBackground(getBackground());
             gc.setForeground(getForeground());
-            gc.drawText(id, r.x + SYMBOL_WIDTH + MARGIN * 2, r.y);
+            gc.drawText(id, r.x + SYMBOL_WIDTH + MARGIN * 2, r.y, true);
         }
     }
 }

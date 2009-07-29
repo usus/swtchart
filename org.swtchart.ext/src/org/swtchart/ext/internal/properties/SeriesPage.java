@@ -336,7 +336,6 @@ public class SeriesPage extends AbstractSelectorPage {
         createLabelControl(lineSeriesGroup, "Line color:");
         lineColorButton = createColorButtonControl(lineSeriesGroup);
         lineColorButton.addListener(new IPropertyChangeListener() {
-            @Override
             public void propertyChange(PropertyChangeEvent event) {
                 lineColors[selectedIndex] = lineColorButton.getColorValue();
             }
@@ -366,7 +365,6 @@ public class SeriesPage extends AbstractSelectorPage {
         createLabelControl(lineSeriesGroup, "Symbol color:");
         symbolColorButton = createColorButtonControl(lineSeriesGroup);
         symbolColorButton.addListener(new IPropertyChangeListener() {
-            @Override
             public void propertyChange(PropertyChangeEvent event) {
                 symbolColors[selectedIndex] = symbolColorButton.getColorValue();
             }
@@ -396,7 +394,6 @@ public class SeriesPage extends AbstractSelectorPage {
         createLabelControl(lineSeriesGroup, "Symbol size:");
         symbolSizeSpinner = createSpinnerControl(lineSeriesGroup, 1, 10);
         symbolSizeSpinner.addModifyListener(new ModifyListener() {
-            @Override
             public void modifyText(ModifyEvent e) {
                 symbolSizes[selectedIndex] = symbolSizeSpinner.getSelection();
             }
@@ -420,7 +417,6 @@ public class SeriesPage extends AbstractSelectorPage {
         createLabelControl(group, "Color:");
         barColorButton = createColorButtonControl(group);
         barColorButton.addListener(new IPropertyChangeListener() {
-            @Override
             public void propertyChange(PropertyChangeEvent event) {
                 barColors[selectedIndex] = barColorButton.getColorValue();
             }
@@ -429,7 +425,6 @@ public class SeriesPage extends AbstractSelectorPage {
         createLabelControl(group, "Padding size:");
         paddingSizeSpinner = createSpinnerControl(group, 0, 100);
         paddingSizeSpinner.addModifyListener(new ModifyListener() {
-            @Override
             public void modifyText(ModifyEvent e) {
                 paddings[selectedIndex] = paddingSizeSpinner.getSelection();
             }

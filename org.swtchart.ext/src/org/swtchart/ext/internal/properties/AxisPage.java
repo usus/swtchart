@@ -4,8 +4,8 @@ import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -221,12 +221,7 @@ public class AxisPage extends AbstractSelectorPage {
 
         createLabelControl(group, "Minimum range value:");
         minRangeText = createTextControl(group);
-        minRangeText.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                // do nothing
-            }
-
+        minRangeText.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 minRanges[selectedIndex] = Double.valueOf(minRangeText
@@ -236,12 +231,7 @@ public class AxisPage extends AbstractSelectorPage {
 
         createLabelControl(group, "Maximum range value:");
         maxRangeText = createTextControl(group);
-        maxRangeText.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                // do nothing
-            }
-
+        maxRangeText.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 maxRanges[selectedIndex] = Double.valueOf(maxRangeText
@@ -305,7 +295,6 @@ public class AxisPage extends AbstractSelectorPage {
         titleLabel = createLabelControl(group, "Text:");
         titleText = createTextControl(group);
         titleText.addModifyListener(new ModifyListener() {
-            @Override
             public void modifyText(ModifyEvent e) {
                 titleTexts[selectedIndex] = titleText.getText();
             }
@@ -323,7 +312,6 @@ public class AxisPage extends AbstractSelectorPage {
         titleColorLabel = createLabelControl(group, "Color:");
         titleColorButton = createColorButtonControl(group);
         titleColorButton.addListener(new IPropertyChangeListener() {
-            @Override
             public void propertyChange(PropertyChangeEvent event) {
                 titleColors[selectedIndex] = titleColorButton.getColorValue();
             }

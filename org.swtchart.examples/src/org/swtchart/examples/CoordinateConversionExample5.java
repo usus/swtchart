@@ -59,7 +59,6 @@ public class CoordinateConversionExample5 {
         // add mouse move listener to legend
         final Control legend = (Control) chart.getLegend();
         legend.addMouseMoveListener(new MouseMoveListener() {
-            @Override
             public void mouseMove(MouseEvent e) {
                 for (ISeries series : chart.getSeriesSet().getSeries()) {
                     Rectangle r = chart.getLegend().getBounds(series.getId());

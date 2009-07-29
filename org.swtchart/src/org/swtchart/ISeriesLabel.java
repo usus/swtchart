@@ -6,8 +6,6 @@
  *******************************************************************************/
 package org.swtchart;
 
-import java.text.DecimalFormat;
-
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 
@@ -17,7 +15,7 @@ import org.eclipse.swt.graphics.Font;
 public interface ISeriesLabel {
 
     /**
-     * Sets the decimal format {@link DecimalFormat} or/plus plain string.
+     * Sets the decimal format {@link java.text.DecimalFormat} or/plus plain string.
      * <p>
      * If formats have been set with <tt>setFormats(String[])</tt>, the format
      * set with this method will be ignored.

@@ -49,7 +49,6 @@ public class CoordinateConversionExample2 {
 
         // add mouse move listener to show mouse position on tooltip
         chart.getPlotArea().addMouseMoveListener(new MouseMoveListener() {
-            @Override
             public void mouseMove(MouseEvent e) {
                 double x = xAxis.getDataCoordinate(e.x);
                 double y = yAxis.getDataCoordinate(e.y);

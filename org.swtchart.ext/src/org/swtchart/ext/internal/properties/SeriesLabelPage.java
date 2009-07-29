@@ -150,7 +150,6 @@ public class SeriesLabelPage extends AbstractSelectorPage {
         colorLabel = createLabelControl(group, "Color:");
         colorButton = createColorButtonControl(group);
         colorButton.addListener(new IPropertyChangeListener() {
-            @Override
             public void propertyChange(PropertyChangeEvent event) {
                 colors[selectedIndex] = colorButton.getColorValue();
             }
@@ -159,7 +158,6 @@ public class SeriesLabelPage extends AbstractSelectorPage {
         fontSizeLabel = createLabelControl(group, "Font size:");
         fontSizeSpinner = createSpinnerControl(group, 8, 30);
         fontSizeSpinner.addModifyListener(new ModifyListener() {
-            @Override
             public void modifyText(ModifyEvent e) {
                 fontSizes[selectedIndex] = fontSizeSpinner.getSelection();
             }
