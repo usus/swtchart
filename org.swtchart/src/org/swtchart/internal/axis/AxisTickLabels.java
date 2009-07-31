@@ -790,6 +790,10 @@ public class AxisTickLabels implements PaintListener {
      * @see PaintListener#paintControl(PaintEvent)
      */
     public void paintControl(PaintEvent e) {
+        if (!axis.getTick().isVisible()) {
+            return;
+        }
+
         e.gc.setBackground(chart.getBackground());
         e.gc.setForeground(getForeground());
         if (axis.isHorizontalAxis()) {
