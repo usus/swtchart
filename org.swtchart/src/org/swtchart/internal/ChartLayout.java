@@ -541,8 +541,12 @@ public class ChartLayout extends Layout {
                 - (legendPosition == SWT.TOP || legendPosition == SWT.BOTTOM ? legendHeight
                         + (legendHeight == 0 ? 0 : PADDING)
                         : 0);
-        int x = r.width - width - rightAxisOffset - legendWidth - MARGIN
-                - ((legendWidth == 0) ? 0 : PADDING);
+        int x = r.width
+                - width
+                - rightAxisOffset
+                - MARGIN
+                - (legendPosition == SWT.RIGHT ? legendWidth
+                        + (legendWidth == 0 ? 0 : PADDING) : 0);
         int y = titleHeight
                 + topAxisHeight
                 + MARGIN
