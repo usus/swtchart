@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2008-2009 SWTChart project. All rights reserved. 
- * 
+ * Copyright (c) 2008-2009 SWTChart project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -29,17 +29,17 @@ public class AxisTitle extends Title {
     private static final int DEFAULT_FONT_SIZE = Constants.MEDIUM_FONT_SIZE;
 
     /** the default font */
-    private Font defaultFont;
+    private final Font defaultFont;
 
     /** the axis */
-    private Axis axis;
+    private final Axis axis;
 
     /** the direction of axis */
-    private Direction direction;
+    private final Direction direction;
 
     /**
      * Constructor.
-     * 
+     *
      * @param chart
      *            the chart
      * @param style
@@ -56,6 +56,7 @@ public class AxisTitle extends Title {
         defaultFont = new Font(Display.getDefault(), "Tahoma",
                 DEFAULT_FONT_SIZE, SWT.BOLD);
         setFont(defaultFont);
+        setText(getDefaultText());
     }
 
     /*

@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2008-2009 SWTChart project. All rights reserved. 
- * 
+ * Copyright (c) 2008-2009 SWTChart project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -36,7 +36,7 @@ public class Title extends Canvas implements ITitle, PaintListener {
     protected boolean isVisible;
 
     /** the default font */
-    private Font defaultFont;
+    private final Font defaultFont;
 
     /** the default font size */
     private static final int DEFAULT_FONT_SIZE = Constants.LARGE_FONT_SIZE;
@@ -49,7 +49,7 @@ public class Title extends Canvas implements ITitle, PaintListener {
 
     /**
      * Constructor.
-     * 
+     *
      * @param parent
      *            the parent composite
      * @param style
@@ -59,7 +59,7 @@ public class Title extends Canvas implements ITitle, PaintListener {
         super(parent, style);
 
         this.chart = parent;
-        text = getDefaultText();
+        text = DEFAULT_TEXT;
         isVisible = true;
 
         defaultFont = new Font(Display.getDefault(), "Tahoma",
@@ -84,7 +84,7 @@ public class Title extends Canvas implements ITitle, PaintListener {
 
     /**
      * Gets the default title text.
-     * 
+     *
      * @return the default title text
      */
     protected String getDefaultText() {
@@ -147,7 +147,7 @@ public class Title extends Canvas implements ITitle, PaintListener {
 
     /**
      * Gets the state indicating if showing title horizontally.
-     * 
+     *
      * @return the state indicating if showing title horizontally
      */
     protected boolean isHorizontal() {
