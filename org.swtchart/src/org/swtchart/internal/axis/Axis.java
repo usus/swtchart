@@ -557,8 +557,8 @@ public class Axis implements IAxis {
             }
 
             if (categorySeries != null && categorySeries.length != 0) {
-                min = (min < 0) ? 0 : (int) min;
-                max = (max >= categorySeries.length) ? max = categorySeries.length - 1
+                min = (min < 0 || min >= categorySeries.length) ? 0 : (int) min;
+                max = (max < 0 || max >= categorySeries.length) ? max = categorySeries.length - 1
                         : (int) max;
             }
 
