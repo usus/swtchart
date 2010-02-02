@@ -376,24 +376,27 @@ public class LineSeries extends Series implements ILineSeries {
         int y2 = yAxis.getPixelCoordinate(yseries[index + 1]);
         int y3, y4;
 
-        if (yAxis.isLogScaleEnabled()) {
-            y3 = yAxis.getPixelCoordinate(yAxis.getRange().lower);
-            y4 = y3;
-        } else if (isValidStackSeries()) {
-            y1 = yAxis.getPixelCoordinate(stackSeries[indexes[index]]);
-            y2 = yAxis.getPixelCoordinate(stackSeries[indexes[index + 1]]);
-            y3 = yAxis.getPixelCoordinate(stackSeries[indexes[index + 1]])
-                    + Math.abs(yAxis.getPixelCoordinate(yseries[index + 1])
-                            - yAxis.getPixelCoordinate(0))
-                    * (xAxis.isHorizontalAxis() ? 1 : -1);
-            y4 = yAxis.getPixelCoordinate(stackSeries[indexes[index]])
-                    + Math.abs(yAxis.getPixelCoordinate(yseries[index])
-                            - yAxis.getPixelCoordinate(0))
-                    * (xAxis.isHorizontalAxis() ? 1 : -1);
-        } else {
-            y3 = yAxis.getPixelCoordinate(0);
-            y4 = y3;
-        }
+		double baseYCoordinate = yAxis.getRange().lower > 0 ? yAxis.getRange().lower
+				: 0;
+
+		if (yAxis.isLogScaleEnabled()) {
+			y3 = yAxis.getPixelCoordinate(yAxis.getRange().lower);
+			y4 = y3;
+		} else if (isValidStackSeries()) {
+			y1 = yAxis.getPixelCoordinate(stackSeries[indexes[index]]);
+			y2 = yAxis.getPixelCoordinate(stackSeries[indexes[index + 1]]);
+			y3 = yAxis.getPixelCoordinate(stackSeries[indexes[index + 1]])
+					+ Math.abs(yAxis.getPixelCoordinate(yseries[index + 1])
+							- yAxis.getPixelCoordinate(0))
+					* (xAxis.isHorizontalAxis() ? 1 : -1);
+			y4 = yAxis.getPixelCoordinate(stackSeries[indexes[index]])
+					+ Math.abs(yAxis.getPixelCoordinate(yseries[index])
+							- yAxis.getPixelCoordinate(0))
+					* (xAxis.isHorizontalAxis() ? 1 : -1);
+		} else {
+			y3 = yAxis.getPixelCoordinate(baseYCoordinate);
+			y4 = y3;
+		}
 
         if (xAxis.isHorizontalAxis()) {
             return new int[] { x1, y1, x2, y2, x3, y3, x4, y4 };
