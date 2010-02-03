@@ -120,7 +120,6 @@ public class CompressConfig {
      */
     @Override
     public int hashCode() {
-        assert false;
         return 0;
     }
 

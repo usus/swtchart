@@ -1,10 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2008-2009 SWTChart project. All rights reserved. 
- * 
+ * Copyright (c) 2008-2009 SWTChart project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 package org.swtchart.internal;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -18,7 +21,9 @@ import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IBarSeries;
+import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILineSeries;
+import org.swtchart.IPlotArea;
 import org.swtchart.ISeries;
 import org.swtchart.ISeriesSet;
 import org.swtchart.internal.series.Series;
@@ -27,7 +32,7 @@ import org.swtchart.internal.series.SeriesSet;
 /**
  * Plot area to draw series and grids.
  */
-public class PlotArea extends Composite implements PaintListener {
+public class PlotArea extends Composite implements PaintListener, IPlotArea {
 
     /** the chart */
     protected Chart chart;
@@ -41,12 +46,15 @@ public class PlotArea extends Composite implements PaintListener {
     /** the state indicating if image cache has to be updated */
     private boolean updateImageCache;
 
+    /** the custom paint listeners */
+    List<ICustomPaintListener> paintListeners;
+
     /** the default background color */
     private static final int DEFAULT_BACKGROUND = SWT.COLOR_WHITE;
 
     /**
      * Constructor.
-     * 
+     *
      * @param chart
      *            the chart
      * @param style
@@ -59,6 +67,7 @@ public class PlotArea extends Composite implements PaintListener {
 
         seriesSet = new SeriesSet(chart);
         updateImageCache = true;
+        paintListeners = new ArrayList<ICustomPaintListener>();
 
         setBackground(Display.getDefault().getSystemColor(DEFAULT_BACKGROUND));
         addPaintListener(this);
@@ -66,7 +75,7 @@ public class PlotArea extends Composite implements PaintListener {
 
     /**
      * Gets the set of series.
-     * 
+     *
      * @return the set of series
      */
     public ISeriesSet getSeriesSet() {
@@ -96,6 +105,20 @@ public class PlotArea extends Composite implements PaintListener {
     }
 
     /*
+     * @see IPlotArea#addCustomPaintListener(ICustomPaintListener)
+     */
+    public void addCustomPaintListener(ICustomPaintListener listener) {
+        paintListeners.add(listener);
+    }
+
+    /*
+     * @see IPlotArea#removeCustomPaintListener(ICustomPaintListener)
+     */
+    public void removeCustomPaintListener(ICustomPaintListener listener) {
+        paintListeners.remove(listener);
+    }
+
+    /*
      * @see PaintListener#paintControl(PaintEvent)
      */
     public void paintControl(PaintEvent e) {
@@ -116,6 +139,15 @@ public class PlotArea extends Composite implements PaintListener {
                 ((Grid) axis.getGrid()).draw(gc, p.x, p.y);
             }
 
+            // draw behind series
+            GC prevGC = e.gc;
+            e.gc = gc;
+            for (ICustomPaintListener listener : paintListeners) {
+                if (listener.drawBehindSeries()) {
+                    listener.paintControl(e);
+                }
+            }
+
             // draw series. The line series should be drawn on bar series.
             for (ISeries series : chart.getSeriesSet().getSeries()) {
                 if (series instanceof IBarSeries) {
@@ -127,6 +159,15 @@ public class PlotArea extends Composite implements PaintListener {
                     ((Series) series).draw(gc, p.x, p.y);
                 }
             }
+
+            // draw over series
+            for (ICustomPaintListener listener : paintListeners) {
+                if (!listener.drawBehindSeries()) {
+                    listener.paintControl(e);
+                }
+            }
+            e.gc = prevGC;
+
             gc.dispose();
             updateImageCache = false;
         }
