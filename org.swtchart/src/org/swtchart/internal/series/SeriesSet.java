@@ -33,7 +33,7 @@ public class SeriesSet implements ISeriesSet {
     private Chart chart;
 
     /** the series */
-    private LinkedHashMap<String, ISeries> seriesMap;
+    private LinkedHashMap<String, Series> seriesMap;
 
     /**
      * Constructor.
@@ -44,7 +44,7 @@ public class SeriesSet implements ISeriesSet {
     public SeriesSet(Chart chart) {
         this.chart = chart;
 
-        seriesMap = new LinkedHashMap<String, ISeries>();
+        seriesMap = new LinkedHashMap<String, Series>();
     }
 
     /*
@@ -62,7 +62,7 @@ public class SeriesSet implements ISeriesSet {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
         }
 
-        ISeries series = null;
+        Series series = null;
         if (type == SeriesType.BAR) {
             series = new BarSeries(chart, identifier);
         } else if (type == SeriesType.LINE) {
@@ -72,7 +72,7 @@ public class SeriesSet implements ISeriesSet {
             return null; // to suppress warning...
         }
 
-        Series oldSeries = (Series) seriesMap.get(identifier);
+        Series oldSeries = seriesMap.get(identifier);
         if (oldSeries != null) {
             oldSeries.dispose();
         }
@@ -125,7 +125,7 @@ public class SeriesSet implements ISeriesSet {
     public void deleteSeries(String id) {
         validateSeriesId(id);
 
-        ((Series) seriesMap.get(id)).dispose();
+        seriesMap.get(id).dispose();
         seriesMap.remove(id);
 
         updateStackAndRiserData();
@@ -141,8 +141,8 @@ public class SeriesSet implements ISeriesSet {
         validateSeriesId(id);
 
         String seriesId = null;
-        LinkedHashMap<String, ISeries> newSeriesMap = new LinkedHashMap<String, ISeries>();
-        for (Entry<String, ISeries> entry : seriesMap.entrySet()) {
+        LinkedHashMap<String, Series> newSeriesMap = new LinkedHashMap<String, Series>();
+        for (Entry<String, Series> entry : seriesMap.entrySet()) {
 
             if (entry.getKey().equals(id)) {
                 seriesId = id;
@@ -171,7 +171,7 @@ public class SeriesSet implements ISeriesSet {
     public void bringToFront(String id) {
         validateSeriesId(id);
 
-        ISeries series = seriesMap.get(id);
+        Series series = seriesMap.get(id);
         seriesMap.remove(id);
         seriesMap.put(series.getId(), series);
 
@@ -186,8 +186,8 @@ public class SeriesSet implements ISeriesSet {
         validateSeriesId(id);
 
         String seriesId = null;
-        LinkedHashMap<String, ISeries> newSeriesMap = new LinkedHashMap<String, ISeries>();
-        for (Entry<String, ISeries> entry : seriesMap.entrySet()) {
+        LinkedHashMap<String, Series> newSeriesMap = new LinkedHashMap<String, Series>();
+        for (Entry<String, Series> entry : seriesMap.entrySet()) {
 
             if (!entry.getKey().equals(id) || seriesId == null) {
                 newSeriesMap.put(entry.getKey(), entry.getValue());
@@ -211,9 +211,9 @@ public class SeriesSet implements ISeriesSet {
     public void sendToBack(String id) {
         validateSeriesId(id);
 
-        LinkedHashMap<String, ISeries> newSeriesMap = new LinkedHashMap<String, ISeries>();
+        LinkedHashMap<String, Series> newSeriesMap = new LinkedHashMap<String, Series>();
         newSeriesMap.put(id, seriesMap.get(id));
-        for (Entry<String, ISeries> entry : seriesMap.entrySet()) {
+        for (Entry<String, Series> entry : seriesMap.entrySet()) {
             if (!entry.getKey().equals(id)) {
                 newSeriesMap.put(entry.getKey(), entry.getValue());
             }
@@ -228,8 +228,8 @@ public class SeriesSet implements ISeriesSet {
      * Disposes the series.
      */
     public void dispose() {
-        for (Entry<String, ISeries> entry : seriesMap.entrySet()) {
-            ((Series) entry.getValue()).dispose();
+        for (Entry<String, Series> entry : seriesMap.entrySet()) {
+            entry.getValue().dispose();
         }
     }
 
@@ -326,7 +326,11 @@ public class SeriesSet implements ISeriesSet {
 
             ICompress compressor = ((Series) series).getCompressor();
             if (axis.isValidCategoryAxis()) {
-                double[] xSeries = new double[axis.getCategorySeries().length];
+                String[] categorySeries = axis.getCategorySeries();
+                if (categorySeries == null) {
+                    continue;
+                }
+                double[] xSeries = new double[categorySeries.length];
                 for (int i = 0; i < xSeries.length; i++) {
                     xSeries[i] = i;
                 }
@@ -365,9 +369,12 @@ public class SeriesSet implements ISeriesSet {
         double[] stackLineSeries = null;
 
         if (((Axis) xAxis).isValidCategoryAxis()) {
-            int size = xAxis.getCategorySeries().length;
-            stackBarSeries = new double[size];
-            stackLineSeries = new double[size];
+            String[] categorySeries = xAxis.getCategorySeries();
+            if (categorySeries != null) {
+                int size = categorySeries.length;
+                stackBarSeries = new double[size];
+                stackLineSeries = new double[size];
+            }
         }
 
         for (ISeries series : getSeries()) {
@@ -411,7 +418,7 @@ public class SeriesSet implements ISeriesSet {
      */
     private void setStackSeries(double[] stackSeries, ISeries series) {
         double[] ySeries = series.getYSeries();
-        if (ySeries == null) {
+        if (ySeries == null || stackSeries == null) {
             return;
         }
 

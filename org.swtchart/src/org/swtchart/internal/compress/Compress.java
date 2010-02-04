@@ -71,6 +71,10 @@ public abstract class Compress implements ICompress {
      * @see ICompress#setXSeries(double[])
      */
     public void setXSeries(double[] xSeries) {
+        if (xSeries == null) {
+            return;
+        }
+
         double[] copiedSeries = new double[xSeries.length];
         System.arraycopy(xSeries, 0, copiedSeries, 0, xSeries.length);
 
@@ -88,6 +92,10 @@ public abstract class Compress implements ICompress {
      * @see ICompress#setYSeries(double[])
      */
     public void setYSeries(double[] ySeries) {
+        if (ySeries == null) {
+            return;
+        }
+
         double[] copiedSeries = new double[ySeries.length];
         System.arraycopy(ySeries, 0, copiedSeries, 0, ySeries.length);
 
