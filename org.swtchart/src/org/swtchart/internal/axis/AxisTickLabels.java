@@ -457,19 +457,21 @@ public class AxisTickLabels implements PaintListener {
 
             // check if the tick label value is major
             boolean isMajorTick = true;
-            if (!axis.isValidCategoryAxis() && axis.isLogScaleEnabled()) {
-                isMajorTick = isMajorTick(tickLabelValues.get(i));
-            }
-
-            // check if the same tick label is repeated
-            String currentLabel = tickLabels.get(i);
-            try {
-                double value = Double.parseDouble(currentLabel);
-                if (value != tickLabelValues.get(i)) {
-                    isMajorTick = false;
+            if (!axis.isValidCategoryAxis()) {
+                if (axis.isLogScaleEnabled()) {
+                    isMajorTick = isMajorTick(tickLabelValues.get(i));
                 }
-            } catch (NumberFormatException e) {
-                // label is not decimal value but string
+
+                // check if the same tick label is repeated
+                String currentLabel = tickLabels.get(i);
+                try {
+                    double value = Double.parseDouble(currentLabel);
+                    if (value != tickLabelValues.get(i)) {
+                        isMajorTick = false;
+                    }
+                } catch (NumberFormatException e) {
+                    // label is not decimal value but string
+                }
             }
 
             if (hasSpaceToDraw && isMajorTick) {
