@@ -198,20 +198,24 @@ public class AxisTickMarks implements PaintListener {
 
         // draw tick marks
         gc.setLineStyle(SWT.LINE_SOLID);
-        if (axis.isValidCategoryAxis()) {
-            if (tickLabelPositions.size() > 1) {
-                int step = tickLabelPositions.get(1).intValue()
-                        - tickLabelPositions.get(0).intValue();
-                int x = (int) (tickLabelPositions.get(0).intValue() - step / 2d);
-                for (int i = 0; i < tickLabelPositions.size() + 1; i++) {
-                    int y = 0;
-                    if (position == Position.Secondary) {
-                        y = bounds.height - 1 - LINE_WIDTH - TICK_LENGTH;
-                    }
-                    gc.drawLine(bounds.x + x, bounds.y + y, bounds.x + x,
-                            bounds.y + y + TICK_LENGTH);
-                    x += step;
-                }
+		if (axis.isValidCategoryAxis()) {
+			if (tickLabelPositions.size() > 1) {
+				int step = tickLabelPositions.get(1).intValue()
+						- tickLabelPositions.get(0).intValue();
+				for (int i = 0; i < tickLabelPositions.size() + 1; i++) {
+					int x;
+					if (i < tickLabelPositions.size()) {
+						x = (int) (tickLabelPositions.get(i).intValue() - step / 2d);
+					} else {
+						x = (int) (tickLabelPositions.get(i - 1).intValue() + step / 2d);
+					}
+					int y = 0;
+					if (position == Position.Secondary) {
+						y = bounds.height - 1 - LINE_WIDTH - TICK_LENGTH;
+					}
+					gc.drawLine(bounds.x + x, bounds.y + y, bounds.x + x,
+							bounds.y + y + TICK_LENGTH);
+				}
             }
         } else {
             for (int i = 0; i < tickLabelPositions.size(); i++) {
@@ -254,9 +258,15 @@ public class AxisTickMarks implements PaintListener {
             if (tickLabelPositions.size() > 1) {
                 int step = tickLabelPositions.get(1).intValue()
                         - tickLabelPositions.get(0).intValue();
-                int y = (int) (tickLabelPositions.get(0).intValue() - step / 2d);
-                for (int i = 0; i < tickLabelPositions.size() + 1; i++) {
-                    int x = 0;
+				for (int i = 0; i < tickLabelPositions.size() + 1; i++) {
+					int x = 0;
+					int y;
+					if (i < tickLabelPositions.size()) {
+						y = (int) (tickLabelPositions.get(i).intValue() - step / 2d);
+					} else {
+						y = (int) (tickLabelPositions.get(i - 1).intValue() + step / 2d);
+					}
+
                     if (position == Position.Primary) {
                         x = bounds.width - 1 - LINE_WIDTH - TICK_LENGTH;
                     } else {
@@ -264,7 +274,6 @@ public class AxisTickMarks implements PaintListener {
                     }
                     gc.drawLine(bounds.x + x, bounds.y + y, bounds.x + x
                             + TICK_LENGTH, bounds.y + y);
-                    y += step;
                 }
             }
         } else {
