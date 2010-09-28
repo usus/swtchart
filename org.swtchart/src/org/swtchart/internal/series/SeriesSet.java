@@ -347,6 +347,7 @@ public class SeriesSet implements ISeriesSet {
      */
     public void updateStackAndRiserData() {
         for (IAxis xAxis : chart.getAxisSet().getXAxes()) {
+        	((Axis) xAxis).setNumRisers(0);
             for (IAxis yAxis : chart.getAxisSet().getYAxes()) {
                 updateStackAndRiserData(xAxis, yAxis);
             }
@@ -391,22 +392,24 @@ public class SeriesSet implements ISeriesSet {
                 if (series.getType() == SeriesType.BAR) {
                     if (stackRiserPosition == -1) {
                         stackRiserPosition = riserCnt;
-                        riserCnt++;
-                    }
-                    ((BarSeries) series).setRiserIndex(stackRiserPosition);
-                    setStackSeries(stackBarSeries, series);
-                } else if (series.getType() == SeriesType.LINE) {
-                    setStackSeries(stackLineSeries, series);
-                }
-            } else {
-                if (series.getType() == SeriesType.BAR) {
-                    ((BarSeries) series).setRiserIndex(riserCnt++);
-                }
-            }
-        }
+						riserCnt++;
+					}
+					((BarSeries) series).setRiserIndex(((Axis) xAxis)
+							.getNumRisers() + stackRiserPosition);
+					setStackSeries(stackBarSeries, series);
+				} else if (series.getType() == SeriesType.LINE) {
+					setStackSeries(stackLineSeries, series);
+				}
+			} else {
+				if (series.getType() == SeriesType.BAR) {
+					((BarSeries) series).setRiserIndex(((Axis) xAxis)
+							.getNumRisers() + riserCnt++);
+				}
+			}
+		}
 
-        ((Axis) xAxis).setNumRisers(riserCnt);
-    }
+		((Axis) xAxis).setNumRisers(((Axis) xAxis).getNumRisers() + riserCnt);
+	}
 
     /**
      * Sets the stack series.
