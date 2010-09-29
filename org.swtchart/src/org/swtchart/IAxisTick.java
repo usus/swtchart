@@ -82,6 +82,23 @@ public interface IAxisTick {
     void setTickMarkStepHint(int tickMarkStepHint);
 
     /**
+     * Gets the tick label angle.
+     * 
+     * @return the tick label angle in degree
+     */
+    int getTickLabelAngle();
+
+    /**
+     * Sets the tick label angle.
+     * 
+     * @param angle
+     *            the angle in degree between 0 and 90. The default value is 0.
+     *            If setting 0, tick labels are horizontally shown. If setting
+     *            90, tick labels are vertically shown.
+     */
+    void setTickLabelAngle(int angle);
+
+    /**
      * Sets the format for axis tick label. <tt>DecimalFormat</tt> and
      * <tt>DateFormat</tt> should be used for <tt>double[]</tt> series and
      * <tt>Date[]</tt> series respectively.

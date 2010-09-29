@@ -39,6 +39,9 @@ public class AxisTick implements IAxisTick {
     /** the tick mark step hint */
     private int tickMarkStepHint;
 
+    /** the tick label angle in degree */
+    private int tickLabelAngle;
+
     /** the default tick mark step hint */
     private static final int DEFAULT_TICK_MARK_STEP_HINT = 64;
 
@@ -57,6 +60,7 @@ public class AxisTick implements IAxisTick {
         axisTickLabels = new AxisTickLabels(chart, axis);
         axisTickMarks = new AxisTickMarks(chart, axis);
         isVisible = true;
+        tickLabelAngle = 0;
         tickMarkStepHint = DEFAULT_TICK_MARK_STEP_HINT;
     }
 
@@ -146,6 +150,27 @@ public class AxisTick implements IAxisTick {
             this.tickMarkStepHint = tickMarkStepHint;
         }
         chart.updateLayout();
+    }
+
+    /*
+     * @see IAxisTick#getTickLabelAngle()
+     */
+    public int getTickLabelAngle() {
+        return tickLabelAngle;
+    }
+
+    /*
+     * @see IAxisTick#setTickLabelAngle(int)
+     */
+    public void setTickLabelAngle(int angle) {
+        if (angle < 0 || 90 < angle) {
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+        }
+
+        if (tickLabelAngle != angle) {
+            tickLabelAngle = angle;
+            chart.updateLayout();
+        }
     }
 
     /*

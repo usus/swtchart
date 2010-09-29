@@ -22,10 +22,13 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
+import org.swtchart.IAxis.Position;
 import org.swtchart.internal.ChartLayoutData;
 import org.swtchart.internal.Util;
 
@@ -359,8 +362,7 @@ public class AxisTickLabels implements PaintListener {
                 tickLabelValues.add(j.doubleValue());
 
                 int tickLabelPosition = (int) ((Math.log10(j.doubleValue()) - Math
-                        .log10(min))
-                        / (Math.log10(max) - Math.log10(min)) * length);
+                        .log10(min)) / (Math.log10(max) - Math.log10(min)) * length);
                 tickLabelPositions.add(tickLabelPosition);
             }
             tickStep = tickStep.multiply(pow(10, 1));
@@ -440,7 +442,8 @@ public class AxisTickLabels implements PaintListener {
             tickVisibilities.add(Boolean.TRUE);
         }
 
-        if (tickLabelPositions.size() == 0) {
+        if (tickLabelPositions.size() == 0
+                || axis.getTick().getTickLabelAngle() != 0) {
             return;
         }
 
@@ -607,7 +610,13 @@ public class AxisTickLabels implements PaintListener {
                 }
             }
         }
-        tickLabelMaxLength = maxLength;
+
+        if (tickLabelMaxLength != maxLength) {
+            tickLabelMaxLength = maxLength;
+            if (axis.getTick().getTickLabelAngle() != 0) {
+                chart.updateLayout();
+            }
+        }
     }
 
     /**
@@ -770,7 +779,7 @@ public class AxisTickLabels implements PaintListener {
     }
 
     /**
-     * Updates title layout.
+     * Updates the tick labels layout.
      */
     protected void updateLayoutData() {
         widthHint = SWT.DEFAULT;
@@ -780,8 +789,12 @@ public class AxisTickLabels implements PaintListener {
             heightHint = 0;
         } else {
             if (axis.isHorizontalAxis()) {
+                double angle = axis.getTick().getTickLabelAngle();
                 heightHint = Axis.MARGIN
-                        + Util.getExtentInGC(getFont(), "dummy").y;
+                        + (int) (tickLabelMaxLength
+                                * Math.sin(Math.toRadians(angle)) + Util
+                                .getExtentInGC(getFont(), "dummy").y
+                                * Math.cos(Math.toRadians(angle)));
             } else {
                 widthHint = tickLabelMaxLength + Axis.MARGIN;
             }
@@ -816,14 +829,78 @@ public class AxisTickLabels implements PaintListener {
 
         // draw tick labels
         gc.setFont(axis.getTick().getFont());
+        int angle = axis.getTick().getTickLabelAngle();
         for (int i = 0; i < tickLabelPositions.size(); i++) {
             if (axis.isValidCategoryAxis() || tickVisibilities.get(i) == true) {
                 String text = tickLabels.get(i);
-                int fontWidth = gc.textExtent(text).x;
-                int x = (int) (tickLabelPositions.get(i) - fontWidth / 2.0 + offset);
-                gc.drawText(text, bounds.x + x, bounds.y);
+                int textWidth = gc.textExtent(text).x;
+                int textHeight = gc.textExtent(text).y;
+                if (angle == 0) {
+                    int x = (int) (tickLabelPositions.get(i) - textWidth / 2d + offset);
+                    gc.drawText(text, bounds.x + x, bounds.y);
+                    continue;
+                }
+
+                float x, y;
+                if (axis.getPosition() == Position.Primary) {
+                    x = (float) (offset + bounds.x + tickLabelPositions.get(i)
+                            - textWidth * Math.cos(Math.toRadians(angle)) - textHeight
+                            / 2d * Math.sin(Math.toRadians(angle)));
+                    y = (float) (bounds.y + textWidth
+                            * Math.sin(Math.toRadians(angle)));
+                } else {
+                    x = (float) (offset + bounds.x + tickLabelPositions.get(i) - textHeight
+                            / 2d * Math.sin(Math.toRadians(angle)));
+                    y = (float) (bounds.y + tickLabelMaxLength
+                            * Math.sin(Math.toRadians(angle)));
+                }
+                drawRotatedText(gc, text, x, y, angle);
             }
         }
+    }
+
+    /**
+     * Draws the rotated text.
+     * 
+     * @param gc
+     *            the graphics context
+     * @param text
+     *            the text
+     * @param x
+     *            the x coordinate
+     * @param y
+     *            the y coordinate
+     * @param angle
+     *            the angle
+     */
+    private void drawRotatedText(GC gc, String text, float x, float y,
+            float angle) {
+
+        int textWidth = gc.textExtent(text).x;
+        int textHeight = gc.textExtent(text).y;
+
+        // create image to draw text
+        Image image = new Image(Display.getCurrent(), textWidth, textHeight);
+        GC tmpGc = new GC(image);
+        tmpGc.setForeground(getForeground());
+        tmpGc.setBackground(gc.getBackground());
+        tmpGc.setFont(getFont());
+        tmpGc.drawText(text, 0, 0);
+
+        // set transform to rotate
+        Transform transform = new Transform(gc.getDevice());
+        transform.translate(x, y);
+        transform.rotate(360 - angle);
+        gc.setTransform(transform);
+
+        // draw the image on the rotated graphics context
+        gc.drawImage(image, 0, 0);
+
+        // dispose resources
+        tmpGc.dispose();
+        transform.dispose();
+        image.dispose();
+        gc.setTransform(null);
     }
 
     /**

@@ -105,7 +105,7 @@ public class AxisTickMarks implements PaintListener {
     }
 
     /**
-     * Updates title layout.
+     * Updates tick marks layout.
      */
     protected void updateLayoutData() {
         widthHint = SWT.DEFAULT;
