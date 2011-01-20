@@ -13,47 +13,47 @@ import org.swtchart.ISeries.SeriesType;
  */
 public class LogScaleExample {
 
-	private static final double[] ySeries = { 0.6, 0.4, 0.7, 0.06, 1.9, 1.7,
-			2.6, 5.4, 9.1, 11.2, 23.4, 10.6, 54.2, 40.6, 68.1, 110.5 };
+    private static final double[] ySeries = { 0.6, 0.4, 0.7, 0.06, 1.9, 1.7,
+            2.6, 5.4, 9.1, 11.2, 23.4, 10.6, 54.2, 40.6, 68.1, 110.5 };
 
-	/**
-	 * The main method.
-	 * 
-	 * @param args
-	 *            the arguments.
-	 */
-	public static void main(String[] args) {
-		Display display = new Display();
-		Shell shell = new Shell(display);
-		shell.setText("Log Scale Example");
-		shell.setSize(500, 400);
-		shell.setLayout(new FillLayout());
+    /**
+     * The main method.
+     * 
+     * @param args
+     *            the arguments.
+     */
+    public static void main(String[] args) {
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setText("Log Scale Example");
+        shell.setSize(500, 400);
+        shell.setLayout(new FillLayout());
 
-		// create a chart
-		Chart chart = new Chart(shell, SWT.NONE);
+        // create a chart
+        Chart chart = new Chart(shell, SWT.NONE);
 
-		// set titles
-		chart.getTitle().setText("Log Scale Example");
-		chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
-		chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
+        // set titles
+        chart.getTitle().setText("Log Scale Example");
+        chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
+        chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
 
-		// create line series
-		ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet()
-				.createSeries(SeriesType.LINE, "line series");
-		lineSeries.setYSeries(ySeries);
+        // create line series
+        ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet()
+                .createSeries(SeriesType.LINE, "line series");
+        lineSeries.setYSeries(ySeries);
 
-		// set log scale
-		chart.getAxisSet().getYAxis(0).enableLogScale(true);
+        // set log scale
+        chart.getAxisSet().getYAxis(0).enableLogScale(true);
 
-		// adjust the axis range
-		chart.getAxisSet().adjustRange();
+        // adjust the axis range
+        chart.getAxisSet().adjustRange();
 
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
-		display.dispose();
-	}
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
+    }
 }

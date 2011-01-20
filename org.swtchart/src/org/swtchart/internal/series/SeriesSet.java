@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008-2009 SWTChart project. All rights reserved. 
+ * Copyright (c) 2008-2011 SWTChart project. All rights reserved. 
  * 
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
@@ -347,7 +347,7 @@ public class SeriesSet implements ISeriesSet {
      */
     public void updateStackAndRiserData() {
         for (IAxis xAxis : chart.getAxisSet().getXAxes()) {
-        	((Axis) xAxis).setNumRisers(0);
+                ((Axis) xAxis).setNumRisers(0);
             for (IAxis yAxis : chart.getAxisSet().getYAxes()) {
                 updateStackAndRiserData(xAxis, yAxis);
             }
@@ -392,24 +392,24 @@ public class SeriesSet implements ISeriesSet {
                 if (series.getType() == SeriesType.BAR) {
                     if (stackRiserPosition == -1) {
                         stackRiserPosition = riserCnt;
-						riserCnt++;
-					}
-					((BarSeries) series).setRiserIndex(((Axis) xAxis)
-							.getNumRisers() + stackRiserPosition);
-					setStackSeries(stackBarSeries, series);
-				} else if (series.getType() == SeriesType.LINE) {
-					setStackSeries(stackLineSeries, series);
-				}
-			} else {
-				if (series.getType() == SeriesType.BAR) {
-					((BarSeries) series).setRiserIndex(((Axis) xAxis)
-							.getNumRisers() + riserCnt++);
-				}
-			}
-		}
+                                                riserCnt++;
+                                        }
+                                        ((BarSeries) series).setRiserIndex(((Axis) xAxis)
+                                                        .getNumRisers() + stackRiserPosition);
+                                        setStackSeries(stackBarSeries, series);
+                                } else if (series.getType() == SeriesType.LINE) {
+                                        setStackSeries(stackLineSeries, series);
+                                }
+                        } else {
+                                if (series.getType() == SeriesType.BAR) {
+                                        ((BarSeries) series).setRiserIndex(((Axis) xAxis)
+                                                        .getNumRisers() + riserCnt++);
+                                }
+                        }
+                }
 
-		((Axis) xAxis).setNumRisers(((Axis) xAxis).getNumRisers() + riserCnt);
-	}
+                ((Axis) xAxis).setNumRisers(((Axis) xAxis).getNumRisers() + riserCnt);
+        }
 
     /**
      * Sets the stack series.

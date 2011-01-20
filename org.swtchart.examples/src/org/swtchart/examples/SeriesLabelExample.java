@@ -13,47 +13,47 @@ import org.swtchart.ISeries.SeriesType;
  */
 public class SeriesLabelExample {
 
-	private static final double[] ySeries = { 0.0, 0.38, 0.71, 0.92, 1.0, 0.92,
-			0.71, 0.38, 0.0, -0.38, -0.71, -0.92, -1.0, -0.92, -0.71, -0.38 };
+    private static final double[] ySeries = { 0.0, 0.38, 0.71, 0.92, 1.0, 0.92,
+            0.71, 0.38, 0.0, -0.38, -0.71, -0.92, -1.0, -0.92, -0.71, -0.38 };
 
-	/**
-	 * The main method.
-	 * 
-	 * @param args
-	 *            the arguments.
-	 */
-	public static void main(String[] args) {
-		Display display = new Display();
-		Shell shell = new Shell(display);
-		shell.setText("Series Label Example");
-		shell.setSize(500, 400);
-		shell.setLayout(new FillLayout());
+    /**
+     * The main method.
+     * 
+     * @param args
+     *            the arguments.
+     */
+    public static void main(String[] args) {
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setText("Series Label Example");
+        shell.setSize(500, 400);
+        shell.setLayout(new FillLayout());
 
-		// create a chart
-		Chart chart = new Chart(shell, SWT.NONE);
-		
-		// set titles
-		chart.getTitle().setText("Series Label Example");
-		chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
-		chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
+        // create a chart
+        Chart chart = new Chart(shell, SWT.NONE);
 
-		// create line series
-		ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet()
-				.createSeries(SeriesType.LINE, "line series");
-		lineSeries.setYSeries(ySeries);
-		
-		// set label visible
-		lineSeries.getLabel().setVisible(true);
+        // set titles
+        chart.getTitle().setText("Series Label Example");
+        chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
+        chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
 
-		// adjust the axis range
-		chart.getAxisSet().adjustRange();
+        // create line series
+        ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet()
+                .createSeries(SeriesType.LINE, "line series");
+        lineSeries.setYSeries(ySeries);
 
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
-		display.dispose();
-	}
+        // set label visible
+        lineSeries.getLabel().setVisible(true);
+
+        // adjust the axis range
+        chart.getAxisSet().adjustRange();
+
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
+    }
 }

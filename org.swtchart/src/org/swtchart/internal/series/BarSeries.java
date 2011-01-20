@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008-2009 SWTChart project. All rights reserved. 
+ * Copyright (c) 2008-2011 SWTChart project. All rights reserved. 
  * 
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
@@ -151,19 +151,19 @@ public class BarSeries extends Series implements IBarSeries {
         Range yRange = yAxis.getRange();
         for (int i = 0; i < xseries.length; i++) {
             int x = xAxis.getPixelCoordinate(xseries[i]);
-			int y = yAxis
-					.getPixelCoordinate(isValidStackSeries() ? stackSeries[indexes[i]]
-							: yseries[i]);
-			double baseYCoordinate = yAxis.getRange().lower > 0 ? yAxis
-					.getRange().lower : 0;
-			double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
-					xRange.upper);
-			double riserHeight = Math.abs(yAxis.getPixelCoordinate(yseries[i],
-					yRange.lower, yRange.upper)
-					- yAxis.getPixelCoordinate(
-							yAxis.isLogScaleEnabled() ? yRange.lower
-									: baseYCoordinate, yRange.lower,
-							yRange.upper));
+                        int y = yAxis
+                                        .getPixelCoordinate(isValidStackSeries() ? stackSeries[indexes[i]]
+                                                        : yseries[i]);
+                        double baseYCoordinate = yAxis.getRange().lower > 0 ? yAxis
+                                        .getRange().lower : 0;
+                        double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
+                                        xRange.upper);
+                        double riserHeight = Math.abs(yAxis.getPixelCoordinate(yseries[i],
+                                        yRange.lower, yRange.upper)
+                                        - yAxis.getPixelCoordinate(
+                                                        yAxis.isLogScaleEnabled() ? yRange.lower
+                                                                        : baseYCoordinate, yRange.lower,
+                                                        yRange.upper));
 
             // adjust riser x coordinate and riser width for multiple series
             int riserCnt = xAxis.getNumRisers();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008-2009 SWTChart project. All rights reserved. 
+ * Copyright (c) 2008-2011 SWTChart project. All rights reserved. 
  * 
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
@@ -307,6 +307,7 @@ public class AxisSet implements IAxisSet {
      * Updates the layout data
      * 
      * @param axes
+     *            The axes
      */
     private void updateAxesLayoutData(IAxis[] axes) {
         for (IAxis axis : axes) {
