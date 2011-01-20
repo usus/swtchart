@@ -377,13 +377,7 @@ abstract public class Series implements ISeries {
      * @return the X range of series
      */
     public Range getXRange() {
-        double min = minX;
-        double max = maxX;
-        if (min == max) {
-            min = min - 0.5;
-            max = max + 0.5;
-        }
-        return new Range(min, max);
+        return new Range(minX, maxX);
     }
 
     /**
