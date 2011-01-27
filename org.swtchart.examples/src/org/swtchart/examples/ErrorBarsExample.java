@@ -16,7 +16,7 @@ import org.swtchart.ISeries.SeriesType;
 public class ErrorBarsExample {
 
     private static final double[] ySeries = { 0.0, 0.38, 0.71, 0.92, 1.0, 0.92,
-	    0.71, 0.38, 0.0, -0.38, -0.71, -0.92, -1.0, -0.92, -0.71, -0.38 };
+            0.71, 0.38, 0.0, -0.38, -0.71, -0.92, -1.0, -0.92, -0.71, -0.38 };
 
     /**
      * The main method.
@@ -25,21 +25,21 @@ public class ErrorBarsExample {
      *            the arguments
      */
     public static void main(String[] args) {
-	Display display = new Display();
-	Shell shell = new Shell(display);
-	shell.setText("Error Bars");
-	shell.setSize(500, 400);
-	shell.setLayout(new FillLayout());
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setText("Error Bars");
+        shell.setSize(500, 400);
+        shell.setLayout(new FillLayout());
 
-	createChart(shell);
+        createChart(shell);
 
-	shell.open();
-	while (!shell.isDisposed()) {
-	    if (!display.readAndDispatch()) {
-		display.sleep();
-	    }
-	}
-	display.dispose();
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
     }
 
     /**
@@ -51,23 +51,23 @@ public class ErrorBarsExample {
      */
     static public Chart createChart(Composite parent) {
 
-	// create a chart
-	Chart chart = new Chart(parent, SWT.NONE);
-	chart.getTitle().setText("Error Bars");
+        // create a chart
+        Chart chart = new Chart(parent, SWT.NONE);
+        chart.getTitle().setText("Error Bars");
 
-	// create series
-	ISeries series = chart.getSeriesSet().createSeries(SeriesType.LINE,
-		"line series");
-	series.setYSeries(ySeries);
+        // create series
+        ISeries series = chart.getSeriesSet().createSeries(SeriesType.LINE,
+                "line series");
+        series.setYSeries(ySeries);
 
-	// set error bars
-	IErrorBar errorBar = series.getYErrorBar();
-	errorBar.setVisible(true);
-	errorBar.setError(0.1);
+        // set error bars
+        IErrorBar errorBar = series.getYErrorBar();
+        errorBar.setVisible(true);
+        errorBar.setError(0.1);
 
-	// adjust the axis range
-	chart.getAxisSet().adjustRange();
+        // adjust the axis range
+        chart.getAxisSet().adjustRange();
 
-	return chart;
+        return chart;
     }
 }

@@ -25,21 +25,21 @@ public class AreaChartExample {
      *            the arguments
      */
     public static void main(String[] args) {
-	Display display = new Display();
-	Shell shell = new Shell(display);
-	shell.setText("Area Chart");
-	shell.setSize(500, 400);
-	shell.setLayout(new FillLayout());
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setText("Area Chart");
+        shell.setSize(500, 400);
+        shell.setLayout(new FillLayout());
 
-	createChart(shell);
+        createChart(shell);
 
-	shell.open();
-	while (!shell.isDisposed()) {
-	    if (!display.readAndDispatch()) {
-		display.sleep();
-	    }
-	}
-	display.dispose();
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
     }
 
     /**
@@ -51,28 +51,28 @@ public class AreaChartExample {
      */
     static public Chart createChart(Composite parent) {
 
-	// create a chart
-	Chart chart = new Chart(parent, SWT.NONE);
+        // create a chart
+        Chart chart = new Chart(parent, SWT.NONE);
 
-	// set titles
-	chart.getTitle().setText("Area Chart");
+        // set titles
+        chart.getTitle().setText("Area Chart");
 
-	// create line series
-	ILineSeries lineSeries1 = (ILineSeries) chart.getSeriesSet()
-		.createSeries(SeriesType.LINE, "line series 1");
-	lineSeries1.setYSeries(ySeries1);
-	lineSeries1.setLineColor(Display.getDefault().getSystemColor(
-		SWT.COLOR_RED));
-	lineSeries1.enableArea(true);
+        // create line series
+        ILineSeries lineSeries1 = (ILineSeries) chart.getSeriesSet()
+                .createSeries(SeriesType.LINE, "line series 1");
+        lineSeries1.setYSeries(ySeries1);
+        lineSeries1.setLineColor(Display.getDefault().getSystemColor(
+                SWT.COLOR_RED));
+        lineSeries1.enableArea(true);
 
-	ILineSeries lineSeries2 = (ILineSeries) chart.getSeriesSet()
-		.createSeries(SeriesType.LINE, "line series 2");
-	lineSeries2.setYSeries(ySeries2);
-	lineSeries2.enableArea(true);
+        ILineSeries lineSeries2 = (ILineSeries) chart.getSeriesSet()
+                .createSeries(SeriesType.LINE, "line series 2");
+        lineSeries2.setYSeries(ySeries2);
+        lineSeries2.enableArea(true);
 
-	// adjust the axis range
-	chart.getAxisSet().adjustRange();
+        // adjust the axis range
+        chart.getAxisSet().adjustRange();
 
-	return chart;
+        return chart;
     }
 }

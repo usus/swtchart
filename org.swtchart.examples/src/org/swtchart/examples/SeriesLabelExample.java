@@ -15,7 +15,7 @@ import org.swtchart.ISeries.SeriesType;
 public class SeriesLabelExample {
 
     private static final double[] ySeries = { 0.0, 0.38, 0.71, 0.92, 1.0, 0.92,
-	    0.71, 0.38, 0.0, -0.38, -0.71, -0.92, -1.0, -0.92, -0.71, -0.38 };
+            0.71, 0.38, 0.0, -0.38, -0.71, -0.92, -1.0, -0.92, -0.71, -0.38 };
 
     /**
      * The main method.
@@ -24,21 +24,21 @@ public class SeriesLabelExample {
      *            the arguments
      */
     public static void main(String[] args) {
-	Display display = new Display();
-	Shell shell = new Shell(display);
-	shell.setText("Series Label");
-	shell.setSize(500, 400);
-	shell.setLayout(new FillLayout());
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setText("Series Label");
+        shell.setSize(500, 400);
+        shell.setLayout(new FillLayout());
 
-	createChart(shell);
+        createChart(shell);
 
-	shell.open();
-	while (!shell.isDisposed()) {
-	    if (!display.readAndDispatch()) {
-		display.sleep();
-	    }
-	}
-	display.dispose();
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
     }
 
     /**
@@ -50,25 +50,25 @@ public class SeriesLabelExample {
      */
     static public Chart createChart(Composite parent) {
 
-	// create a chart
-	Chart chart = new Chart(parent, SWT.NONE);
+        // create a chart
+        Chart chart = new Chart(parent, SWT.NONE);
 
-	// set titles
-	chart.getTitle().setText("Series Label");
-	chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
-	chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
+        // set titles
+        chart.getTitle().setText("Series Label");
+        chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
+        chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
 
-	// create line series
-	ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet()
-		.createSeries(SeriesType.LINE, "line series");
-	lineSeries.setYSeries(ySeries);
+        // create line series
+        ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet()
+                .createSeries(SeriesType.LINE, "line series");
+        lineSeries.setYSeries(ySeries);
 
-	// set label visible
-	lineSeries.getLabel().setVisible(true);
+        // set label visible
+        lineSeries.getLabel().setVisible(true);
 
-	// adjust the axis range
-	chart.getAxisSet().adjustRange();
+        // adjust the axis range
+        chart.getAxisSet().adjustRange();
 
-	return chart;
+        return chart;
     }
 }

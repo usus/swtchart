@@ -66,7 +66,9 @@ public class SymbolBoundsExample {
         ILineSeries series2 = (ILineSeries) chart.getSeriesSet().createSeries(
                 SeriesType.LINE, "series 2");
         series2.setYSeries(ySeries2);
-        series2.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+        series2
+                .setLineColor(Display.getDefault()
+                        .getSystemColor(SWT.COLOR_RED));
 
         // adjust the axis range
         chart.getAxisSet().adjustRange();

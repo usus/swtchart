@@ -15,7 +15,7 @@ import org.swtchart.ISeries.SeriesType;
 public class BarChartExample {
 
     private static final double[] ySeries = { 0.2, 1.1, 1.9, 2.3, 1.8, 1.5,
-	    1.8, 2.6, 2.9, 3.2 };
+            1.8, 2.6, 2.9, 3.2 };
 
     /**
      * The main method.
@@ -24,21 +24,21 @@ public class BarChartExample {
      *            the arguments
      */
     public static void main(String[] args) {
-	Display display = new Display();
-	Shell shell = new Shell(display);
-	shell.setText("Bar Chart");
-	shell.setSize(500, 400);
-	shell.setLayout(new FillLayout());
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setText("Bar Chart");
+        shell.setSize(500, 400);
+        shell.setLayout(new FillLayout());
 
-	createChart(shell);
+        createChart(shell);
 
-	shell.open();
-	while (!shell.isDisposed()) {
-	    if (!display.readAndDispatch()) {
-		display.sleep();
-	    }
-	}
-	display.dispose();
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
     }
 
     /**
@@ -50,22 +50,22 @@ public class BarChartExample {
      */
     static public Chart createChart(Composite parent) {
 
-	// create a chart
-	Chart chart = new Chart(parent, SWT.NONE);
+        // create a chart
+        Chart chart = new Chart(parent, SWT.NONE);
 
-	// set titles
-	chart.getTitle().setText("Bar Chart");
-	chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
-	chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
+        // set titles
+        chart.getTitle().setText("Bar Chart");
+        chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
+        chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
 
-	// create bar series
-	IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(
-		SeriesType.BAR, "bar series");
-	barSeries.setYSeries(ySeries);
+        // create bar series
+        IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(
+                SeriesType.BAR, "bar series");
+        barSeries.setYSeries(ySeries);
 
-	// adjust the axis range
-	chart.getAxisSet().adjustRange();
+        // adjust the axis range
+        chart.getAxisSet().adjustRange();
 
-	return chart;
+        return chart;
     }
 }

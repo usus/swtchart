@@ -39,93 +39,93 @@ public class RunAllExamples {
      *            the arguments
      */
     public static void main(String[] args) {
-	Display display = new Display();
-	Shell shell = new Shell(display);
-	shell.setText("Examples");
-	shell.setSize(750, 400);
-	shell.setLayout(new FillLayout());
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setText("Examples");
+        shell.setSize(750, 400);
+        shell.setLayout(new FillLayout());
 
-	SashForm sashForm = new SashForm(shell, SWT.HORIZONTAL);
+        SashForm sashForm = new SashForm(shell, SWT.HORIZONTAL);
 
-	TabFolder tabFolder = new TabFolder(sashForm, SWT.NONE);
-	tabFolder.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-	tabFolder.setLayout(new FillLayout());
+        TabFolder tabFolder = new TabFolder(sashForm, SWT.NONE);
+        tabFolder.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+        tabFolder.setLayout(new FillLayout());
 
-	final Composite composite = new Composite(sashForm, SWT.NONE);
-	composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-	final StackLayout layout = new StackLayout();
-	composite.setLayout(layout);
+        final Composite composite = new Composite(sashForm, SWT.NONE);
+        composite.setLayoutData(new GridData(GridData.FILL_BOTH));
+        final StackLayout layout = new StackLayout();
+        composite.setLayout(layout);
 
-	sashForm.setWeights(new int[] { 1, 2 });
+        sashForm.setWeights(new int[] { 1, 2 });
 
-	createList("Basic", createBasicCharts(composite), tabFolder, layout,
-		composite);
-	createList("Advanced", createAdvancedCharts(composite), tabFolder,
-		layout, composite);
+        createList("Basic", createBasicCharts(composite), tabFolder, layout,
+                composite);
+        createList("Advanced", createAdvancedCharts(composite), tabFolder,
+                layout, composite);
 
-	shell.open();
-	while (!shell.isDisposed()) {
-	    if (!display.readAndDispatch()) {
-		display.sleep();
-	    }
-	}
-	display.dispose();
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
     }
 
     private static void createList(String tabName, final Vector<Chart> charts,
-	    TabFolder tabFolder, final StackLayout layout,
-	    final Composite composite) {
-	final List list = new List(tabFolder, SWT.H_SCROLL | SWT.V_SCROLL);
-	TabItem basicTabItem = new TabItem(tabFolder, SWT.NONE);
-	basicTabItem.setText(tabName);
-	basicTabItem.setControl(list);
-	for (Chart chart : charts) {
-	    list.add(chart.getTitle().getText());
-	}
+            TabFolder tabFolder, final StackLayout layout,
+            final Composite composite) {
+        final List list = new List(tabFolder, SWT.H_SCROLL | SWT.V_SCROLL);
+        TabItem basicTabItem = new TabItem(tabFolder, SWT.NONE);
+        basicTabItem.setText(tabName);
+        basicTabItem.setControl(list);
+        for (Chart chart : charts) {
+            list.add(chart.getTitle().getText());
+        }
 
-	list.addSelectionListener(new SelectionAdapter() {
-	    @Override
-	    public void widgetSelected(SelectionEvent event) {
-		Chart chart = charts.get(list.getSelectionIndex());
-		chart.getAxisSet().adjustRange();
-		layout.topControl = chart;
-		composite.layout();
-	    }
-	});
+        list.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                Chart chart = charts.get(list.getSelectionIndex());
+                chart.getAxisSet().adjustRange();
+                layout.topControl = chart;
+                composite.layout();
+            }
+        });
     }
 
     private static Vector<Chart> createBasicCharts(Composite parent) {
-	basicCharts = new Vector<Chart>();
+        basicCharts = new Vector<Chart>();
 
-	basicCharts.add(LineChartExample.createChart(parent));
-	basicCharts.add(BarChartExample.createChart(parent));
-	basicCharts.add(ScatterChartExample.createChart(parent));
-	basicCharts.add(AreaChartExample.createChart(parent));
-	basicCharts.add(StepChartExample.createChart(parent));
-	basicCharts.add(StackSeriesExample.createChart(parent));
-	basicCharts.add(LogScaleExample.createChart(parent));
-	basicCharts.add(OrientationExample.createChart(parent));
-	basicCharts.add(CategoryExample.createChart(parent));
-	basicCharts.add(SeriesLabelExample.createChart(parent));
-	basicCharts.add(ErrorBarsExample.createChart(parent));
-	basicCharts.add(MultipleAxesExample.createChart(parent));
-	basicCharts.add(LargeSeriesExample.createChart(parent));
-	basicCharts.add(AngledAxisTickLabelsExample.createChart(parent));
+        basicCharts.add(LineChartExample.createChart(parent));
+        basicCharts.add(BarChartExample.createChart(parent));
+        basicCharts.add(ScatterChartExample.createChart(parent));
+        basicCharts.add(AreaChartExample.createChart(parent));
+        basicCharts.add(StepChartExample.createChart(parent));
+        basicCharts.add(StackSeriesExample.createChart(parent));
+        basicCharts.add(LogScaleExample.createChart(parent));
+        basicCharts.add(OrientationExample.createChart(parent));
+        basicCharts.add(CategoryExample.createChart(parent));
+        basicCharts.add(SeriesLabelExample.createChart(parent));
+        basicCharts.add(ErrorBarsExample.createChart(parent));
+        basicCharts.add(MultipleAxesExample.createChart(parent));
+        basicCharts.add(LargeSeriesExample.createChart(parent));
+        basicCharts.add(AngledAxisTickLabelsExample.createChart(parent));
 
-	return basicCharts;
+        return basicCharts;
     }
 
     private static Vector<Chart> createAdvancedCharts(Composite parent) {
-	basicCharts = new Vector<Chart>();
+        basicCharts = new Vector<Chart>();
 
-	basicCharts.add(PxielToDataConversionExample.createChart(parent));
-	basicCharts.add(DataToPixelConversionExample.createChart(parent));
-	basicCharts.add(SymbolBoundsExample.createChart(parent));
-	basicCharts.add(BarBoundsExample.createChart(parent));
-	basicCharts.add(AxisTickBoundsExample.createChart(parent));
-	basicCharts.add(LegendBoundsExample.createChart(parent));
-	basicCharts.add(CustomPaintListenerExample.createChart(parent));
+        basicCharts.add(PxielToDataConversionExample.createChart(parent));
+        basicCharts.add(DataToPixelConversionExample.createChart(parent));
+        basicCharts.add(SymbolBoundsExample.createChart(parent));
+        basicCharts.add(BarBoundsExample.createChart(parent));
+        basicCharts.add(AxisTickBoundsExample.createChart(parent));
+        basicCharts.add(LegendBoundsExample.createChart(parent));
+        basicCharts.add(CustomPaintListenerExample.createChart(parent));
 
-	return basicCharts;
+        return basicCharts;
     }
 }

@@ -24,21 +24,21 @@ public class StackSeriesExample {
      *            the arguments
      */
     public static void main(String[] args) {
-	Display display = new Display();
-	Shell shell = new Shell(display);
-	shell.setText("Stack Series");
-	shell.setSize(500, 400);
-	shell.setLayout(new FillLayout());
+        Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setText("Stack Series");
+        shell.setSize(500, 400);
+        shell.setLayout(new FillLayout());
 
-	createChart(shell);
+        createChart(shell);
 
-	shell.open();
-	while (!shell.isDisposed()) {
-	    if (!display.readAndDispatch()) {
-		display.sleep();
-	    }
-	}
-	display.dispose();
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
     }
 
     /**
@@ -50,37 +50,37 @@ public class StackSeriesExample {
      */
     static public Chart createChart(Composite parent) {
 
-	// create a chart
-	Chart chart = new Chart(parent, SWT.NONE);
+        // create a chart
+        Chart chart = new Chart(parent, SWT.NONE);
 
-	// set titles
-	chart.getTitle().setText("Stack Series");
-	chart.getAxisSet().getXAxis(0).getTitle().setText("Month");
-	chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
+        // set titles
+        chart.getTitle().setText("Stack Series");
+        chart.getAxisSet().getXAxis(0).getTitle().setText("Month");
+        chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
 
-	// set category
-	chart.getAxisSet().getXAxis(0).enableCategory(true);
-	chart.getAxisSet().getXAxis(0).setCategorySeries(
-		new String[] { "Jan", "Feb", "Mar", "Apr", "May" });
+        // set category
+        chart.getAxisSet().getXAxis(0).enableCategory(true);
+        chart.getAxisSet().getXAxis(0).setCategorySeries(
+                new String[] { "Jan", "Feb", "Mar", "Apr", "May" });
 
-	// create bar series
-	IBarSeries barSeries1 = (IBarSeries) chart.getSeriesSet().createSeries(
-		SeriesType.BAR, "bar series 1");
-	barSeries1.setYSeries(ySeries1);
-	barSeries1.setBarColor(Display.getDefault().getSystemColor(
-		SWT.COLOR_GREEN));
+        // create bar series
+        IBarSeries barSeries1 = (IBarSeries) chart.getSeriesSet().createSeries(
+                SeriesType.BAR, "bar series 1");
+        barSeries1.setYSeries(ySeries1);
+        barSeries1.setBarColor(Display.getDefault().getSystemColor(
+                SWT.COLOR_GREEN));
 
-	IBarSeries barSeries2 = (IBarSeries) chart.getSeriesSet().createSeries(
-		SeriesType.BAR, "bar series 2");
-	barSeries2.setYSeries(ySeries2);
+        IBarSeries barSeries2 = (IBarSeries) chart.getSeriesSet().createSeries(
+                SeriesType.BAR, "bar series 2");
+        barSeries2.setYSeries(ySeries2);
 
-	// enable stack series
-	barSeries1.enableStack(true);
-	barSeries2.enableStack(true);
+        // enable stack series
+        barSeries1.enableStack(true);
+        barSeries2.enableStack(true);
 
-	// adjust the axis range
-	chart.getAxisSet().adjustRange();
+        // adjust the axis range
+        chart.getAxisSet().adjustRange();
 
-	return chart;
+        return chart;
     }
 }
