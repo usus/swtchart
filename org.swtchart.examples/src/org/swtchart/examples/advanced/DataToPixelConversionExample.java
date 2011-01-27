@@ -1,9 +1,10 @@
-package org.swtchart.examples;
+package org.swtchart.examples.advanced;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
@@ -14,7 +15,7 @@ import org.swtchart.ISeries.SeriesType;
 /**
  * An example to convert data coordinate into pixel coordinate.
  */
-public class CoordinateConversionExample1 {
+public class DataToPixelConversionExample {
 
     private static final int MARGIN = 5;
 
@@ -30,12 +31,33 @@ public class CoordinateConversionExample1 {
     public static void main(String[] args) {
         Display display = new Display();
         Shell shell = new Shell(display);
-        shell.setText("Show Threshold Example");
+        shell.setText("Data To Pixel Conversion");
         shell.setSize(500, 400);
         shell.setLayout(new FillLayout());
 
+        createChart(shell);
+
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
+    }
+
+    /**
+     * create the chart.
+     * 
+     * @param parent
+     *            The parent composite
+     * @return The created chart
+     */
+    static public Chart createChart(Composite parent) {
+
         // create a chart
-        Chart chart = new Chart(shell, SWT.NONE);
+        Chart chart = new Chart(parent, SWT.NONE);
+        chart.getTitle().setText("Data To Pixel Conversion");
 
         // get Y axis
         final IAxis yAxis = chart.getAxisSet().getYAxis(0);
@@ -57,12 +79,6 @@ public class CoordinateConversionExample1 {
             }
         });
 
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-        }
-        display.dispose();
+        return chart;
     }
 }

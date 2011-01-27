@@ -2,6 +2,7 @@ package org.swtchart.examples;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
@@ -23,49 +24,63 @@ public class StackSeriesExample {
      *            the arguments
      */
     public static void main(String[] args) {
-        Display display = new Display();
-        Shell shell = new Shell(display);
-        shell.setText("Stack Series Example");
-        shell.setSize(500, 400);
-        shell.setLayout(new FillLayout());
+	Display display = new Display();
+	Shell shell = new Shell(display);
+	shell.setText("Stack Series");
+	shell.setSize(500, 400);
+	shell.setLayout(new FillLayout());
 
-        // create a chart
-        Chart chart = new Chart(shell, SWT.NONE);
+	createChart(shell);
 
-        // set titles
-        chart.getTitle().setText("Stack Series Example");
-        chart.getAxisSet().getXAxis(0).getTitle().setText("Month");
-        chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
+	shell.open();
+	while (!shell.isDisposed()) {
+	    if (!display.readAndDispatch()) {
+		display.sleep();
+	    }
+	}
+	display.dispose();
+    }
 
-        // set category
-        chart.getAxisSet().getXAxis(0).enableCategory(true);
-        chart.getAxisSet().getXAxis(0).setCategorySeries(
-                new String[] { "Jan", "Feb", "Mar", "Apr", "May" });
+    /**
+     * create the chart.
+     * 
+     * @param parent
+     *            The parent composite
+     * @return The created chart
+     */
+    static public Chart createChart(Composite parent) {
 
-        // create bar series
-        IBarSeries barSeries1 = (IBarSeries) chart.getSeriesSet().createSeries(
-                SeriesType.BAR, "bar series 1");
-        barSeries1.setYSeries(ySeries1);
-        barSeries1.setBarColor(Display.getDefault().getSystemColor(
-                SWT.COLOR_GREEN));
+	// create a chart
+	Chart chart = new Chart(parent, SWT.NONE);
 
-        IBarSeries barSeries2 = (IBarSeries) chart.getSeriesSet().createSeries(
-                SeriesType.BAR, "bar series 2");
-        barSeries2.setYSeries(ySeries2);
+	// set titles
+	chart.getTitle().setText("Stack Series");
+	chart.getAxisSet().getXAxis(0).getTitle().setText("Month");
+	chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
 
-        // enable stack series
-        barSeries1.enableStack(true);
-        barSeries2.enableStack(true);
+	// set category
+	chart.getAxisSet().getXAxis(0).enableCategory(true);
+	chart.getAxisSet().getXAxis(0).setCategorySeries(
+		new String[] { "Jan", "Feb", "Mar", "Apr", "May" });
 
-        // adjust the axis range
-        chart.getAxisSet().adjustRange();
+	// create bar series
+	IBarSeries barSeries1 = (IBarSeries) chart.getSeriesSet().createSeries(
+		SeriesType.BAR, "bar series 1");
+	barSeries1.setYSeries(ySeries1);
+	barSeries1.setBarColor(Display.getDefault().getSystemColor(
+		SWT.COLOR_GREEN));
 
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-        }
-        display.dispose();
+	IBarSeries barSeries2 = (IBarSeries) chart.getSeriesSet().createSeries(
+		SeriesType.BAR, "bar series 2");
+	barSeries2.setYSeries(ySeries2);
+
+	// enable stack series
+	barSeries1.enableStack(true);
+	barSeries2.enableStack(true);
+
+	// adjust the axis range
+	chart.getAxisSet().adjustRange();
+
+	return chart;
     }
 }

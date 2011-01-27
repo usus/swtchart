@@ -1,10 +1,11 @@
-package org.swtchart.examples;
+package org.swtchart.examples.advanced;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -16,7 +17,7 @@ import org.swtchart.ISeries.SeriesType;
 /**
  * An example to get bounds of items on legend.
  */
-public class CoordinateConversionExample5 {
+public class LegendBoundsExample {
 
     private static final double[] ySeries1 = { 0.1, 0.1, 0.2, 0.2, 0.3 };
     private static final double[] ySeries2 = { 0.5, 0.5, 0.4, 0.3, 0.2 };
@@ -31,12 +32,33 @@ public class CoordinateConversionExample5 {
     public static void main(String[] args) {
         Display display = new Display();
         Shell shell = new Shell(display);
-        shell.setText("Legend Bounds Example");
+        shell.setText("Legend Bounds");
         shell.setSize(500, 400);
         shell.setLayout(new FillLayout());
 
+        createChart(shell);
+
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
+    }
+
+    /**
+     * create the chart.
+     * 
+     * @param parent
+     *            The parent composite
+     * @return The created chart
+     */
+    static public Chart createChart(Composite parent) {
+
         // create a chart
-        final Chart chart = new Chart(shell, SWT.NONE);
+        final Chart chart = new Chart(parent, SWT.NONE);
+        chart.getTitle().setText("Legend Bounds");
 
         // create bar series
         IBarSeries series1 = (IBarSeries) chart.getSeriesSet().createSeries(
@@ -71,12 +93,6 @@ public class CoordinateConversionExample5 {
             }
         });
 
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-        }
-        display.dispose();
+        return chart;
     }
 }

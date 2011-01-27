@@ -1,9 +1,10 @@
-package org.swtchart.examples;
+package org.swtchart.examples.advanced;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
@@ -14,7 +15,7 @@ import org.swtchart.ISeries.SeriesType;
 /**
  * An example to convert pixel coordinate into data coordinate.
  */
-public class CoordinateConversionExample2 {
+public class PxielToDataConversionExample {
 
     private static final double[] ySeries = { 0.0, 0.38, 0.71, 0.92, 1.0, 0.92,
             0.71, 0.38, 0.0, -0.38, -0.71, -0.92, -1.0, -0.92, -0.71, -0.38 };
@@ -28,12 +29,33 @@ public class CoordinateConversionExample2 {
     public static void main(String[] args) {
         Display display = new Display();
         Shell shell = new Shell(display);
-        shell.setText("Show Mouse Position Example");
+        shell.setText("Pxiel To Data Conversion");
         shell.setSize(500, 400);
         shell.setLayout(new FillLayout());
 
+        createChart(shell);
+
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch()) {
+                display.sleep();
+            }
+        }
+        display.dispose();
+    }
+
+    /**
+     * create the chart.
+     * 
+     * @param parent
+     *            The parent composite
+     * @return The created chart
+     */
+    static public Chart createChart(Composite parent) {
+
         // create a chart
-        final Chart chart = new Chart(shell, SWT.NONE);
+        final Chart chart = new Chart(parent, SWT.NONE);
+        chart.getTitle().setText("Pxiel To Data Conversion");
 
         // get axes
         final IAxis xAxis = chart.getAxisSet().getXAxis(0);
@@ -56,12 +78,6 @@ public class CoordinateConversionExample2 {
             }
         });
 
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-        }
-        display.dispose();
+        return chart;
     }
 }

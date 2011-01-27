@@ -2,6 +2,7 @@ package org.swtchart.examples;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
@@ -14,46 +15,60 @@ import org.swtchart.ISeries.SeriesType;
 public class OrientationExample {
 
     private static final double[] ySeries = { 0.2, 1.1, 1.9, 2.3, 1.8, 1.5,
-            1.8, 2.6, 2.9, 3.2 };
+	    1.8, 2.6, 2.9, 3.2 };
 
     /**
      * The main method.
      * 
      * @param args
-     *            the arguments.
+     *            the arguments
      */
     public static void main(String[] args) {
-        Display display = new Display();
-        Shell shell = new Shell(display);
-        shell.setText("Orientation Example");
-        shell.setSize(500, 400);
-        shell.setLayout(new FillLayout());
+	Display display = new Display();
+	Shell shell = new Shell(display);
+	shell.setText("Orientation");
+	shell.setSize(500, 400);
+	shell.setLayout(new FillLayout());
 
-        // create a chart
-        Chart chart = new Chart(shell, SWT.NONE);
+	createChart(shell);
 
-        // set the chart orientation
-        chart.setOrientation(SWT.VERTICAL);
+	shell.open();
+	while (!shell.isDisposed()) {
+	    if (!display.readAndDispatch()) {
+		display.sleep();
+	    }
+	}
+	display.dispose();
+    }
 
-        // set titles
-        chart.getTitle().setText("Orientation Example");
-        chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
-        chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
+    /**
+     * create the chart.
+     * 
+     * @param parent
+     *            The parent composite
+     * @return The created chart
+     */
+    static public Chart createChart(Composite parent) {
 
-        // create bar series
-        IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(
-                SeriesType.BAR, "bar series");
-        barSeries.setYSeries(ySeries);
+	// create a chart
+	Chart chart = new Chart(parent, SWT.NONE);
 
-        // adjust the axis range
-        chart.getAxisSet().adjustRange();
+	// set the chart orientation
+	chart.setOrientation(SWT.VERTICAL);
 
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-        }
-        display.dispose();
+	// set titles
+	chart.getTitle().setText("Orientation");
+	chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
+	chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
+
+	// create bar series
+	IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(
+		SeriesType.BAR, "bar series");
+	barSeries.setYSeries(ySeries);
+
+	// adjust the axis range
+	chart.getAxisSet().adjustRange();
+
+	return chart;
     }
 }

@@ -2,6 +2,7 @@ package org.swtchart.examples;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
@@ -27,12 +28,33 @@ public class AngledAxisTickLabelsExample {
     public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
-	shell.setText("Angled Axis Tick Labels Example");
+	shell.setText("Angled Axis Tick Labels");
 	shell.setSize(500, 400);
 	shell.setLayout(new FillLayout());
 
+	createChart(shell);
+
+	shell.open();
+	while (!shell.isDisposed()) {
+	    if (!display.readAndDispatch()) {
+		display.sleep();
+	    }
+	}
+	display.dispose();
+    }
+
+    /**
+     * create the chart.
+     * 
+     * @param parent
+     *            The parent composite
+     * @return The created chart
+     */
+    static public Chart createChart(Composite parent) {
+
 	// create a chart
-	Chart chart = new Chart(shell, SWT.NONE);
+	Chart chart = new Chart(parent, SWT.NONE);
+	chart.getTitle().setText("Angled Axis Tick Labels");
 
 	// set category
 	chart.getAxisSet().getXAxis(0).enableCategory(true);
@@ -46,12 +68,6 @@ public class AngledAxisTickLabelsExample {
 
 	chart.getAxisSet().adjustRange();
 
-	shell.open();
-	while (!shell.isDisposed()) {
-	    if (!display.readAndDispatch()) {
-		display.sleep();
-	    }
-	}
-	display.dispose();
+	return chart;
     }
 }

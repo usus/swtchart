@@ -2,6 +2,7 @@ package org.swtchart.examples;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.Chart;
@@ -21,43 +22,57 @@ public class AreaChartExample {
      * The main method.
      * 
      * @param args
-     *            the arguments.
+     *            the arguments
      */
     public static void main(String[] args) {
-        Display display = new Display();
-        Shell shell = new Shell(display);
-        shell.setText("Area Chart Example");
-        shell.setSize(500, 400);
-        shell.setLayout(new FillLayout());
+	Display display = new Display();
+	Shell shell = new Shell(display);
+	shell.setText("Area Chart");
+	shell.setSize(500, 400);
+	shell.setLayout(new FillLayout());
 
-        // create a chart
-        Chart chart = new Chart(shell, SWT.NONE);
+	createChart(shell);
 
-        // set titles
-        chart.getTitle().setText("Area Chart Example");
+	shell.open();
+	while (!shell.isDisposed()) {
+	    if (!display.readAndDispatch()) {
+		display.sleep();
+	    }
+	}
+	display.dispose();
+    }
 
-        // create line series
-        ILineSeries lineSeries1 = (ILineSeries) chart.getSeriesSet()
-                .createSeries(SeriesType.LINE, "line series 1");
-        lineSeries1.setYSeries(ySeries1);
-        lineSeries1.setLineColor(Display.getDefault().getSystemColor(
-                SWT.COLOR_RED));
-        lineSeries1.enableArea(true);
+    /**
+     * create the chart.
+     * 
+     * @param parent
+     *            The parent composite
+     * @return The created chart
+     */
+    static public Chart createChart(Composite parent) {
 
-        ILineSeries lineSeries2 = (ILineSeries) chart.getSeriesSet()
-                .createSeries(SeriesType.LINE, "line series 2");
-        lineSeries2.setYSeries(ySeries2);
-        lineSeries2.enableArea(true);
+	// create a chart
+	Chart chart = new Chart(parent, SWT.NONE);
 
-        // adjust the axis range
-        chart.getAxisSet().adjustRange();
+	// set titles
+	chart.getTitle().setText("Area Chart");
 
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-        }
-        display.dispose();
+	// create line series
+	ILineSeries lineSeries1 = (ILineSeries) chart.getSeriesSet()
+		.createSeries(SeriesType.LINE, "line series 1");
+	lineSeries1.setYSeries(ySeries1);
+	lineSeries1.setLineColor(Display.getDefault().getSystemColor(
+		SWT.COLOR_RED));
+	lineSeries1.enableArea(true);
+
+	ILineSeries lineSeries2 = (ILineSeries) chart.getSeriesSet()
+		.createSeries(SeriesType.LINE, "line series 2");
+	lineSeries2.setYSeries(ySeries2);
+	lineSeries2.enableArea(true);
+
+	// adjust the axis range
+	chart.getAxisSet().adjustRange();
+
+	return chart;
     }
 }
