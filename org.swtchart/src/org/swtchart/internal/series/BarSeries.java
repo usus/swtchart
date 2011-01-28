@@ -9,6 +9,7 @@ package org.swtchart.internal.series;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
@@ -151,19 +152,19 @@ public class BarSeries extends Series implements IBarSeries {
         Range yRange = yAxis.getRange();
         for (int i = 0; i < xseries.length; i++) {
             int x = xAxis.getPixelCoordinate(xseries[i]);
-                        int y = yAxis
-                                        .getPixelCoordinate(isValidStackSeries() ? stackSeries[indexes[i]]
-                                                        : yseries[i]);
-                        double baseYCoordinate = yAxis.getRange().lower > 0 ? yAxis
-                                        .getRange().lower : 0;
-                        double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
-                                        xRange.upper);
-                        double riserHeight = Math.abs(yAxis.getPixelCoordinate(yseries[i],
-                                        yRange.lower, yRange.upper)
-                                        - yAxis.getPixelCoordinate(
-                                                        yAxis.isLogScaleEnabled() ? yRange.lower
-                                                                        : baseYCoordinate, yRange.lower,
-                                                        yRange.upper));
+            int y = yAxis
+                    .getPixelCoordinate(isValidStackSeries() ? stackSeries[indexes[i]]
+                            : yseries[i]);
+            double baseYCoordinate = yAxis.getRange().lower > 0 ? yAxis
+                    .getRange().lower : 0;
+            double riserwidth = getRiserWidth(xseries, i, xAxis, xRange.lower,
+                    xRange.upper);
+            double riserHeight = Math.abs(yAxis.getPixelCoordinate(yseries[i],
+                    yRange.lower, yRange.upper)
+                    - yAxis.getPixelCoordinate(
+                            yAxis.isLogScaleEnabled() ? yRange.lower
+                                    : baseYCoordinate, yRange.lower,
+                            yRange.upper));
 
             // adjust riser x coordinate and riser width for multiple series
             int riserCnt = xAxis.getNumRisers();
@@ -188,8 +189,8 @@ public class BarSeries extends Series implements IBarSeries {
                 int width = (int) Math.ceil(riserwidth);
                 width = (width == 0) ? 1 : width;
 
-                rectangles[i] = new Rectangle((int) Math.floor(x - riserwidth
-                        / 2d), y, width, (int) riserHeight);
+                rectangles[i] = getVisibleRectangle((int) Math.floor(x
+                        - riserwidth / 2d), y, width, (int) riserHeight);
             } else {
 
                 // adjust coordinate for negative series
@@ -200,13 +201,54 @@ public class BarSeries extends Series implements IBarSeries {
                 int height = (int) Math.ceil(riserwidth);
                 height = (height == 0) ? 1 : height;
 
-                rectangles[i] = new Rectangle((int) (y - riserHeight),
+                rectangles[i] = getVisibleRectangle((int) (y - riserHeight),
                         (int) Math.floor(x - riserwidth / 2d),
                         (int) riserHeight, height);
             }
         }
 
         return rectangles;
+    }
+
+    /**
+     * Gets the rectangle that is visible part of given rectangle.
+     * 
+     * @param x
+     *            The x coordinate
+     * @param y
+     *            The y coordinate
+     * @param width
+     *            the width
+     * @param height
+     *            The height
+     * @return The visible rectangle
+     */
+    private Rectangle getVisibleRectangle(int x, int y, int width, int height) {
+
+        final int offset = 5;
+        int newX = x;
+        int newY = y;
+        int newWidth = width;
+        int newHeight = height;
+
+        if (x < 0) {
+            newX = -offset;
+            newWidth += x + offset;
+        }
+        if (y < 0) {
+            newY = -offset;
+            newHeight += y + offset;
+        }
+
+        Point size = chart.getPlotArea().getSize();
+        if (x + width > size.x) {
+            newWidth -= x + width - size.x + offset;
+        }
+        if (y + height > size.y) {
+            newHeight -= y + height - size.y + offset;
+        }
+
+        return new Rectangle(newX, newY, newWidth, newHeight);
     }
 
     /**
