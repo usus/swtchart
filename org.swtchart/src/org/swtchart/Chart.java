@@ -7,6 +7,8 @@
 package org.swtchart;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -29,7 +31,7 @@ import org.swtchart.internal.axis.AxisSet;
 /**
  * A chart which are composed of title, legend, axes and plot area.
  */
-public class Chart extends Composite implements Listener {
+public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /** the title */
     private Title title;
@@ -42,7 +44,7 @@ public class Chart extends Composite implements Listener {
 
     /** the plot area */
     private PlotArea plotArea;
-
+    
     /** the orientation of chart which can be horizontal or vertical */
     private int orientation;
 
@@ -77,6 +79,8 @@ public class Chart extends Composite implements Listener {
         updateLayout();
 
         addListener(SWT.Resize, this);
+        
+        plotArea.addMouseMoveListener(this);
     }
 
     /**
@@ -304,4 +308,26 @@ public class Chart extends Composite implements Listener {
         loader.save(filename, format);
         image.dispose();
     }
+
+	@Override
+	public void mouseMove(MouseEvent e) {
+		
+		IAxis axis = getAxisSet().getYAxis(0);
+		
+		if (axis != null)
+		{
+			double y = axis.getDataCoordinate(e.y);
+			
+			axis = getAxisSet().getXAxis(0);
+			
+			if (axis != null)
+			{
+				double x = axis.getDataCoordinate(e.x);
+				
+				String strToolTip;
+				strToolTip = String.format("%.2f %.2f", x, y);
+				plotArea.setToolTipText(strToolTip);
+			}
+		}
+	}
 }
