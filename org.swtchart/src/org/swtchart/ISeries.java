@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2008-2011 SWTChart project. All rights reserved. 
- * 
+ * Copyright (c) 2008-2011 SWTChart project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -9,6 +9,7 @@ package org.swtchart;
 import java.util.Date;
 
 import org.eclipse.swt.graphics.Point;
+import org.swtchart.dataset.xy.IXYDataset;
 
 /**
  * Series.
@@ -31,7 +32,7 @@ public interface ISeries {
 
         /**
          * Constructor.
-         * 
+         *
          * @param label
          *            the label for series type
          */
@@ -42,14 +43,14 @@ public interface ISeries {
 
     /**
      * Gets the series id.
-     * 
+     *
      * @return the series id
      */
     String getId();
 
     /**
      * Sets the visibility state.
-     * 
+     *
      * @param visible
      *            the visibility state
      */
@@ -57,21 +58,21 @@ public interface ISeries {
 
     /**
      * Gets the visibility state.
-     * 
+     *
      * @return true if series is visible
      */
     boolean isVisible();
 
     /**
      * Gets the series type.
-     * 
+     *
      * @return the series type
      */
     SeriesType getType();
 
     /**
      * Enables the stack series. The series has to contain only positive values.
-     * 
+     *
      * @param enabled
      *            true if enabling stack series
      * @throws IllegalStateException
@@ -81,14 +82,14 @@ public interface ISeries {
 
     /**
      * Gets the state indicating if stack is enabled.
-     * 
+     *
      * @return the state indicating if stack is enabled
      */
     boolean isStackEnabled();
 
     /**
      * Sets the X series.
-     * 
+     *
      * @param series
      *            the X series
      */
@@ -96,16 +97,23 @@ public interface ISeries {
 
     /**
      * Sets the Y series.
-     * 
+     *
      * @param series
      *            the Y series
      */
     void setYSeries(double[] series);
 
     /**
+     * Set the series according to an XY data set rather than an individual
+     * x and y data series.
+     * @param dataset Data set containing x and y values.
+     */
+    void setXYSeries(IXYDataset dataset);
+
+    /**
      * Gets the X series. If the X series is not set, <tt>null</tt> will be
      * returned.
-     * 
+     *
      * @return the X series
      */
     double[] getXSeries();
@@ -113,7 +121,7 @@ public interface ISeries {
     /**
      * Gets the Y series. If the Y series haven't been set yet, <tt>null</tt>
      * will be returned.
-     * 
+     *
      * @return the Y series
      */
     double[] getYSeries();
@@ -123,7 +131,7 @@ public interface ISeries {
      * <p>
      * X series and X date series are exclusive. X date series will be cleared
      * by setting X series, and vice versa.
-     * 
+     *
      * @param series
      *            the X date series
      */
@@ -131,21 +139,21 @@ public interface ISeries {
 
     /**
      * Gets the X date series.
-     * 
+     *
      * @return the X date series, or <tt>null</tt> if X date series is not set.
      */
     Date[] getXDateSeries();
 
     /**
      * Gets the X axis id.
-     * 
+     *
      * @return the X axis id
      */
     int getXAxisId();
 
     /**
      * Sets the X axis id.
-     * 
+     *
      * @param id
      *            the X axis id.
      */
@@ -153,14 +161,14 @@ public interface ISeries {
 
     /**
      * Gets the Y axis id.
-     * 
+     *
      * @return the Y axis id
      */
     int getYAxisId();
 
     /**
      * Sets the Y axis id.
-     * 
+     *
      * @param id
      *            the Y axis id.
      */
@@ -168,28 +176,28 @@ public interface ISeries {
 
     /**
      * Gets the X error bar. This is typically used for scatter chart.
-     * 
+     *
      * @return the X error bar
      */
     IErrorBar getXErrorBar();
 
     /**
      * Gets the Y error bar.
-     * 
+     *
      * @return the Y error bar
      */
     IErrorBar getYErrorBar();
 
     /**
      * Gets the series label.
-     * 
+     *
      * @return the series label
      */
     ISeriesLabel getLabel();
 
     /**
      * Gets the pixel coordinates corresponding to the given series index.
-     * 
+     *
      * @param index
      *            the series index
      * @return the pixel coordinates
@@ -199,7 +207,7 @@ public interface ISeries {
     /**
      * Adds the dispose listener. The newly created color or font for series can
      * be disposed with the dispose listener when they are no longer needed.
-     * 
+     *
      * @param listener
      *            the dispose listener
      */

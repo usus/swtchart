@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2008-2011 SWTChart project. All rights reserved. 
- * 
+ * Copyright (c) 2008-2011 SWTChart project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -15,6 +15,7 @@ import org.swtchart.ILineSeries;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 import org.swtchart.IAxis.Direction;
+import org.swtchart.dataset.xy.IXYDataset;
 import org.swtchart.internal.Util;
 import org.swtchart.internal.axis.Axis;
 import org.swtchart.internal.compress.CompressLineSeries;
@@ -84,7 +85,7 @@ public class LineSeries extends Series implements ILineSeries {
 
     /**
      * Constructor.
-     * 
+     *
      * @param chart
      *            the chart
      * @param id
@@ -350,7 +351,7 @@ public class LineSeries extends Series implements ILineSeries {
 
     /**
      * Gets the line points to draw line and area.
-     * 
+     *
      * @param xseries
      *            the horizontal series
      * @param yseries
@@ -429,7 +430,7 @@ public class LineSeries extends Series implements ILineSeries {
 
     /**
      * Draws the line and area.
-     * 
+     *
      * @param gc
      *            the graphics context
      * @param width
@@ -512,7 +513,7 @@ public class LineSeries extends Series implements ILineSeries {
 
     /**
      * Draws the area.
-     * 
+     *
      * @param gc
      *            the graphic context
      * @param p
@@ -545,7 +546,7 @@ public class LineSeries extends Series implements ILineSeries {
 
     /**
      * Draws series symbol, label and error bars.
-     * 
+     *
      * @param gc
      *            the graphics context
      * @param width
@@ -599,7 +600,7 @@ public class LineSeries extends Series implements ILineSeries {
 
     /**
      * Draws series symbol.
-     * 
+     *
      * @param gc
      *            the GC object
      * @param h
@@ -657,4 +658,10 @@ public class LineSeries extends Series implements ILineSeries {
         }
         gc.setAntialias(oldAntialias);
     }
+
+	@Override
+	public void setXYSeries(IXYDataset dataset) {
+		setXSeries(dataset.getXvalues());
+		setYSeries(dataset.getYvalues());
+	}
 }

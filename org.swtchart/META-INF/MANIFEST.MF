@@ -4,5 +4,6 @@ Bundle-Name: SWTChart Plug-in
 Bundle-SymbolicName: org.swtchart;singleton:=true
 Bundle-Version: 0.7.0
 Require-Bundle: org.eclipse.swt
-Export-Package: org.swtchart
+Export-Package: org.swtchart,
+ org.swtchart.dataset.xy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
