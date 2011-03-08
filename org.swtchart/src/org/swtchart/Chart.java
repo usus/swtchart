@@ -1,14 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2008-2011 SWTChart project. All rights reserved. 
- * 
+ * Copyright (c) 2008-2011 SWTChart project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 package org.swtchart;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -31,7 +29,7 @@ import org.swtchart.internal.axis.AxisSet;
 /**
  * A chart which are composed of title, legend, axes and plot area.
  */
-public class Chart extends Composite implements Listener, MouseMoveListener {
+public class Chart extends Composite implements Listener {
 
     /** the title */
     private Title title;
@@ -44,7 +42,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /** the plot area */
     private PlotArea plotArea;
-    
+
     /** the orientation of chart which can be horizontal or vertical */
     private int orientation;
 
@@ -53,7 +51,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /**
      * Constructor.
-     * 
+     *
      * @param parent
      *            the parent composite on which chart is placed
      * @param style
@@ -79,13 +77,11 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
         updateLayout();
 
         addListener(SWT.Resize, this);
-        
-        plotArea.addMouseMoveListener(this);
     }
 
     /**
      * Gets the chart title.
-     * 
+     *
      * @return the chart title
      */
     public ITitle getTitle() {
@@ -94,7 +90,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /**
      * Gets the legend.
-     * 
+     *
      * @return the legend
      */
     public ILegend getLegend() {
@@ -103,7 +99,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /**
      * Gets the set of axes.
-     * 
+     *
      * @return the set of axes
      */
     public IAxisSet getAxisSet() {
@@ -112,7 +108,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /**
      * Gets the plot area.
-     * 
+     *
      * @return the plot area
      */
     public Composite getPlotArea() {
@@ -121,7 +117,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /**
      * Gets the set of series.
-     * 
+     *
      * @return the set of series
      */
     public ISeriesSet getSeriesSet() {
@@ -145,7 +141,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
     /**
      * Gets the background color in plot area. This method is identical with
      * <tt>getPlotArea().getBackground()</tt>.
-     * 
+     *
      * @return the background color in plot area
      */
     public Color getBackgroundInPlotArea() {
@@ -154,7 +150,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /**
      * Sets the background color in plot area.
-     * 
+     *
      * @param color
      *            the background color in plot area. If <tt>null</tt> is given,
      *            default background color will be set.
@@ -172,7 +168,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
      * Sets the state of chart orientation. The horizontal orientation means
      * that X axis is horizontal as usual, while the vertical orientation means
      * that Y axis is horizontal.
-     * 
+     *
      * @param orientation
      *            the orientation which can be SWT.HORIZONTAL or SWT.VERTICAL
      */
@@ -187,7 +183,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
      * Gets the state of chart orientation. The horizontal orientation means
      * that X axis is horizontal as usual, while the vertical orientation means
      * that Y axis is horizontal.
-     * 
+     *
      * @return the orientation which can be SWT.HORIZONTAL or SWT.VERTICAL
      */
     public int getOrientation() {
@@ -199,7 +195,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
      * and normally there should be no usecase to disable it. However, if you
      * suspect that something is wrong in compressing series, you can disable it
      * to isolate the issue.
-     * 
+     *
      * @param enabled
      *            true if enabling compressing series
      */
@@ -209,7 +205,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /**
      * Gets the state indicating if compressing series is enabled.
-     * 
+     *
      * @return true if compressing series is enabled
      */
     public boolean isCompressEnabled() {
@@ -289,7 +285,7 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
 
     /**
      * Saves to file with given format.
-     * 
+     *
      * @param filename
      *            the file name
      * @param format
@@ -308,26 +304,4 @@ public class Chart extends Composite implements Listener, MouseMoveListener {
         loader.save(filename, format);
         image.dispose();
     }
-
-	@Override
-	public void mouseMove(MouseEvent e) {
-		
-		IAxis axis = getAxisSet().getYAxis(0);
-		
-		if (axis != null)
-		{
-			double y = axis.getDataCoordinate(e.y);
-			
-			axis = getAxisSet().getXAxis(0);
-			
-			if (axis != null)
-			{
-				double x = axis.getDataCoordinate(e.x);
-				
-				String strToolTip;
-				strToolTip = String.format("%.2f %.2f", x, y);
-				plotArea.setToolTipText(strToolTip);
-			}
-		}
-	}
 }

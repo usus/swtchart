@@ -4,6 +4,8 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
@@ -52,8 +54,43 @@ public class InteractiveChart extends Chart implements PaintListener {
     private PropertiesResources resources;
 
     /**
+     * Mouse move listener implementation showing the current coordinates
+     * of the mouse cursor as data points.
+     * @author nbraun
+     *
+     */
+    private class DataPilot implements MouseMoveListener
+    {
+    	@Override
+		public void mouseMove(MouseEvent e) {
+
+    		IAxis axis = getAxisSet().getYAxis(0);
+
+    		if (axis != null)
+    		{
+    			double y = axis.getDataCoordinate(e.y);
+
+    			axis = getAxisSet().getXAxis(0);
+
+    			if (axis != null)
+    			{
+    				double x = axis.getDataCoordinate(e.x);
+
+    				String strToolTip;
+    				strToolTip = String.format("%.2f %.2f", x, y);
+    				getPlotArea().setToolTipText(strToolTip);
+    			}
+    		}
+   		}
+
+    }
+
+    /** The data pilot enabling tool-tip text with the current coordinates */
+    private DataPilot dataPilot = null;
+
+    /**
      * Constructor.
-     * 
+     *
      * @param parent
      *            the parent composite
      * @param style
@@ -220,7 +257,7 @@ public class InteractiveChart extends Chart implements PaintListener {
 
     /**
      * Handles mouse move event.
-     * 
+     *
      * @param event
      *            the mouse move event
      */
@@ -233,7 +270,7 @@ public class InteractiveChart extends Chart implements PaintListener {
 
     /**
      * Handles the mouse down event.
-     * 
+     *
      * @param event
      *            the mouse down event
      */
@@ -246,7 +283,7 @@ public class InteractiveChart extends Chart implements PaintListener {
 
     /**
      * Handles the mouse up event.
-     * 
+     *
      * @param event
      *            the mouse up event
      */
@@ -273,7 +310,7 @@ public class InteractiveChart extends Chart implements PaintListener {
 
     /**
      * Handles mouse wheel event.
-     * 
+     *
      * @param event
      *            the mouse wheel event
      */
@@ -300,7 +337,7 @@ public class InteractiveChart extends Chart implements PaintListener {
 
     /**
      * Handles the key down event.
-     * 
+     *
      * @param event
      *            the key down event
      */
@@ -338,7 +375,7 @@ public class InteractiveChart extends Chart implements PaintListener {
 
     /**
      * Gets the axes for given orientation.
-     * 
+     *
      * @param orientation
      *            the orientation
      * @return the axes
@@ -355,7 +392,7 @@ public class InteractiveChart extends Chart implements PaintListener {
 
     /**
      * Handles the selection event.
-     * 
+     *
      * @param event
      *            the event
      */
@@ -500,7 +537,7 @@ public class InteractiveChart extends Chart implements PaintListener {
 
     /**
      * Sets the axis range.
-     * 
+     *
      * @param range
      *            the axis range in pixels
      * @param axis
@@ -515,5 +552,31 @@ public class InteractiveChart extends Chart implements PaintListener {
         double max = axis.getDataCoordinate(range.y);
 
         axis.setRange(new Range(min, max));
+    }
+
+    /**
+     * When the data pilot is enabled, the mouse cursor will be extended with a
+     * tool-tip showing the current x,y coordinates that the mouse is pointing
+     * to.
+     * @param enable true to enable mouse tool-tips, false to disable
+     * @return whether the data pilot was enabled or not, before calling this
+     *         function.
+     */
+    public boolean enableDataPilot(boolean enable)
+    {
+    	boolean b = (dataPilot != null);
+
+    	if ((b == false) && enable)
+    	{
+    		dataPilot = new DataPilot();
+    		getPlotArea().addMouseMoveListener(dataPilot);
+    	}
+    	else if ((b==true) && (enable == false))
+    	{
+    		getPlotArea().removeMouseMoveListener(dataPilot);
+    		dataPilot = null;
+    	} /** if ... else */
+
+    	return b;
     }
 }
