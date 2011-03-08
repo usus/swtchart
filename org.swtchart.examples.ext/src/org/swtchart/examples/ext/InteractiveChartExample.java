@@ -1,9 +1,12 @@
 package org.swtchart.examples.ext;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.part.ViewPart;
 import org.swtchart.Chart;
 import org.swtchart.IBarSeries;
@@ -24,7 +27,7 @@ public class InteractiveChartExample extends ViewPart {
     private static final double[] yBarSeries2 = { 4.3, 3.4, 2.8, 2.1, 1.9 };
 
     /** the chart */
-    private Chart chart;
+    private InteractiveChart chart;
 
     /*
      * @see WorkbenchPart#createPartControl(Composite)
@@ -67,6 +70,22 @@ public class InteractiveChartExample extends ViewPart {
 
         // adjust the axis range
         chart.getAxisSet().adjustRange();
+
+        chart.getPlotArea().addMouseListener(new MouseListener() {
+
+			private boolean toolTipEnable = true;
+
+        	@Override
+			public void mouseUp(MouseEvent e) {}
+
+			@Override
+			public void mouseDown(MouseEvent e) {}
+
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				toolTipEnable = chart.enableDataPilot(toolTipEnable);
+			}
+		});
     }
 
     /*
@@ -76,7 +95,7 @@ public class InteractiveChartExample extends ViewPart {
     public void setFocus() {
         chart.getPlotArea().setFocus();
     }
-    
+
     /*
      * @see WorkbenchPart#dispose()
      */
