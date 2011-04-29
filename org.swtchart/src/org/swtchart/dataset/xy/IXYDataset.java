@@ -16,6 +16,11 @@ public interface IXYDataset {
 	void add(double x, double y);
 
 	/**
+	 * Clear all values in the current data set
+	 */
+	void clear();
+
+	/**
 	 * Returns an array of X-values of this data set.
 	 * @return Array of values for the x-axis
 	 */

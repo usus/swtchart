@@ -46,9 +46,16 @@ public class XYDataset implements IXYDataset {
 		return ret;
 	}
 
+
 	@Override
 	public int size() {
 		return valuesX.size();
+	}
+
+	@Override
+	public void clear() {
+		valuesX.clear();
+		valuesY.clear();
 	}
 
 }
