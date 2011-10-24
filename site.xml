@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.swtchart_0.7.0.jar" id="org.swtchart" version="0.7.0">
+      <category name="org.swtchart"/>
+   </feature>
+   <category-def name="org.swtchart" label="SWTChart"/>
+</site>
